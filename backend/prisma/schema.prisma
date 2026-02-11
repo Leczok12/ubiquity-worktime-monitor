@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Worker {
+  id        String  @id @default(uuid())
+  name      String
+  lastname  String
+  email     String?
+
+  workEvents WorkEvent[]
+}
+
+model WorkEvent {
+  id        String  @id @default(uuid())
+  workerId  String  
+  worker    Worker  @relation(fields: [workerId], references: [id])
+  type      WorkEventTypes
+}
+
+enum WorkEventTypes {
+  START
+  END
+  BREAK
+}

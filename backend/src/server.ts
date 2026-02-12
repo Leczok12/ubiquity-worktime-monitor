@@ -7,28 +7,30 @@ import { log } from './utils/log';
 import logger from './middlewares/logger';
 import errorHandler from './middlewares/error-handler';
 import { workerRouter } from './routers/worker-router';
-import { initialize } from './initialize';
+import { initialize } from './config/initialize';
 
-const app = express();
-const port = 3000;
+const startServer = async () => {
+    try {
+        await initialize();
 
-initialize();
-
-app.use(logger);
-
-app.get('/', (req: Request, res: Response) => {
-    const response: ApiResponse = {
-        status: 200,
-        message: 'Działa!',
-        data: { id: '1', name: 'Laptop', price: 3500 } as Product,
-    };
-    res.status(response.status).json(response);
-});
-
-app.use('/api/worker', workerRouter);
-
-app.use(errorHandler);
-
-app.listen(config.port, () => {
-    log(`Server is running on port ${config.port}`, 'SUCCESS');
-});
+        const app = express();
+        app.use(logger);
+        app.get('/', (req: Request, res: Response) => {
+            const response: ApiResponse = {
+                status: 200,
+                message: 'Działa!',
+                data: { id: '1', name: 'Laptop', price: 3500 } as Product,
+            };
+            res.status(response.status).json(response);
+        });
+        app.use('/api/worker', workerRouter);
+        app.use(errorHandler);
+        app.listen(config.port, () => {
+            log(`Server is running on port ${config.port}`, 'SUCCESS');
+        });
+    } catch (error) {
+        log(`Failed to start server: ${error}`, 'ERROR');
+        process.exit(1);
+    }
+};
+startServer();

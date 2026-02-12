@@ -1,12 +1,16 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/config/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
-
+model Configuration {
+  id    String @id @default(uuid())
+  key   String
+  value String
+}
 model Worker {
   id        String  @id @default(uuid())
   name      String
@@ -19,12 +23,14 @@ model Worker {
 model WorkEvent {
   id        String  @id @default(uuid())
   workerId  String  
-  worker    Worker  @relation(fields: [workerId], references: [id])
   type      WorkEventTypes
+  timeStart DateTime
+  timeEnd   DateTime
+
+  worker    Worker  @relation(fields: [workerId], references: [id])
 }
 
 enum WorkEventTypes {
-  START
-  END
+  WORK
   BREAK
 }

@@ -7,15 +7,15 @@ datasource ubiquityWorktimeMonitor {
   provider = "postgresql"
 }
 model Configuration {
-  id    String @id @default(uuid())
-  key   String
+  key   String @id
   value String
 }
 model Worker {
-  id        String  @id @default(uuid())
+  id        String  @id
   name      String
   lastname  String
   email     String?
+  active    Boolean 
 
   workEvents WorkEvent[]
 }

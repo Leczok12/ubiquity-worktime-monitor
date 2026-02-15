@@ -1,5 +1,5 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { config } from './config';
+import { config } from './config-old';
 import { PrismaClient } from '@prisma/client';
 import { log } from 'src/utils/log';
 import { exit } from 'node:process';

@@ -2,16 +2,18 @@ import express, { Request, Response, RequestHandler } from 'express';
 // Importujemy typ z folderu obok używając aliasu
 import { ApiResponse, Product } from '@shared/common';
 
-import { config } from './config/config';
+import { config } from './config/config-old';
 import { log } from './utils/log';
 import logger from './middlewares/logger';
 import errorHandler from './middlewares/error-handler';
 import { workerRouter } from './routers/worker-router';
-import { initialize } from './config/initialize';
+import configManager from './services/config-manager';
+import ubiquityAccessSyncManager from './services/ubiqity-access-sync-manager';
 
 const startServer = async () => {
     try {
-        await initialize();
+        await configManager.initalize();
+        await ubiquityAccessSyncManager.sync();
 
         const app = express();
         app.use(logger);

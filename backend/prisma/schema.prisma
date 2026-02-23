@@ -20,6 +20,11 @@ model Worker {
   workEvents WorkEvent[]
 }
 
+model Group {
+  id      String   @id
+  name    String
+}
+
 model WorkEvent {
   id        String  @id @default(uuid())
   workerId  String  

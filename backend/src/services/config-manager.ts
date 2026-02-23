@@ -9,6 +9,8 @@ const defaultConfig = [
     { key: 'another-config', value: 'default-value' },
 ] as const;
 
+export const ConfigKeys = defaultConfig.map((config) => config.key);
+
 export type ConfigKeys = (typeof defaultConfig)[number]['key'];
 
 class ConfigManager {
@@ -17,6 +19,12 @@ class ConfigManager {
         for (const config of defaultConfig) {
             const value = await this.getValue(config.key);
         }
+
+        await database.prisma.configuration.deleteMany({
+            where: {
+                key: { notIn: ConfigKeys },
+            },
+        });
     }
 
     async getValue(key: ConfigKeys): Promise<string | null> {
@@ -49,6 +57,11 @@ class ConfigManager {
             where: { key: key },
             data: { value: value },
         });
+    }
+
+    async getAllConfigs(): Promise<{ key: string; value: string }[]> {
+        const configs = await database.prisma.configuration.findMany();
+        return configs.map((config) => ({ key: config.key, value: config.value }));
     }
 }
 

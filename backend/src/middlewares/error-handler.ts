@@ -1,18 +1,19 @@
 import { ApiResponse } from '@shared/api-response';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ApiError } from 'src/types/api-error';
 import { log } from 'src/utils/log';
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    const response: { json: ApiResponse<undefined>; code: number } = (() => {
-        if (err instanceof ApiError) {
-            return { json: { status: 'ERROR', message: err.message }, code: err.statusCode };
-        }
-        return { json: { status: 'ERROR', message: 'Unknown error' }, code: 500 };
-    })();
-
-    log(`${response.json.message}`, 'ERROR');
-    res.status(response.code).json(response.json);
+    if (err instanceof ApiError) {
+        log(err.message || err.status, 'ERROR');
+        res.status(err.statusCode).json({ status: err.status, errorMessage: err.message } as ApiResponse<undefined>);
+    } else if (err instanceof Error) {
+        log(err.message, 'ERROR');
+        res.status(500).json({ status: 'ERROR', errorMessage: err.message } as ApiResponse<undefined>);
+    } else {
+        log('Internal Server Error', 'ERROR');
+        res.status(500).json({ status: 'ERROR', errorMessage: 'Internal Server Error' } as ApiResponse<undefined>);
+    }
 };
 
 export default errorHandler;

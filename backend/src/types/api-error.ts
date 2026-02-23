@@ -1,7 +1,12 @@
-export class ApiError extends Error {
+import { ApiResponseStatus } from '@shared/api-response';
+
+export class ApiError {
     statusCode: number;
-    constructor(statusCode: number, message: string) {
-        super(message);
+    status: ApiResponseStatus;
+    message?: string;
+    constructor(statusCode: number, status: ApiResponseStatus = 'ERROR', message?: string) {
+        this.message = message;
         this.statusCode = statusCode;
+        this.status = status;
     }
 }

@@ -1,6 +1,6 @@
 export interface ApiResponse<T> {
     status: ApiResponseStatus;
-    message: string;
+    errorMessage?: string;
     data?: T;
     pagination?: {
         page: number;
@@ -9,4 +9,4 @@ export interface ApiResponse<T> {
     };
 }
 
-export type ApiResponseStatus = 'SUCCESS' | 'ERROR';
+export type ApiResponseStatus = 'SUCCESS' | 'ERROR' | 'INVALID_ARGS' | 'NOT_FOUND' | 'UNAUTHORIZED' | 'FORBIDDEN';

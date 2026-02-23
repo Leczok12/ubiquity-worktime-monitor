@@ -3,41 +3,26 @@ import { ApiError } from 'src/types/api-error';
 import configManager, { ConfigKeys } from 'src/services/config-manager';
 import { ApiResponse } from '@shared/api-response';
 import { ApiConfigRow } from '@shared/api-config';
+import { get } from 'node:http';
 
 const getAllConfig = async (req: Request, res: Response) => {
-    const response: ApiResponse<ApiConfigRow[]> = {
-        message: 'Successfully retrieved all configurations',
-        status: 'SUCCESS',
-        data: await configManager.getAllConfigs(),
-    };
+    const data = await configManager.getAllConfigs();
 
-    res.json(response);
-};
+    if (data.length === 0) throw new ApiError(500, 'ERROR', 'Failed to retrieve config data');
 
-const getValue = async (req: Request, res: Response) => {
-    const { key } = req.params;
-    if (ConfigKeys.includes(key as ConfigKeys)) throw new ApiError(400, `Invalid key parameter`);
-
-    const response: ApiResponse<ApiConfigRow> = {
-        message: `Successfully retrieved value for key: ${key}`,
-        status: 'SUCCESS',
-        data: { key: key as string, value: (await configManager.getValue(key as ConfigKeys)) ?? '' },
-    };
-    res.json(response);
+    res.json({ status: 'SUCCESS', data: data } as ApiResponse<ApiConfigRow[]>);
 };
 
 const setValue = async (req: Request, res: Response) => {
-    const { key } = req.params;
-    if (ConfigKeys.includes(key as ConfigKeys)) throw new ApiError(400, `Invalid key parameter`);
+    if (req.body.key === undefined || req.body.value === undefined) throw new ApiError(400, 'INVALID_ARGS');
 
-    await configManager.setValue(key as ConfigKeys, req.body.value);
+    try {
+        await configManager.setValue(req.body.key as ConfigKeys, req.body.value);
+    } catch (error) {
+        throw new ApiError(500, 'ERROR');
+    }
 
-    const response: ApiResponse<ApiConfigRow> = {
-        message: `Successfully set value for key: ${key}`,
-        status: 'SUCCESS',
-        data: { key: key as string, value: (await configManager.getValue(key as ConfigKeys)) ?? '' },
-    };
-    res.json(response);
+    res.status(200).json({ status: 'SUCCESS', data: data } as ApiResponse<ApiConfigRow>);
 };
 
-export { getAllConfig, getValue, setValue };
+export { getAllConfig, setValue };

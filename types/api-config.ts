@@ -1,4 +1,4 @@
-export type ApiConfigRow = {
+export interface ApiConfigRow {
     key: string;
     value: string;
-};
+}

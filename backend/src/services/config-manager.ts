@@ -16,9 +16,7 @@ export type ConfigKeys = (typeof defaultConfig)[number]['key'];
 class ConfigManager {
     async initalize() {
         log('Initializing configuration', 'INFO');
-        for (const config of defaultConfig) {
-            const value = await this.getValue(config.key);
-        }
+        for (const config of defaultConfig) await this.getValue(config.key);
 
         await database.prisma.configuration.deleteMany({
             where: {

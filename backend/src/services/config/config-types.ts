@@ -1,14 +1,10 @@
-export type ConfigItemKey =
-    | 'ubiquity-access-update-interval'
-    | 'ubiquity-access-on-fail-update-interval'
-    | 'ubiquity-access-api-url'
-    | 'ubiquity-access-api-key'
-    | 'another-config';
+export interface Config {
+    UBIQUITI_ACCESS_UPDATE_INTERVAL: number;
+    UBIQUITI_ACCESS_ON_FAIL_UPDATE_INTERVAL: number;
+    UBIQUITI_ACCESS_API_URL: string;
+    UBIQUITI_ACCESS_API_KEY: string;
+    ANOTHER_CONFIG: string;
+    SERVER_PORT: number;
+}
 
-export type ConfigItemType = 'string' | 'number' | 'boolean';
-
-export type ConfigItem = {
-    key: ConfigItemKey;
-    value: string;
-    type: ConfigItemType;
-};
+export type ConfigKey = keyof Config;

@@ -1,4 +1,4 @@
-import database from 'src/config/database';
+import database from 'src/services/database/database-service';
 import { log } from 'src/utils/log';
 
 const defaultConfig = [

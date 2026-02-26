@@ -1,9 +1,13 @@
-import { ConfigItem } from './config-types';
+import { Config } from './config-types';
+import dotenv from 'dotenv';
 
-export const defaultValue: ConfigItem[] = [
-    { key: 'ubiquity-access-update-interval', value: '60000', type: 'number' },
-    { key: 'ubiquity-access-on-fail-update-interval', value: '600', type: 'number' },
-    { key: 'ubiquity-access-api-url', value: '', type: 'string' },
-    { key: 'ubiquity-access-api-key', value: '', type: 'string' },
-    { key: 'another-config', value: 'default-value', type: 'string' },
-];
+dotenv.config();
+
+export const defaultConfig: Config = {
+    UBIQUITI_ACCESS_UPDATE_INTERVAL: 60000,
+    UBIQUITI_ACCESS_ON_FAIL_UPDATE_INTERVAL: 600,
+    UBIQUITI_ACCESS_API_URL: '',
+    UBIQUITI_ACCESS_API_KEY: '',
+    SERVER_PORT: process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3000,
+    ANOTHER_CONFIG: 'default-value',
+};

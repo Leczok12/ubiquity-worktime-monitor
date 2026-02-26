@@ -3,7 +3,7 @@ import configManager from '../config-manager';
 import axios from 'axios';
 import https from 'https';
 import { UbiquityAccessGroup, UbiquityAccessResponse, UbiquityAccessUser } from '@shared/ubiquity/access';
-import database from 'src/config/database';
+import database from 'src/services/database/database-service';
 import { isDeepStrictEqual } from 'util';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaTransaction } from 'src/types/prisma-transaction';

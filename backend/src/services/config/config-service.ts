@@ -1,88 +1,73 @@
-import database from 'src/config/database';
+import { database } from 'src/services/database';
 import { log } from 'src/utils/log';
 import { logger } from '../logger';
-import { ConfigKey } from './config-types';
-import { defaultValue } from './config-default';
-import { ConfigKey } from './config-types';
+import { defaultConfig } from './config-default';
+import { ConfigKey, Config } from './config-types';
 import { exit } from 'node:process';
 
-class Config {
-    private async _isSet(key: ConfigKey): Promise<boolean> {
-        const row = await database.prisma.configuration.findFirst({
-            where: { key },
-        });
+class ConfigService {
+    public async initialize(): Promise<void> {
+        logger.info('Initializing configuration');
+        for (const key in defaultConfig) {
+            const row = await database.prisma.configuration.findFirst({
+                where: { key: key },
+            });
 
-        return !!row;
-    }
-
-    private async _setDefaultValue(key: ConfigKey): Promise<void> {
-        const defaultConfigItem = defaultValue.find((config) => config.key === key);
-        if (!defaultConfigItem) {
-            //TODO: error handling
-            logger.error(`No default for ${key}. Cannot set default value.`);
-            exit(1);
+            if (!row) {
+                await this._setValue(key as ConfigKey, defaultConfig[key as ConfigKey]);
+                logger.info(`Created config key [${key} = ${defaultConfig[key as ConfigKey]}]`);
+            }
         }
-        
-        await database.prisma.configuration.upsert({
-            where: { key },
-            update: { value: defaultConfigItem.value, type: defaultConfigItem.type },
-            create: { key: defaultConfigItem.key as string, value: defaultConfigItem.value, type: defaultConfigItem.type },
+
+        const obsoleteKeys = await database.prisma.configuration.findMany({
+            where: { NOT: { key: { in: Object.keys(defaultConfig) } } },
         });
+
+        for (const key of obsoleteKeys.map((k) => k.key)) {
+            await database.prisma.configuration.delete({ where: { key } });
+            logger.info(`Removed obsolete config key [${key}]`);
+        }
     }
 
-    public async getValue(key: ConfigKey): Promise<> {
-        
+    public async setValue<K extends ConfigKey>(key: K, value: Config[K]): Promise<void> {
+        logger.warn(`Setting config key [${key} = ${value}]`);
+        await this._setValue(key, value);
     }
 
-    async initalize() {
-        log('Initializing configuration', 'INFO');
-        for (const config of defaultConfig) await this.getValue(config.key);
-
-        await database.prisma.configuration.deleteMany({
-            where: {
-                key: { notIn: ConfigKeys },
-            },
-        });
-    }
-
-    async getValue(key: ConfigKeys): Promise<string | null> {
+    public async getValue<K extends ConfigKey>(key: K): Promise<Config[K]> {
         const row = await database.prisma.configuration.findFirst({
             where: { key },
         });
 
         if (!row) {
-            const defaultConfigItem = defaultConfig.find((config) => config.key === key);
-            if (!defaultConfigItem) {
-                throw new Error(`No default configuration found for key [${key}]`);
-            }
-
-            log(`Creating default configuration for [${key} = ${defaultConfigItem.value}]`, 'INFO');
-            await database.prisma.configuration.create({
-                data: {
-                    key: defaultConfigItem.key,
-                    value: defaultConfigItem.value,
-                },
-            });
-
-            return defaultConfigItem.value;
+            const value = defaultConfig[key];
+            this.setValue(key, value);
+            return value;
         }
 
-        return row.value;
+        return this._parseValue(row.value, row.type) as Config[K];
     }
 
-    async setValue(key: ConfigKeys, value: string): Promise<void> {
-        await database.prisma.configuration.update({
-            where: { key: key },
-            data: { value: value },
+    private async _setValue<K extends ConfigKey>(key: K, value: Config[K]): Promise<void> {
+        await database.prisma.configuration.upsert({
+            where: { key },
+            update: { value: value.toString() },
+            create: { key, value: value.toString(), type: typeof defaultConfig[key] },
         });
     }
 
-    async getAllConfigs(): Promise<{ key: string; value: string }[]> {
-        const configs = await database.prisma.configuration.findMany();
-        return configs.map((config) => ({ key: config.key, value: config.value }));
+    private _parseValue(value: string, type: string): number | boolean | string {
+        switch (type) {
+            case 'number':
+                return Number(value);
+            case 'boolean':
+                return value === 'true';
+            default:
+                return value;
+        }
     }
 }
 
-const config = new Config();
+const config = new ConfigService();
 
 export default config;

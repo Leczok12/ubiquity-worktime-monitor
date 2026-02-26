@@ -11,6 +11,33 @@ model Configuration {
   value String
   type  String
 }
+
+model Tasks {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  schedule    String
+  active      Boolean  @default(true)
+}
+
+model User {
+  id String @id @default(uuid())
+  email    String @unique
+  password String
+  name     String
+  lastname String
+  locked   Boolean @default(false)
+  roles    UserRole[] @default([WORKER])
+}
+
+enum UserRole {
+  FULL_ADMIN
+  USER_ADMIN
+  EDITOR
+  VIEWER
+  WORKER
+}
+
 model Worker {
   id        String  @id
   name      String

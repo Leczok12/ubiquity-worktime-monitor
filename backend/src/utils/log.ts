@@ -1,3 +1,8 @@
+class Logger {}
+
+const logger = new Logger();
+export default logger;
+
 export const log = (message: string, logLevel?: 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS'): void => {
     const level = logLevel || 'INFO';
     const colorReset = '\x1b[0m';

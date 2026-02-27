@@ -20,7 +20,7 @@ class Logger {
             }
         })();
 
-        console.log(`${color}[${logType}] ${new Date().toISOString()} - ${message}${colorReset}`);
+        console.log(`${color}[${logType}]${new Date().toISOString()} - ${message}${colorReset}`);
     }
 
     public error(message: string): void {

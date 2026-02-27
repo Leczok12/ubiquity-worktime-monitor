@@ -5,6 +5,7 @@ export interface Config {
     UBIQUITI_ACCESS_API_KEY: string;
     ANOTHER_CONFIG: string;
     SERVER_PORT: number;
+    STH_ENABLE: boolean;
 }
 
 export type ConfigKey = keyof Config;

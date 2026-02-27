@@ -29,6 +29,14 @@ class ConfigService {
         }
     }
 
+    public async getAll(): Promise<{ key: ConfigKey; value: number | boolean | string }[]> {
+        const rows = await database.prisma.configuration.findMany();
+        return rows.map((row) => ({
+            key: row.key as ConfigKey,
+            value: this._parseValue(row.value, row.type),
+        }));
+    }
+
     public async setValue<K extends ConfigKey>(key: K, value: Config[K]): Promise<void> {
         logger.warn(`Setting config key [${key} = ${value}]`);
         await this._setValue(key, value);
@@ -70,4 +78,4 @@ class ConfigService {
 
 const config = new ConfigService();
 
-export default config;
+export { config };

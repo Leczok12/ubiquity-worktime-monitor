@@ -1,11 +1,11 @@
 import express from 'express';
-import { getAllConfig, setValue } from 'src/controllers/config-controller';
 import { ApiError } from 'src/types/api-error';
+import { getAllConfig, setConfigValue } from './config-controler';
 
 const router = express.Router();
 
 router.get('/', getAllConfig);
-router.post('/', setValue);
+router.post('/', setConfigValue);
 router.all('/', () => {
     throw new ApiError(404, 'NOT_FOUND');
 });

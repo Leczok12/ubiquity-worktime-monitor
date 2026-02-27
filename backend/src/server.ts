@@ -6,9 +6,10 @@ import errorHandler from './middlewares/error-handler';
 // import { configRouter } from './routers/config-router';
 // import { ApiResponse } from '@shared/api-response';
 // import { ApiError } from './types/api-error';
-import config from './services/config/config-service';
+import { config } from './services/config/config-service';
 import { exit } from 'node:process';
 import { logger } from './services/logger';
+import { configRouter } from './features/config/config-router';
 
 const startServer = async () => {
     try {
@@ -23,7 +24,7 @@ const startServer = async () => {
         // app.use(logger);
 
         // app.use('/api/worker', workerRouter);
-        // app.use('/api/config', configRouter);
+        app.use('/api/config', configRouter);
         // app.get('/dd', () => {
         //     throw new ApiError(404, 'NOT_FOUND');
         // });

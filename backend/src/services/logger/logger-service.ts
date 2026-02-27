@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express';
 import { LogType } from './logger-types';
 
 class Logger {
@@ -21,6 +22,11 @@ class Logger {
         })();
 
         console.log(`${color}[${logType}]${new Date().toISOString()} - ${message}${colorReset}`);
+    }
+
+    public middleware(req: Request, res: Response, next: NextFunction): void {
+        this.info(`${req.method} ${req.url}`);
+        next();
     }
 
     public error(message: string): void {

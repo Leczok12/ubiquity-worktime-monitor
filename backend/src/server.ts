@@ -21,7 +21,7 @@ const startServer = async () => {
 
         const app = express();
         app.use(express.json());
-        // app.use(logger);
+        app.use(logger.middleware.bind(logger) as RequestHandler);
 
         // app.use('/api/worker', workerRouter);
         app.use('/api/config', configRouter);

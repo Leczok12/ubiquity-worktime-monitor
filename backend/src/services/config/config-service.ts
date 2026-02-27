@@ -1,9 +1,7 @@
 import { database } from 'src/services/database';
-import { log } from 'src/utils/log';
 import { logger } from '../logger';
 import { defaultConfig } from './config-default';
 import { ConfigKey, Config } from './config-types';
-import { exit } from 'node:process';
 
 class ConfigService {
     public async initialize(): Promise<void> {

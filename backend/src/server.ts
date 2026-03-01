@@ -10,11 +10,12 @@ import { config } from './services/config/config-service';
 import { exit } from 'node:process';
 import { logger } from './services/logger';
 import { configRouter } from './features/config/config-router';
+import { ubiquityAccessSync } from './services/ubiquity-access-sync';
 
 const startServer = async () => {
     try {
         await config.initialize();
-
+        await ubiquityAccessSync.initialize();
         const port = await config.getValue('SERVER_PORT');
         // await configManager.initalize();
         //await ubiquityAccessSyncManager.sync();

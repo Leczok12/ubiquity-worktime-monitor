@@ -1,12 +1,12 @@
 import axios from 'axios';
 import https from 'https';
-import configManager from '../config-manager';
+import { config } from '../config';
 
 export const createAxiosInstance = async () => {
-    const apiUrl = await configManager.getValue('ubiquity-access-api-url');
+    const apiUrl = await config.getValue('UBIQUITI_ACCESS_API_URL');
     if (!apiUrl || apiUrl.trim() === '') throw new Error('Ubiquity Access API URL is not configured');
 
-    const apiKey = await configManager.getValue('ubiquity-access-api-key');
+    const apiKey = await config.getValue('UBIQUITI_ACCESS_API_KEY');
     if (!apiKey || apiKey.trim() === '') throw new Error('Ubiquity Access API Key is not configured');
 
     return axios.create({
@@ -16,7 +16,7 @@ export const createAxiosInstance = async () => {
             accept: 'application/json',
             'content-Type': 'application/json',
         },
-        httpAgent: new https.Agent({ rejectUnauthorized: false, timeout: 15000 }),
+        httpsAgent: new https.Agent({ rejectUnauthorized: false, timeout: 15000 }),
         timeout: 15000,
     });
 };

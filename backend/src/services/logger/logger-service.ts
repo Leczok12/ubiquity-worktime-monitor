@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { LogType } from './logger-types';
 
-class Logger {
+class LoggerService {
     private _log(message: string, logType: LogType): void {
         const colorReset = '\x1b[0m';
         const color = (() => {
@@ -10,6 +10,7 @@ class Logger {
                     return '\x1b[36m'; // cyan
                 case 'WARN':
                     return '\x1b[33m'; // yellow
+                case 'DANGER':
                 case 'ERROR':
                     return '\x1b[31m'; // red
                 case 'SUCCESS':
@@ -27,6 +28,10 @@ class Logger {
     public middleware(req: Request, res: Response, next: NextFunction): void {
         this.info(`${req.method} ${req.url}`);
         next();
+    }
+
+    public danger(message: string): void {
+        this._log(message, 'DANGER');
     }
 
     public error(message: string): void {
@@ -50,5 +55,5 @@ class Logger {
     }
 }
 
-const logger = new Logger();
+const logger = new LoggerService();
 export default logger;

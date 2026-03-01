@@ -1,1 +1,1 @@
-export type LogType = 'SUCCESS' | 'WARN' | 'INFO' | 'ERROR' | 'DEBUG';
+export type LogType = 'SUCCESS' | 'WARN' | 'INFO' | 'ERROR' | 'DEBUG' | 'DANGER';

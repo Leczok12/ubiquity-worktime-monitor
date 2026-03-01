@@ -1,1 +1,1 @@
-export { default as database } from './database-service';
+export * from './database-service';

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class Database {
+class DatabaseService {
     public readonly prisma: PrismaClient;
 
     constructor() {
@@ -17,6 +17,6 @@ class Database {
     }
 }
 
-const database = new Database();
+const database = new DatabaseService();
 
-export default database;
+export { database };

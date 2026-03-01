@@ -2,6 +2,7 @@ import { database } from '../database';
 import { logger } from '../logger';
 import { createAxiosInstance } from './ubiquity-access-sync-create-axios-instance';
 import { syncGroups } from './ubiquity-access-sync-groups';
+import { syncGroupsAssignment } from './ubiquity-access-sync-groups-assigment';
 import { syncWorkers } from './ubiquity-access-sync-workers';
 
 class UbiquityAccessSyncService {
@@ -27,6 +28,13 @@ class UbiquityAccessSyncService {
         await database.prisma.$transaction(
             async (prisma) => {
                 await syncGroups(prisma, axiosInstance);
+            },
+            { timeout: 60000 }
+        );
+
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncGroupsAssignment(prisma, axiosInstance);
             },
             { timeout: 60000 }
         );

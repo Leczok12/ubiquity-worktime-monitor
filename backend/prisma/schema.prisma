@@ -45,12 +45,15 @@ model Worker {
   email     String?
   active    Boolean 
 
+  groups    Group[] @relation("WorkerGroups")
   workEvents WorkEvent[]
 }
 
 model Group {
   id      String   @id
   name    String
+  
+  workers Worker[] @relation("WorkerGroups")
 }
 
 model WorkEvent {

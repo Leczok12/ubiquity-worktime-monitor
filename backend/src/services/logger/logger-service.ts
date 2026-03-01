@@ -22,7 +22,27 @@ class LoggerService {
             }
         })();
 
-        console.log(`${color}[${logType}]${new Date().toISOString()} - ${message}${colorReset}`);
+        let log = '';
+        log += color;
+        log += '[';
+        log += logType;
+        log += (() => {
+            let padding = 7 - logType.length;
+            if (padding < 0) padding = 0;
+            let p = '';
+            for (let i = 0; i < padding; i++) {
+                p += ' ';
+            }
+            return p;
+        })();
+        log += ']';
+        log += '[';
+        log += new Date().toISOString();
+        log += ']';
+        log += colorReset;
+        log += ' - ';
+        log += message;
+        console.log(log);
     }
 
     public middleware(req: Request, res: Response, next: NextFunction): void {

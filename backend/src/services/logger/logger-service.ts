@@ -25,10 +25,23 @@ class LoggerService {
         let log = '';
         log += color;
         log += '[';
+        log += (() => {
+            let padding = 7 - logType.length;
+            if (padding < 0) padding = 0;
+            padding /= 2;
+            padding = Math.floor(padding);
+            let p = '';
+            for (let i = 0; i < padding; i++) {
+                p += ' ';
+            }
+            return p;
+        })();
         log += logType;
         log += (() => {
             let padding = 7 - logType.length;
             if (padding < 0) padding = 0;
+            padding /= 2;
+            padding = Math.ceil(padding);
             let p = '';
             for (let i = 0; i < padding; i++) {
                 p += ' ';

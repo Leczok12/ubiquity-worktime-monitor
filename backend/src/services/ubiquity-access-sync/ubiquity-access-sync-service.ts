@@ -3,6 +3,7 @@ import { logger } from '../logger';
 import { createAxiosInstance } from './ubiquity-access-sync-create-axios-instance';
 import { syncGroups } from './ubiquity-access-sync-groups';
 import { syncGroupsAssignment } from './ubiquity-access-sync-groups-assigment';
+import { syncWorkEvents } from './ubiquity-access-sync-work-events';
 import { syncWorkers } from './ubiquity-access-sync-workers';
 
 class UbiquityAccessSyncService {
@@ -18,25 +19,32 @@ class UbiquityAccessSyncService {
     public async fullSync(): Promise<void> {
         const axiosInstance = await createAxiosInstance();
 
-        await database.prisma.$transaction(
-            async (prisma) => {
-                await syncWorkers(prisma, axiosInstance);
-            },
-            { timeout: 60000 }
-        );
+        // await database.prisma.$transaction(
+        //     async (prisma) => {
+        //         await syncWorkers(prisma, axiosInstance);
+        //     },
+        //     { timeout: 60000 }
+        // );
+
+        // await database.prisma.$transaction(
+        //     async (prisma) => {
+        //         await syncGroups(prisma, axiosInstance);
+        //     },
+        //     { timeout: 60000 }
+        // );
+
+        // await database.prisma.$transaction(
+        //     async (prisma) => {
+        //         await syncGroupsAssignment(prisma, axiosInstance);
+        //     },
+        //     { timeout: 60000 }
+        // );
 
         await database.prisma.$transaction(
             async (prisma) => {
-                await syncGroups(prisma, axiosInstance);
+                await syncWorkEvents(prisma, axiosInstance);
             },
-            { timeout: 60000 }
-        );
-
-        await database.prisma.$transaction(
-            async (prisma) => {
-                await syncGroupsAssignment(prisma, axiosInstance);
-            },
-            { timeout: 60000 }
+            { timeout: 1000 * 60 * 10 }
         );
     }
 }

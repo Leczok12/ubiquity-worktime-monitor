@@ -11,4 +11,5 @@ export const defaultConfig: Config = {
     UBIQUITI_ACCESS_API_URL: process.env.UBIQUITI_ACCESS_API_URL || '',
     UBIQUITI_ACCESS_API_KEY: process.env.UBIQUITI_ACCESS_API_KEY || '',
     SERVER_PORT: process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3000,
+    UBIQUITY_ACCESS_END_WORK_DAY: '23:59:00',
 };

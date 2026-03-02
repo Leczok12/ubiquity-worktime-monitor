@@ -16,7 +16,7 @@ export const createAxiosInstance = async () => {
             accept: 'application/json',
             'content-Type': 'application/json',
         },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false, timeout: 15000 }),
-        timeout: 15000,
+        httpsAgent: new https.Agent({ rejectUnauthorized: false, timeout: 1000 * 5 }),
+        timeout: 1000 * 60 * 5,
     });
 };

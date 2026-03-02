@@ -13,7 +13,7 @@ class ConfigService {
 
             if (!row) {
                 await this._setValue(key as ConfigKey, defaultConfig[key as ConfigKey]);
-                logger.info(`Created config key [${key} = ${defaultConfig[key as ConfigKey]}]`);
+                logger.success(`Created config key [${key} = ${defaultConfig[key as ConfigKey]}]`);
             }
         }
 
@@ -23,7 +23,7 @@ class ConfigService {
 
         for (const key of obsoleteKeys.map((k) => k.key)) {
             await database.prisma.configuration.delete({ where: { key } });
-            logger.info(`Removed obsolete config key [${key}]`);
+            logger.danger(`Removed obsolete config key [${key}]`);
         }
     }
 

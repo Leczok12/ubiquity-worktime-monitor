@@ -5,6 +5,7 @@ export interface Config {
     UBIQUITI_ACCESS_FULL_AUTO_UPDATE_ENABLED: boolean;
     UBIQUITI_ACCESS_API_URL: string;
     UBIQUITI_ACCESS_API_KEY: string;
+    UBIQUITY_ACCESS_END_WORK_DAY: string;
     SERVER_PORT: number;
 }
 

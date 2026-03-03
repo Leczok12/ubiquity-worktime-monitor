@@ -1,10 +1,7 @@
-import { UbiquityAccessResponse, UbiquityAccessUser } from '@shared/ubiquity/access';
+import { UbiquityAccessResponse, UbiquityAccessUser } from './ubiquity-access-api-types';
 import { AxiosInstance } from 'axios';
-import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
-import { UbiquityAccessGroup } from './ubiquity-access-api-types';
-import { Prisma } from '@prisma/client';
 
 export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting groups assignment sync with Ubiquity Access API');

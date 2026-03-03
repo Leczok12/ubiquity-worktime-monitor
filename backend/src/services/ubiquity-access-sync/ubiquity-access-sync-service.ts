@@ -19,26 +19,26 @@ class UbiquityAccessSyncService {
     public async fullSync(): Promise<void> {
         const axiosInstance = await createAxiosInstance();
 
-        // await database.prisma.$transaction(
-        //     async (prisma) => {
-        //         await syncWorkers(prisma, axiosInstance);
-        //     },
-        //     { timeout: 60000 }
-        // );
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncWorkers(prisma, axiosInstance);
+            },
+            { timeout: 60000 }
+        );
 
-        // await database.prisma.$transaction(
-        //     async (prisma) => {
-        //         await syncGroups(prisma, axiosInstance);
-        //     },
-        //     { timeout: 60000 }
-        // );
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncGroups(prisma, axiosInstance);
+            },
+            { timeout: 60000 }
+        );
 
-        // await database.prisma.$transaction(
-        //     async (prisma) => {
-        //         await syncGroupsAssignment(prisma, axiosInstance);
-        //     },
-        //     { timeout: 60000 }
-        // );
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncGroupsAssignment(prisma, axiosInstance);
+            },
+            { timeout: 60000 }
+        );
 
         await database.prisma.$transaction(
             async (prisma) => {

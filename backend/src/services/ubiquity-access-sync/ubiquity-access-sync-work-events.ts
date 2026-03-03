@@ -6,11 +6,9 @@ import { database } from '../database';
 
 export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting work events sync with Ubiquity Access API');
-    const workers = await prisma.worker.findMany();
+    const workers = await prisma.worker.findMany({ where: { sync: true } });
 
     for (const worker of workers) {
-        if (worker.email != 'kamil.leczkowski@zsoio.pl') continue;
-
         const lastEvent = await prisma.workEvent.findFirst({
             where: {
                 workerId: worker.id,
@@ -22,17 +20,12 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
 
         const since = lastEvent ? Math.floor(lastEvent.timeEnd.getTime() / 1000) : null;
 
-        console.log('Last event for worker', worker.name, worker.lastname, lastEvent, since);
-
         const response = await axiosInstance.post<UbiquityAccessResponse<UbiquityAccessSystemLog>>(
             `/api/v1/developer/system/logs`,
             {
                 topic: 'door_openings',
                 actor_id: worker.id,
                 since: since,
-                until: null,
-                // until: Math.floor(start.getTime() / 1000),
-                // since: Math.floor(end.getTime() / 1000),
             }
         );
 
@@ -44,8 +37,8 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
 
         response.data.data.hits.forEach((hit) => {
             const date = new Date(hit['@timestamp']);
-            console.log(date.getTime(), since);
-            if (date.getTime() === since) return;
+
+            if (date.getTime() / 1000 === since) return;
 
             const existingDate = rawData.find((d) => d.date.toDateString() === date.toDateString());
             if (existingDate) {
@@ -63,6 +56,7 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
         for (const d of rawData) {
             await prisma.workEvent.create({
                 data: {
+                    lastModified: new Date(),
                     workerId: worker.id,
                     type: 'WORK',
                     timeStart: d.events[0],
@@ -70,9 +64,6 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
                 },
             });
         }
-
-        console.log(rawData);
-        break;
     }
 
     logger.success('Finished work events sync with Ubiquity Access API');

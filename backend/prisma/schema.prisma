@@ -28,10 +28,12 @@ model User {
   lastname String
   locked   Boolean @default(false)
   roles    UserRole[] @default([WORKER])
+
+  modifiedWorkEvents WorkEvent[]
 }
 
 enum UserRole {
-  FULL_ADMIN
+  SYSTEM_ADMIN
   USER_ADMIN
   EDITOR
   VIEWER
@@ -44,6 +46,7 @@ model Worker {
   lastname  String
   email     String?
   active    Boolean 
+  sync      Boolean @default(true)
 
   groups    Group[] @relation("WorkerGroups")
   workEvents WorkEvent[]
@@ -57,13 +60,18 @@ model Group {
 }
 
 model WorkEvent {
-  id        String  @id @default(uuid())
-  workerId  String  
-  type      WorkEventTypes
-  timeStart DateTime
-  timeEnd   DateTime
+  id          String          @id @default(uuid())
+  workerId    String
+  lastModifiedByUserId String?
+  lastModified DateTime       
+  type        WorkEventTypes
+  timeStart   DateTime
+  timeEnd     DateTime
+  placeStart  String? 
+  placeEnd    String?
 
-  worker    Worker  @relation(fields: [workerId], references: [id])
+  lastModifiedByUser User? @relation(fields: [lastModifiedByUserId], references: [id])
+  worker    Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
 }
 
 enum WorkEventTypes {

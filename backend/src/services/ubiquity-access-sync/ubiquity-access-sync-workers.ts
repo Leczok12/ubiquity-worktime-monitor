@@ -1,4 +1,4 @@
-import { UbiquityAccessResponse, UbiquityAccessUser } from '@shared/ubiquity/access';
+import { UbiquityAccessResponse, UbiquityAccessUser } from './ubiquity-access-api-types';
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';

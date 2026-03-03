@@ -59,6 +59,31 @@ model Group {
   workers Worker[] @relation("WorkerGroups")
 }
 
+model Device {
+  id   String @id
+  name String
+  type DeviceType @default(WORK_START_STOP)
+
+  events Event[]
+}
+
+enum DeviceType {
+  WORK_START_STOP
+  WORK_START
+  WORK_STOP
+  BREAK_START_STOP
+  BREAK_START
+  BREAK_STOP
+}
+
+model Event {
+  id          String          @id @default(uuid())
+  date        DateTime
+  DeviceId    String
+
+  device      Device  @relation(fields: [DeviceId], references: [id], onDelete: Cascade)
+}
+
 model WorkEvent {
   id          String          @id @default(uuid())
   workerId    String

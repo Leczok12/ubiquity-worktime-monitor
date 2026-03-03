@@ -1,6 +1,7 @@
 import { database } from '../database';
 import { logger } from '../logger';
 import { createAxiosInstance } from './ubiquity-access-sync-create-axios-instance';
+import { syncDevices } from './ubiquity-access-sync-devices';
 import { syncGroups } from './ubiquity-access-sync-groups';
 import { syncGroupsAssignment } from './ubiquity-access-sync-groups-assigment';
 import { syncWorkEvents } from './ubiquity-access-sync-work-events';
@@ -18,6 +19,13 @@ class UbiquityAccessSyncService {
 
     public async fullSync(): Promise<void> {
         const axiosInstance = await createAxiosInstance();
+
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncDevices(prisma, axiosInstance);
+            },
+            { timeout: 60000 }
+        );
 
         await database.prisma.$transaction(
             async (prisma) => {

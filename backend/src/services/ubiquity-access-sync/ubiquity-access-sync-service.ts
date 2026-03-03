@@ -75,6 +75,13 @@ class UbiquityAccessSyncService {
             },
             { timeout: 1000 * 60 * 10 }
         );
+
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncWorkEvents(prisma, axiosInstance);
+            },
+            { timeout: 1000 * 60 * 10 }
+        );
     }
 }
 

@@ -14,9 +14,9 @@ export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: Axios
         },
     });
 
-    for (const worker of workers) {
-        const since = lastEvent ? Math.floor(lastEvent.date.getTime() / 1000) : null;
+    const since = lastEvent ? Math.floor(lastEvent.date.getTime() / 1000) : null;
 
+    for (const worker of workers) {
         const response = await axiosInstance.post<UbiquityAccessResponse<UbiquityAccessSystemLog>>(
             `/api/v1/developer/system/logs`,
             {

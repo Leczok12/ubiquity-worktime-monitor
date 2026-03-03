@@ -48,6 +48,7 @@ model Worker {
   active    Boolean 
   sync      Boolean @default(true)
 
+  events    Event[]
   groups    Group[] @relation("WorkerGroups")
   workEvents WorkEvent[]
 }
@@ -74,14 +75,17 @@ enum DeviceType {
   BREAK_START_STOP
   BREAK_START
   BREAK_STOP
+  UNUSED
 }
 
 model Event {
   id          String          @id @default(uuid())
+  deviceId    String
+  workerId    String
   date        DateTime
-  DeviceId    String
 
-  device      Device  @relation(fields: [DeviceId], references: [id], onDelete: Cascade)
+  worker    Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  device      Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 }
 
 model WorkEvent {

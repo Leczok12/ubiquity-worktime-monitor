@@ -18,7 +18,7 @@ import { deviceRouter } from './features/device/device-router';
 const startServer = async () => {
     try {
         await config.initialize();
-        //await ubiquityAccessSync.initialize();
+        await ubiquityAccessSync.initialize();
         const port = await config.getValue('SERVER_PORT');
         // await configManager.initalize();
         //await ubiquityAccessSyncManager.sync();

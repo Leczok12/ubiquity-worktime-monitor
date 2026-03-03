@@ -4,7 +4,7 @@ import { getAllConfig, setConfigValue } from './config-controller';
 
 const router = express.Router();
 
-router.get('/', getAllConfig);
+router.get('/all', getAllConfig);
 router.post('/', setConfigValue);
 router.all('/', () => {
     throw new ApiError(404, 'NOT_FOUND');

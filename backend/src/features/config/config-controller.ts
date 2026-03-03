@@ -9,7 +9,7 @@ export const getAllConfig = async (req: Request, res: Response) => {
         status: 'SUCCESS',
         data: (await config.getAll()).map((row) => ({
             key: row.key as string,
-            value: row.value.toString(),
+            value: row.value.toString(), //TODO: hide sensitive values
             type: typeof row.value,
         })),
     };
@@ -51,7 +51,7 @@ export const setConfigValue = async (req: Request, res: Response) => {
         status: 'SUCCESS',
         data: (await config.getAll()).map((row) => ({
             key: row.key as string,
-            value: row.value.toString(),
+            value: row.value.toString(), //TODO: hide sensitive values
             type: typeof row.value,
         })),
     };

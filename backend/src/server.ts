@@ -11,11 +11,14 @@ import { exit } from 'node:process';
 import { logger } from './services/logger';
 import { configRouter } from './features/config/config-router';
 import { ubiquityAccessSync } from './services/ubiquity-access-sync';
+import { groupRouter } from './features/group/group-router';
+import { workerRouter } from './features/worker/worker-router';
+import { deviceRouter } from './features/device/device-router';
 
 const startServer = async () => {
     try {
         await config.initialize();
-        await ubiquityAccessSync.initialize();
+        //await ubiquityAccessSync.initialize();
         const port = await config.getValue('SERVER_PORT');
         // await configManager.initalize();
         //await ubiquityAccessSyncManager.sync();
@@ -26,10 +29,13 @@ const startServer = async () => {
 
         // app.use('/api/worker', workerRouter);
         app.use('/api/config', configRouter);
+        app.use('/api/group', groupRouter);
+        app.use('/api/worker', workerRouter);
+        app.use('/api/device', deviceRouter);
         // app.get('/dd', () => {
         //     throw new ApiError(404, 'NOT_FOUND');
         // });
-        //app.use(errorHandler);
+        app.use(errorHandler);
         app.listen(port, () => {
             logger.success(`Server is running on port ${port}`);
         });

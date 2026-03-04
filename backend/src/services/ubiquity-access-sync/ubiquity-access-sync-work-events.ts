@@ -4,15 +4,19 @@ import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 import { database } from '../database';
 import { config } from '../config';
+import { $Enums } from '@prisma/client';
+import { raw } from 'express';
 
 export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting work events sync with Ubiquity Access API');
     const workers = await prisma.worker.findMany({ where: { sync: true } });
 
-    const [h, m, s] = (await config.getValue('UBIQUITY_ACCESS_END_WORK_DAY')).split(':').map(Number);
-    const offset = (h * 60 * 60 + m * 60 + s) * 1000;
+    // const [h, m, s] = (await config.getValue('UBIQUITY_ACCESS_END_WORK_DAY')).split(':').map(Number);
+    // const offset = (h * 60 * 60 + m * 60 + s) * 1000;
 
     for (const worker of workers) {
+        if (worker.email !== 'kamil.leczkowski@zsoio.pl') continue;
+
         const lastEvent = await prisma.workEvent.findFirst({
             where: {
                 workerId: worker.id,
@@ -21,18 +25,58 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
                 timeEnd: 'desc',
             },
         });
-        console.log('lastEvent', lastEvent?.timeEnd || new Date(0), lastEvent);
-        const events = await prisma.event.findMany({
+
+        const rawEvents = await prisma.event.findMany({
+            select: {
+                date: true,
+                device: {
+                    select: {
+                        name: true,
+                        type: true,
+                    },
+                },
+            },
             where: {
                 AND: [{ workerId: worker.id }, { date: { gt: lastEvent?.timeEnd || new Date(0) } }],
             },
         });
 
-        for (const event of events) {
-        }
+        const eventsByDate: { [date: string]: { date: Date; device: { name: string; type: $Enums.DeviceType } }[] } =
+            {};
 
-        logger.info(`Found ${events.length} events for worker ${worker.id}`);
+        rawEvents.forEach((event) => {
+            const date = new Date(event.date.getTime() + 0); //OFFSET
+            date.setHours(0, 0, 0, 0);
+
+            const dateKey = event.date.toDateString();
+        });
+
+        const events: { date: Date; device }[];
+
+        console.log('lastEvent', lastEvent?.timeEnd);
+        console.log('rawEvents', rawEvents);
     }
+    // const lastEvent = await prisma.workEvent.findFirst({
+    //     where: {
+    //         workerId: worker.id,
+    //     },
+    //     orderBy: {
+    //         timeEnd: 'desc',
+    //     },
+    // });
+    // console.log('lastEvent', lastEvent?.timeEnd || new Date(0), lastEvent);
+    // const events = await prisma.event.findMany({
+    //     where: {
+    //         AND: [{ workerId: worker.id }, { date: { gt: lastEvent?.timeEnd || new Date(0) } }],
+    //     },
+    // });
+
+    // for (const event of events) {
+    // }
+
+    // logger.info(`Found ${events.length} events for worker ${worker.id}`);
+    // }
+
     //     const lastEvent = await prisma.workEvent.findFirst({
     //         where: {
     //             workerId: worker.id,

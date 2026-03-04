@@ -1,6 +1,5 @@
 import { UbiquityAccessResponse, UbiquityAccessDevice } from './ubiquity-access-api-types';
 import { AxiosInstance } from 'axios';
-import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 

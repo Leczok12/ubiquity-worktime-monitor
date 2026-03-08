@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { LogType } from './logger-types';
+import { database } from '../database';
 
 class LoggerService {
     private _log(message: string, logType: LogType): void {
         const colorReset = '\x1b[0m';
+        const date = new Date();
         const color = (() => {
             switch (logType) {
                 case 'INFO':
@@ -50,7 +52,7 @@ class LoggerService {
         })();
         log += ']';
         log += '[';
-        log += new Date().toISOString();
+        log += date.toISOString();
         log += ']';
         log += colorReset;
         log += ' - ';

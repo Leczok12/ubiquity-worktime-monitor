@@ -8,25 +8,67 @@ import { syncGroupsAssignment } from './ubiquity-access-sync-groups-assigment';
 import { syncWorkEvents } from './ubiquity-access-sync-work-events';
 import { syncWorkers } from './ubiquity-access-sync-workers';
 import { syncEvents } from './ubiquity-access-sync-events';
+import nodeCron, { ScheduledTask } from 'node-cron';
+import { config } from '../config';
 
 class UbiquityAccessSyncService {
     private intervalId: NodeJS.Timeout | null = null;
+    private syncTask: ScheduledTask | null = null;
+    private syncTaskString: string = '';
+    private fullSyncTask: ScheduledTask | null = null;
+    private fullSyncTaskString: string = '';
 
     public async initialize(): Promise<void> {
         logger.info('Initializing Ubiquity Access Sync Service');
+
+        await this._upsertTask();
         await this.fullSync();
         //await this._sync(await createAxiosInstance());
     }
 
-    public async sync(): Promise<void> {}
-
     public async fullSync(): Promise<void> {
+        logger.info('Starting full sync with Ubiquity Access API');
         const axiosInstance = await createAxiosInstance();
         try {
             await this._fullSync(axiosInstance);
-            logger.info('Ubiquity Access full sync completed successfully');
+            logger.success('Finished full sync with Ubiquity Access API');
         } catch (error) {
             logger.error(`Ubiquity Access full sync failed: ${error instanceof Error ? error.message : error}`);
+        }
+    }
+
+    public async sync(): Promise<void> {
+        logger.info('Starting sync with Ubiquity Access API');
+        const axiosInstance = await createAxiosInstance();
+        try {
+            await this._sync(axiosInstance);
+            logger.success('Finished sync with Ubiquity Access API');
+        } catch (error) {
+            logger.error(`Ubiquity Access sync failed: ${error instanceof Error ? error.message : error}`);
+        }
+    }
+
+    private async _upsertTask(): Promise<void> {
+        if (
+            this.fullSyncTask === null ||
+            this.fullSyncTaskString !== (await config.getValue('UBIQUITY_ACCESS_FULL_SYNC_CRONE'))
+        ) {
+            if (this.fullSyncTask) {
+                this.fullSyncTask.destroy();
+            }
+            this.fullSyncTaskString = await config.getValue('UBIQUITY_ACCESS_FULL_SYNC_CRONE');
+            this.fullSyncTask = nodeCron.schedule(this.fullSyncTaskString, async () => {
+                await this.fullSync();
+            });
+        }
+        if (this.syncTask === null || this.syncTaskString !== (await config.getValue('UBIQUITY_ACCESS_SYNC_CRONE'))) {
+            if (this.syncTask) {
+                this.syncTask.destroy();
+            }
+            this.syncTaskString = await config.getValue('UBIQUITY_ACCESS_SYNC_CRONE');
+            this.syncTask = nodeCron.schedule(this.syncTaskString, async () => {
+                await this.sync();
+            });
         }
     }
 

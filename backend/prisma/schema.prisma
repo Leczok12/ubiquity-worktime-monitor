@@ -12,14 +12,6 @@ model Configuration {
   type  String
 }
 
-model Tasks {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  schedule    String
-  active      Boolean  @default(true)
-}
-
 model User {
   id String @id @default(uuid())
   email    String @unique
@@ -90,7 +82,7 @@ model WorkEvent {
   workerId    String
   lastModifiedByUserId String?
   lastModified DateTime       
-  type        WorkEventTypes
+  type        WorkEventType
   timeStart   DateTime
   timeEnd     DateTime
   placeStart  String? 
@@ -100,7 +92,7 @@ model WorkEvent {
   worker    Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
 }
 
-enum WorkEventTypes {
+enum WorkEventType {
   WORK
   BREAK
 }

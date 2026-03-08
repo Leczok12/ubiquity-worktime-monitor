@@ -11,15 +11,14 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
     logger.info('Starting work events sync with Ubiquity Access API');
     const workers = await prisma.worker.findMany({ where: { sync: true } });
 
-    // const [h, m, s] = (await config.getValue('UBIQUITY_ACCESS_END_WORK_DAY')).split(':').map(Number);
-    // const offset = (h * 60 * 60 + m * 60 + s) * 1000;
+    const [h, m, s] = (await config.getValue('UBIQUITY_ACCESS_END_WORK_DAY')).split(':').map(Number);
+    const offset = (h * 60 * 60 + m * 60 + s) * 1000;
 
     for (const worker of workers) {
-        if (worker.email !== 'kamil.leczkowski@zsoio.pl') continue;
-
         const lastEvent = await prisma.workEvent.findFirst({
             where: {
                 workerId: worker.id,
+                type: $Enums.WorkEventType.WORK,
             },
             orderBy: {
                 timeEnd: 'desc',
@@ -37,102 +36,56 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
                 },
             },
             where: {
-                AND: [{ workerId: worker.id }, { date: { gt: lastEvent?.timeEnd || new Date(0) } }],
+                AND: [
+                    { workerId: worker.id },
+                    { date: { gt: lastEvent?.timeEnd || new Date(0) } },
+                    { device: { type: $Enums.DeviceType.WORK_START_STOP } },
+                ],
             },
         });
 
-        const eventsByDate: { [date: string]: { date: Date; device: { name: string; type: $Enums.DeviceType } }[] } =
-            {};
+        const eventsGroupedByDate: { date: string; events: typeof rawEvents }[] = [];
 
         rawEvents.forEach((event) => {
-            const date = new Date(event.date.getTime() + 0); //OFFSET
+            const date = new Date(event.date.getTime() - offset);
             date.setHours(0, 0, 0, 0);
-
-            const dateKey = event.date.toDateString();
+            eventsGroupedByDate.find((d) => d.date === date.toDateString())?.events.push(event) ||
+                eventsGroupedByDate.push({ date: date.toDateString(), events: [event] });
         });
 
-        const events: { date: Date; device }[];
+        eventsGroupedByDate.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        eventsGroupedByDate.forEach((d) => {
+            d.events.sort((a, b) => a.date.getTime() - b.date.getTime());
+        });
 
-        console.log('lastEvent', lastEvent?.timeEnd);
-        console.log('rawEvents', rawEvents);
+        for (const group of eventsGroupedByDate) {
+            if (lastEvent && new Date(lastEvent.timeEnd.getTime() - offset).toDateString() === group.date) {
+                console.log('Updating last event', { lastEvent, group });
+                await prisma.workEvent.update({
+                    where: {
+                        id: lastEvent.id,
+                    },
+                    data: {
+                        timeEnd: group.events[group.events.length - 1].date,
+                        placeEnd: group.events[group.events.length - 1].device.name,
+                        lastModified: new Date(),
+                    },
+                });
+                continue;
+            }
+            await prisma.workEvent.create({
+                data: {
+                    workerId: worker.id,
+                    lastModified: new Date(),
+                    type: $Enums.WorkEventType.WORK,
+                    timeStart: group.events[0].date,
+                    placeStart: group.events[0].device.name,
+                    timeEnd: group.events[group.events.length - 1].date,
+                    placeEnd: group.events[group.events.length - 1].device.name,
+                },
+            });
+        }
     }
-    // const lastEvent = await prisma.workEvent.findFirst({
-    //     where: {
-    //         workerId: worker.id,
-    //     },
-    //     orderBy: {
-    //         timeEnd: 'desc',
-    //     },
-    // });
-    // console.log('lastEvent', lastEvent?.timeEnd || new Date(0), lastEvent);
-    // const events = await prisma.event.findMany({
-    //     where: {
-    //         AND: [{ workerId: worker.id }, { date: { gt: lastEvent?.timeEnd || new Date(0) } }],
-    //     },
-    // });
-
-    // for (const event of events) {
-    // }
-
-    // logger.info(`Found ${events.length} events for worker ${worker.id}`);
-    // }
-
-    //     const lastEvent = await prisma.workEvent.findFirst({
-    //         where: {
-    //             workerId: worker.id,
-    //         },
-    //         orderBy: {
-    //             timeEnd: 'desc',
-    //         },
-    //     });
-
-    //     const since = lastEvent ? Math.floor(lastEvent.timeEnd.getTime() / 1000) : null;
-
-    //     const response = await axiosInstance.post<UbiquityAccessResponse<UbiquityAccessSystemLog>>(
-    //         `/api/v1/developer/system/logs`,
-    //         {
-    //             topic: 'door_openings',
-    //             actor_id: worker.id,
-    //             since: since,
-    //         }
-    //     );
-
-    //     if (!response.data || !response.data.data) {
-    //         throw new Error('Invalid response from Ubiquity Access API');
-    //     }
-
-    //     const rawData: { date: Date; events: Date[] }[] = [];
-
-    //     response.data.data.hits.forEach((hit) => {
-    //         const date = new Date(hit['@timestamp']);
-
-    //         if (date.getTime() / 1000 === since) return;
-
-    //         const existingDate = rawData.find((d) => d.date.toDateString() === date.toDateString());
-    //         if (existingDate) {
-    //             existingDate.events.push(date);
-    //         } else {
-    //             rawData.push({ date, events: [date] });
-    //         }
-    //     });
-
-    //     rawData.sort((a, b) => a.date.getTime() - b.date.getTime());
-    //     rawData.forEach((d) => {
-    //         d.events.sort((a, b) => a.getTime() - b.getTime());
-    //     });
-
-    //     for (const d of rawData) {
-    //         await prisma.workEvent.create({
-    //             data: {
-    //                 lastModified: new Date(),
-    //                 workerId: worker.id,
-    //                 type: 'WORK',
-    //                 timeStart: d.events[0],
-    //                 timeEnd: d.events[d.events.length - 1],
-    //             },
-    //         });
-    //     }
-    // }
 
     logger.success('Finished work events sync with Ubiquity Access API');
 };

@@ -7,7 +7,7 @@ services:
             POSTGRES_USER: admin
             POSTGRES_PASSWORD: 12345678admin
         ports:
-            - '5432:5432'
+            - '1000:5432'
         volumes:
             - ./postgres:/var/lib/postgresql
 

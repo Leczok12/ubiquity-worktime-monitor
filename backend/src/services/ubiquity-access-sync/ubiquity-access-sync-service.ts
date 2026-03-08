@@ -14,8 +14,8 @@ class UbiquityAccessSyncService {
 
     public async initialize(): Promise<void> {
         logger.info('Initializing Ubiquity Access Sync Service');
-        //await this.fullSync();
-        await this._sync(await createAxiosInstance());
+        await this.fullSync();
+        //await this._sync(await createAxiosInstance());
     }
 
     public async sync(): Promise<void> {}
@@ -63,18 +63,12 @@ class UbiquityAccessSyncService {
     }
 
     private async _sync(axiosInstance: AxiosInstance): Promise<void> {
-        // await database.prisma.$transaction(
-        //     async (prisma) => {
-        //         await syncWorkEvents(prisma, axiosInstance);
-        //     },
-        //     { timeout: 1000 * 60 * 10 }
-        // );
-        // await database.prisma.$transaction(
-        //     async (prisma) => {
-        //         await syncEvents(prisma, axiosInstance);
-        //     },
-        //     { timeout: 1000 * 60 * 10 }
-        // );
+        await database.prisma.$transaction(
+            async (prisma) => {
+                await syncEvents(prisma, axiosInstance);
+            },
+            { timeout: 1000 * 60 * 10 }
+        );
 
         await database.prisma.$transaction(
             async (prisma) => {

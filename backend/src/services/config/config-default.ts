@@ -4,8 +4,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const defaultConfig: Config = {
-    UBIQUITI_ACCESS_SYNC_CRONE: '*/15 * * * *', // every 15 minutes
-    UBIQUITI_ACCESS_FULL_SYNC_CRONE: '0 0 * * *', // every day at midnight
+    UBIQUITI_ACCESS_SYNC_CRON: '*/15 * * * *', // every 15 minutes
+    UBIQUITI_ACCESS_FULL_SYNC_CRON: '0 0 * * *', // every day at midnight
+    UBIQUITY_ACCESS_SYNC_ON_STARTUP:
+        (process.env.UBIQUITY_ACCESS_SYNC_ON_STARTUP !== undefined &&
+            process.env.UBIQUITY_ACCESS_SYNC_ON_STARTUP === 'true') ||
+        true,
 
     UBIQUITI_ACCESS_FULL_AUTO_UPDATE_ENABLED: true,
     UBIQUITI_ACCESS_API_URL: process.env.UBIQUITI_ACCESS_API_URL || '',

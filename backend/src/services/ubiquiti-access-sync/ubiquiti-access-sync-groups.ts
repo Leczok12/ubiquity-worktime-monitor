@@ -2,7 +2,7 @@ import { UbiquitiAccessResponse, UbiquitiAccessGroup } from './ubiquiti-access-a
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 
 export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting groups sync with Ubiquiti Access API');

@@ -4,4 +4,5 @@ export interface ApiWorkerResponse {
     lastname: string;
     email: string | null;
     active: boolean;
+    sync: boolean;
 }

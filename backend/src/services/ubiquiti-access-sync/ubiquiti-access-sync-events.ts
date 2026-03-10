@@ -1,7 +1,7 @@
 import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 import { database } from '../database';
 
 export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {

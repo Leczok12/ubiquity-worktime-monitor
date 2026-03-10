@@ -1,7 +1,7 @@
 import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 import { database } from '../database';
 import { config } from '../config';
 import { $Enums } from '@prisma/client';

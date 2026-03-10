@@ -4,7 +4,7 @@ export interface ApiResponse<T> {
     data?: T;
     pagination?: {
         page: number;
-        totalPages: number;
+        total: number;
         pageSize: number;
     };
 }

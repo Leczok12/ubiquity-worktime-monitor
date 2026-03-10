@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { database } from '../database';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 import { createAxiosInstance } from './ubiquiti-access-sync-create-axios-instance';
 import { syncDevices } from './ubiquiti-access-sync-devices';
 import { syncGroups } from './ubiquiti-access-sync-groups';
@@ -10,20 +10,36 @@ import { syncWorkers } from './ubiquiti-access-sync-workers';
 import { syncEvents } from './ubiquiti-access-sync-events';
 import nodeCron, { ScheduledTask } from 'node-cron';
 import { config } from '../config';
+import { CronJob } from 'src/utils/cron-job';
 
 class UbiquitiAccessSyncService {
-    private intervalId: NodeJS.Timeout | null = null;
-    private syncTask: ScheduledTask | null = null;
-    private syncTaskString: string = '';
-    private fullSyncTask: ScheduledTask | null = null;
-    private fullSyncTaskString: string = '';
+    private fullSyncCronJob: CronJob | null = null;
+    private syncCronJob: CronJob | null = null;
 
     public async initialize(): Promise<void> {
         logger.info('Initializing Ubiquiti Access Sync Service');
 
-        await this._upsertTask();
-        await this.fullSync();
-        //await this._sync(await createAxiosInstance());
+        this.fullSyncCronJob = new CronJob(
+            'Ubiquiti Access Full Sync',
+            await config.getValue('UBIQUITI_ACCESS_FULL_SYNC_CRON'),
+            this.fullSync.bind(this)
+        );
+
+        this.syncCronJob = new CronJob(
+            'Ubiquiti Access Sync',
+            await config.getValue('UBIQUITI_ACCESS_SYNC_CRON'),
+            this.sync.bind(this)
+        );
+
+        if ((await config.getValue('UBIQUITY_ACCESS_SYNC_ON_STARTUP')) === false) return;
+
+        try {
+            await this.fullSync();
+        } catch (error) {
+            logger.error(
+                `Initial full sync with Ubiquiti Access API failed: ${error instanceof Error ? error.message : error}`
+            );
+        }
     }
 
     public async fullSync(): Promise<void> {
@@ -34,6 +50,7 @@ class UbiquitiAccessSyncService {
             logger.success('Finished full sync with Ubiquiti Access API');
         } catch (error) {
             logger.error(`Ubiquiti Access full sync failed: ${error instanceof Error ? error.message : error}`);
+            throw error;
         }
     }
 
@@ -45,30 +62,7 @@ class UbiquitiAccessSyncService {
             logger.success('Finished sync with Ubiquiti Access API');
         } catch (error) {
             logger.error(`Ubiquiti Access sync failed: ${error instanceof Error ? error.message : error}`);
-        }
-    }
-
-    private async _upsertTask(): Promise<void> {
-        if (
-            this.fullSyncTask === null ||
-            this.fullSyncTaskString !== (await config.getValue('UBIQUITI_ACCESS_FULL_SYNC_CRONE'))
-        ) {
-            if (this.fullSyncTask) {
-                this.fullSyncTask.destroy();
-            }
-            this.fullSyncTaskString = await config.getValue('UBIQUITI_ACCESS_FULL_SYNC_CRONE');
-            this.fullSyncTask = nodeCron.schedule(this.fullSyncTaskString, async () => {
-                await this.fullSync();
-            });
-        }
-        if (this.syncTask === null || this.syncTaskString !== (await config.getValue('UBIQUITI_ACCESS_SYNC_CRONE'))) {
-            if (this.syncTask) {
-                this.syncTask.destroy();
-            }
-            this.syncTaskString = await config.getValue('UBIQUITI_ACCESS_SYNC_CRONE');
-            this.syncTask = nodeCron.schedule(this.syncTaskString, async () => {
-                await this.sync();
-            });
+            throw error;
         }
     }
 

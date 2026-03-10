@@ -1,7 +1,7 @@
 import { ApiResponse } from '@shared/api-response';
 import { NextFunction, Request, Response } from 'express';
 import { ApiError } from 'src/types/api-error';
-import { logger } from 'src/services/logger';
+import { logger } from '../utils/logger';
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ApiError) {

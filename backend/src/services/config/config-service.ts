@@ -1,5 +1,5 @@
 import { database } from 'src/services/database';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 import { defaultConfig } from './config-default';
 import { ConfigKey, Config } from './config-types';
 
@@ -36,8 +36,8 @@ class ConfigService {
     }
 
     public async setValue<K extends ConfigKey>(key: K, value: Config[K]): Promise<void> {
-        if (key === 'UBIQUITY_ACCESS_END_WORK_DAY' && !/^\d{2}:\d{2}:\d{2}$/.test(value as string)) {
-            throw new Error('Invalid time format for UBIQUITY_ACCESS_END_WORK_DAY. Expected format: HH:mm:ss');
+        if (key === 'UBIQUITI_ACCESS_END_WORK_DAY' && !/^\d{2}:\d{2}:\d{2}$/.test(value as string)) {
+            throw new Error('Invalid time format for UBIQUITI_ACCESS_END_WORK_DAY. Expected format: HH:mm:ss');
         }
 
         logger.warn(`Setting config key [${key} = ${value}]`);

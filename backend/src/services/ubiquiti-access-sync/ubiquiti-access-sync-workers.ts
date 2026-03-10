@@ -2,7 +2,7 @@ import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-ap
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 
 export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting workers sync with Ubiquiti Access API');

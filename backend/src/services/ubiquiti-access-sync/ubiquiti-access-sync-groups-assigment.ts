@@ -1,7 +1,7 @@
 import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../logger';
+import { logger } from '../../utils/logger';
 
 export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting groups assignment sync with Ubiquiti Access API');

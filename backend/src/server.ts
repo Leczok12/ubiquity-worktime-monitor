@@ -8,9 +8,9 @@ import errorHandler from './middlewares/error-handler';
 // import { ApiError } from './types/api-error';
 import { config } from './services/config/config-service';
 import { exit } from 'node:process';
-import { logger } from './services/logger';
+import { logger } from './utils/logger';
 import { configRouter } from './features/config/config-router';
-import { ubiquityAccessSync } from './services/ubiquity-access-sync';
+import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 import { groupRouter } from './features/group/group-router';
 import { workerRouter } from './features/worker/worker-router';
 import { deviceRouter } from './features/device/device-router';
@@ -18,10 +18,9 @@ import { deviceRouter } from './features/device/device-router';
 const startServer = async () => {
     try {
         await config.initialize();
-        await ubiquityAccessSync.initialize();
+        await ubiquitiAccessSync.initialize();
+
         const port = await config.getValue('SERVER_PORT');
-        // await configManager.initalize();
-        //await ubiquityAccessSyncManager.sync();
 
         const app = express();
         app.use(express.json());

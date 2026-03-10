@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { LogType } from './logger-types';
-import { database } from '../database';
 
 class LoggerService {
     private _log(message: string, logType: LogType): void {
@@ -91,4 +90,4 @@ class LoggerService {
 }
 
 const logger = new LoggerService();
-export default logger;
+export { logger };

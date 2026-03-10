@@ -1,20 +1,20 @@
-import { UbiquityAccessResponse, UbiquityAccessUser } from './ubiquity-access-api-types';
+import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 
 export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting workers sync with Ubiquity Access API');
-    const response = await axiosInstance.get<UbiquityAccessResponse<UbiquityAccessUser[]>>(`/api/v1/developer/users`);
+    logger.info('Starting workers sync with Ubiquiti Access API');
+    const response = await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessUser[]>>(`/api/v1/developer/users`);
 
     if (!response.data || !response.data.data) {
-        throw new Error('Invalid response from Ubiquity Access API');
+        throw new Error('Invalid response from Ubiquiti Access API');
     }
 
     for (const worker of response.data.data) {
         if (!worker.id) {
-            throw new Error(`Invalid worker data from Ubiquity Access API`);
+            throw new Error(`Invalid worker data from Ubiquiti Access API`);
         }
 
         const existingWorker = await prisma.worker.findUnique({
@@ -63,5 +63,5 @@ export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: Axio
         });
         logger.danger(`Deleted worker ${removedWorker.name} ${removedWorker.lastname}`);
     }
-    logger.success('Finished workers sync with Ubiquity Access API');
+    logger.success('Finished workers sync with Ubiquiti Access API');
 };

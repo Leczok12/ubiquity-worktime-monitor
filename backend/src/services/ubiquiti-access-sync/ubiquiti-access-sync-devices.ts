@@ -1,22 +1,22 @@
-import { UbiquityAccessResponse, UbiquityAccessDevice } from './ubiquity-access-api-types';
+import { UbiquitiAccessResponse, UbiquitiAccessDevice } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 
 export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting devices sync with Ubiquity Access API');
-    const response = await axiosInstance.get<UbiquityAccessResponse<UbiquityAccessDevice[][]>>(
+    logger.info('Starting devices sync with Ubiquiti Access API');
+    const response = await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessDevice[][]>>(
         `/api/v1/developer/devices?refresh=true`
     );
 
     if (!response.data || !response.data.data) {
-        throw new Error('Invalid response from Ubiquity Access API');
+        throw new Error('Invalid response from Ubiquiti Access API');
     }
 
     for (const rDevice of response.data.data) {
         const device = rDevice[0];
         if (!device.id) {
-            throw new Error(`Invalid response from Ubiquity Access API`);
+            throw new Error(`Invalid response from Ubiquiti Access API`);
         }
 
         const existingDevice = await prisma.device.findUnique({
@@ -59,5 +59,5 @@ export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: Axio
         logger.danger(`Deleted device ${removedDevice.name}`);
     }
 
-    logger.success('Finished device sync with Ubiquity Access API');
+    logger.success('Finished device sync with Ubiquiti Access API');
 };

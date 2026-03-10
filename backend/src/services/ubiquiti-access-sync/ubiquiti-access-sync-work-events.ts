@@ -1,4 +1,4 @@
-import { UbiquityAccessSystemLog, UbiquityAccessResponse } from './ubiquity-access-api-types';
+import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
@@ -8,10 +8,10 @@ import { $Enums } from '@prisma/client';
 import { raw } from 'express';
 
 export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting work events sync with Ubiquity Access API');
+    logger.info('Starting work events sync with Ubiquiti Access API');
     const workers = await prisma.worker.findMany({ where: { sync: true } });
 
-    const [h, m, s] = (await config.getValue('UBIQUITY_ACCESS_END_WORK_DAY')).split(':').map(Number);
+    const [h, m, s] = (await config.getValue('UBIQUITI_ACCESS_END_WORK_DAY')).split(':').map(Number);
     const offset = (h * 60 * 60 + m * 60 + s) * 1000;
 
     for (const worker of workers) {
@@ -85,7 +85,9 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
                 },
             });
         }
+
+        //TODO: sync breaks events
     }
 
-    logger.success('Finished work events sync with Ubiquity Access API');
+    logger.success('Finished work events sync with Ubiquiti Access API');
 };

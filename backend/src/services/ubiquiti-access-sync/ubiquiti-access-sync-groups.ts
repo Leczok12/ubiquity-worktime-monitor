@@ -1,21 +1,21 @@
-import { UbiquityAccessResponse, UbiquityAccessGroup } from './ubiquity-access-api-types';
+import { UbiquitiAccessResponse, UbiquitiAccessGroup } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 
 export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting groups sync with Ubiquity Access API');
+    logger.info('Starting groups sync with Ubiquiti Access API');
     const response =
-        await axiosInstance.get<UbiquityAccessResponse<UbiquityAccessGroup[]>>(`/api/v1/developer/user_groups`);
+        await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessGroup[]>>(`/api/v1/developer/user_groups`);
 
     if (!response.data || !response.data.data) {
-        throw new Error('Invalid response from Ubiquity Access API');
+        throw new Error('Invalid response from Ubiquiti Access API');
     }
 
     for (const group of response.data.data) {
         if (!group.id) {
-            throw new Error(`Invalid group data from Ubiquity Access API`);
+            throw new Error(`Invalid group data from Ubiquiti Access API`);
         }
 
         const existingGroup = await prisma.group.findUnique({
@@ -57,5 +57,5 @@ export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: Axios
         });
         logger.danger(`Deleted group ${removedGroup.name}`);
     }
-    logger.success('Finished groups sync with Ubiquity Access API');
+    logger.success('Finished groups sync with Ubiquiti Access API');
 };

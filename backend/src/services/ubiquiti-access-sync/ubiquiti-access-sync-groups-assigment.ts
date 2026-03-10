@@ -1,10 +1,10 @@
-import { UbiquityAccessResponse, UbiquityAccessUser } from './ubiquity-access-api-types';
+import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 
 export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting groups assignment sync with Ubiquity Access API');
+    logger.info('Starting groups assignment sync with Ubiquiti Access API');
 
     await prisma.$executeRaw`DELETE FROM "_WorkerGroups"`;
 
@@ -12,12 +12,12 @@ export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInsta
 
     for (const group of groups) {
         logger.info(`Syncing workers assigment for group ${group.name}`);
-        const response = await axiosInstance.get<UbiquityAccessResponse<UbiquityAccessUser[]>>(
+        const response = await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessUser[]>>(
             `/api/v1/developer/user_groups/${group.id}/users/all`
         );
 
         if (!response.data || !response.data.data) {
-            throw new Error('Invalid response from Ubiquity Access API');
+            throw new Error('Invalid response from Ubiquiti Access API');
         }
 
         for (const user of response.data.data) {
@@ -29,5 +29,5 @@ export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInsta
         logger.success(`Finished workers assignment for group ${group.name}`);
     }
 
-    logger.success('Finished groups assignment sync with Ubiquity Access API');
+    logger.success('Finished groups assignment sync with Ubiquiti Access API');
 };

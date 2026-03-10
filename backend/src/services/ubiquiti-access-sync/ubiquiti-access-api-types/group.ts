@@ -1,4 +1,4 @@
-export type UbiquityAccessGroup = {
+export type UbiquitiAccessGroup = {
     full_name: string;
     id: string;
     name: string;

@@ -1,11 +1,11 @@
-import { UbiquityAccessSystemLog, UbiquityAccessResponse } from './ubiquity-access-api-types';
+import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../logger';
 import { database } from '../database';
 
 export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
-    logger.info('Starting events sync with Ubiquity Access API');
+    logger.info('Starting events sync with Ubiquiti Access API');
     const workers = await prisma.worker.findMany({ where: { sync: true } });
 
     const lastEvent = await prisma.event.findFirst({
@@ -17,7 +17,7 @@ export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: Axios
     const since = lastEvent ? Math.floor(lastEvent.date.getTime() / 1000) : null;
 
     for (const worker of workers) {
-        const response = await axiosInstance.post<UbiquityAccessResponse<UbiquityAccessSystemLog>>(
+        const response = await axiosInstance.post<UbiquitiAccessResponse<UbiquitiAccessSystemLog>>(
             `/api/v1/developer/system/logs`,
             {
                 topic: 'door_openings',
@@ -27,7 +27,7 @@ export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: Axios
         );
 
         if (!response.data || !response.data.data.hits) {
-            throw new Error('Invalid response from Ubiquity Access API');
+            throw new Error('Invalid response from Ubiquiti Access API');
         }
 
         for (const event of response.data.data.hits) {
@@ -43,5 +43,5 @@ export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: Axios
             });
         }
     }
-    logger.success('Finished events sync with Ubiquity Access API');
+    logger.success('Finished events sync with Ubiquiti Access API');
 };

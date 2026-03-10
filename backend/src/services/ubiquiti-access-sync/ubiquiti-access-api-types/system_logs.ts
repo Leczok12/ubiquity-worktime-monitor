@@ -1,4 +1,4 @@
-export type UbiquityAccessSystemLog = {
+export type UbiquitiAccessSystemLog = {
     hits: {
         '@timestamp': string;
         _id: string;

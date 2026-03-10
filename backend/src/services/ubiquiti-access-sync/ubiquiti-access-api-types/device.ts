@@ -1,4 +1,4 @@
-export type UbiquityAccessDevice = {
+export type UbiquitiAccessDevice = {
     alias: string;
     id: string;
     name: string;

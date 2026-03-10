@@ -36,9 +36,9 @@ class UbiquitiAccessSyncService {
         try {
             await this.fullSync();
         } catch (error) {
-            logger.error(
-                `Initial full sync with Ubiquiti Access API failed: ${error instanceof Error ? error.message : error}`
-            );
+            // logger.error(
+            //     `Initial full sync with Ubiquiti Access API failed: ${error instanceof Error ? error.message : error}`
+            // );
         }
     }
 
@@ -50,7 +50,6 @@ class UbiquitiAccessSyncService {
             logger.success('Finished full sync with Ubiquiti Access API');
         } catch (error) {
             logger.error(`Ubiquiti Access full sync failed: ${error instanceof Error ? error.message : error}`);
-            throw error;
         }
     }
 
@@ -62,7 +61,6 @@ class UbiquitiAccessSyncService {
             logger.success('Finished sync with Ubiquiti Access API');
         } catch (error) {
             logger.error(`Ubiquiti Access sync failed: ${error instanceof Error ? error.message : error}`);
-            throw error;
         }
     }
 

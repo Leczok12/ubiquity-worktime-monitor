@@ -60,7 +60,6 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
 
         for (const group of eventsGroupedByDate) {
             if (lastEvent && new Date(lastEvent.timeEnd.getTime() - offset).toDateString() === group.date) {
-                console.log('Updating last event', { lastEvent, group });
                 await prisma.workEvent.update({
                     where: {
                         id: lastEvent.id,

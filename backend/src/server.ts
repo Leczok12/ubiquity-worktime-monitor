@@ -12,7 +12,7 @@ import { logger } from './utils/logger';
 import { configRouter } from './features/config/config-router';
 import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 import { groupRouter } from './features/group/group-router';
-import { workerRouter } from './features/worker/worker-router';
+import { workerRouter } from './features/worker/api/worker-router';
 import { deviceRouter } from './features/device/device-router';
 
 const startServer = async () => {

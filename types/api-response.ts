@@ -1,6 +1,7 @@
 export interface ApiResponse<T> {
     status: ApiResponseStatus;
     errorMessage?: string;
+    redirect?: string;
     data?: T;
     pagination?: {
         page: number;

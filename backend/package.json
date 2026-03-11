@@ -14,6 +14,7 @@
         "-": "^0.0.1",
         "@prisma/adapter-pg": "^7.4.0",
         "@prisma/client": "^7.4.0",
+        "@quixo3/prisma-session-store": "^3.1.19",
         "@types/passport": "^1.0.17",
         "argon2": "^0.44.0",
         "axios": "^1.13.5",

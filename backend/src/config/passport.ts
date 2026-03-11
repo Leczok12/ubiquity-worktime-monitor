@@ -7,7 +7,6 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(function (id, done) {
-    // throw new Error('Deserialization not implemented yet');
     console.log('Deserializing user with id:', id);
     done(null, {
         id: '1',

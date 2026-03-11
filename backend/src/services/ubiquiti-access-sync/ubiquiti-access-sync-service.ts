@@ -11,6 +11,7 @@ import { syncEvents } from './ubiquiti-access-sync-events';
 import nodeCron, { ScheduledTask } from 'node-cron';
 import { config } from '../config';
 import { CronJob } from 'src/utils/cron-job';
+import { hostCheck } from 'src/utils/host-check';
 
 class UbiquitiAccessSyncService {
     private fullSyncCronJob: CronJob | null = null;
@@ -30,6 +31,13 @@ class UbiquitiAccessSyncService {
             await config.getValue('UBIQUITI_ACCESS_SYNC_CRON'),
             this.sync.bind(this)
         );
+
+        if ((await hostCheck(await config.getValue('UBIQUITI_ACCESS_API_URL'))) === false) {
+            logger.error('Ubiquiti Access API is not accessible');
+            return;
+        } else {
+            logger.success('Ubiquiti Access API is accessible');
+        }
 
         if ((await config.getValue('UBIQUITY_ACCESS_SYNC_ON_STARTUP')) === false) return;
 

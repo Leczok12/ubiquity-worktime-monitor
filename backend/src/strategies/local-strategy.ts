@@ -1,17 +1,21 @@
 import { Strategy } from 'passport-local';
+import { database } from 'src/services/database';
+import argon2 from 'argon2';
 
-export const localStrategy = new Strategy((username, password, done) => {
-    // User.findOne({ username: username }, function (err, user) {
-    // 	if (err) return done(err);
-    // 	if (!user) return done(null, false, { message: 'Incorrect username.' });
+export const localStrategy = new Strategy(async (username, password, done) => {
+    const user = await database.prisma.user.findFirst({ where: { email: username } });
 
-    // 	bcrypt.compare(password, user.password, function (err, res) {
-    // 		if (err) return done(err);
-    // 		if (res === false) return done(null, false, { message: 'Incorrect password.' });
+    if (!user) {
+        return done(null, false, { message: 'Invalid credentials' });
+    }
 
-    // 		return done(null, user);
-    // 	});
-    // });
-    console.log('Authenticating user with username:', username);
-    return done(null, { id: 1, username: 'testuser' });
+    try {
+        if (!(await argon2.verify(user.password, password))) {
+            return done(null, false, { message: 'Invalid credentials' });
+        }
+    } catch (err) {
+        return done(null, false, { message: 'Invalid credentials' });
+    }
+
+    return done(null, user);
 });

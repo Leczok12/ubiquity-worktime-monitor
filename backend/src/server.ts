@@ -1,10 +1,9 @@
 import express, { Request, Response, RequestHandler } from 'express';
 import errorHandler from './middlewares/error-handler';
 
-import passport from 'passport';
-import expressSession from 'express-session';
+import { passport } from './config/passport';
+import { session } from './config/session';
 
-import { localStrategy } from './strategies';
 import { logger } from './utils/logger';
 
 import { config } from './services/config/config-service';
@@ -15,6 +14,8 @@ import { groupRouter } from './features/group/group-router';
 import { workerRouter } from './features/worker/api/worker-router';
 import { deviceRouter } from './features/device/device-router';
 import { authRouter } from './features/auth/auth-router';
+import { database } from './services/database';
+import argon2 from 'argon2';
 
 const startServer = async () => {
     try {
@@ -24,30 +25,13 @@ const startServer = async () => {
         const port = await config.getValue('SERVER_PORT');
 
         const app = express();
-        app.use(expressSession({ secret: 'your-secret-key', resave: false, saveUninitialized: true }));
         app.use(express.json());
+        app.use(express.urlencoded({ extended: true }));
+
+        app.use(session);
 
         app.use(passport.initialize());
         app.use(passport.session());
-
-        passport.serializeUser(function (user, done) {
-            console.log('Serializing user with id:', user);
-            done(null, user.id);
-        });
-
-        passport.deserializeUser(function (id, done) {
-            console.log('Deserializing user with id:', id);
-            done(null, {
-                id: '1',
-                email: 'testuser@example.com',
-                name: 'Test User',
-                roles: ['EDITOR'],
-                lastname: '',
-                password: '',
-                locked: false,
-            });
-        });
-        passport.use(localStrategy);
 
         app.use(logger.middleware.bind(logger));
 

@@ -10,4 +10,11 @@ export interface ApiResponse<T> {
     };
 }
 
-export type ApiResponseStatus = 'SUCCESS' | 'ERROR' | 'INVALID_ARGS' | 'NOT_FOUND' | 'UNAUTHORIZED' | 'FORBIDDEN';
+export type ApiResponseStatus =
+    | 'SUCCESS'
+    | 'ERROR'
+    | 'INVALID_CREDENTIALS'
+    | 'INVALID_ARGS'
+    | 'NOT_FOUND'
+    | 'UNAUTHORIZED'
+    | 'FORBIDDEN';

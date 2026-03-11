@@ -1,7 +1,7 @@
 import express, { Request, Response, RequestHandler } from 'express';
 import errorHandler from './middlewares/error-handler';
 
-import { passport } from './config/passport';
+import { passport } from './config/passport/passport';
 import { session } from './config/session';
 
 import { logger } from './utils/logger';
@@ -14,8 +14,6 @@ import { groupRouter } from './features/group/group-router';
 import { workerRouter } from './features/worker/api/worker-router';
 import { deviceRouter } from './features/device/device-router';
 import { authRouter } from './features/auth/auth-router';
-import { database } from './services/database';
-import argon2 from 'argon2';
 
 const startServer = async () => {
     try {

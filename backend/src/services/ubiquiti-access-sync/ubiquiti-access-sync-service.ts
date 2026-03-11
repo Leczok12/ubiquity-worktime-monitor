@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { database } from '../database';
+import { database } from 'src/config/database';
 import { logger } from '../../utils/logger';
 import { createAxiosInstance } from './ubiquiti-access-sync-create-axios-instance';
 import { syncDevices } from './ubiquiti-access-sync-devices';

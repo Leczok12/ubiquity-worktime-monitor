@@ -1,5 +1,5 @@
 import expressSession from 'express-session';
-import { database } from '../services/database';
+import { database } from 'src/config/database';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
 const session = expressSession({

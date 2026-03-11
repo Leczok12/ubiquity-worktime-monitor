@@ -1,5 +1,5 @@
 import { Strategy } from 'passport-local';
-import { database } from 'src/services/database';
+import { database } from 'src/config/database';
 import argon2 from 'argon2';
 
 export const localStrategy = new Strategy(async (username, password, done) => {

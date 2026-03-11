@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { localStrategy } from '../strategies';
+import { localStrategy } from './local-strategy';
 
 passport.serializeUser(function (user, done) {
     console.log('Serializing user with id:', user);

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ApiResponse } from '@shared/api-response';
-import { database } from 'src/services/database';
+import { database } from 'src/config/database';
 import { ApiError } from 'src/types/api-error';
 import { ApiWorkerResponse } from '@shared/api-worker';
 

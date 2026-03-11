@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ApiGroupResponse } from '@shared/api-group';
 import { ApiResponse } from '@shared/api-response';
-import { database } from 'src/services/database';
+import { database } from 'src/config/database';
 
 export const getAllGroups = async (req: Request, res: Response) => {
     const response: ApiResponse<ApiGroupResponse[]> = {

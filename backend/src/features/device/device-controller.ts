@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ApiResponse } from '@shared/api-response';
-import { database } from 'src/services/database';
+import { database } from 'src/config/database';
 import { ApiDeviceResponse } from '@shared/api-device';
 
 export const getAllDevices = async (req: Request, res: Response) => {

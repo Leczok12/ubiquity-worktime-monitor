@@ -1,4 +1,4 @@
-import { database } from 'src/services/database';
+import { database } from 'src/config/database';
 import { logger } from '../../utils/logger';
 import { defaultConfig } from './config-default';
 import { ConfigKey, Config } from './config-types';

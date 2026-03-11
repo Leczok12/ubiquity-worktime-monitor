@@ -18,7 +18,7 @@ router.post(
     }
 );
 
-router.get('/callback/logout', logout);
+router.post('/callback/logout', logout);
 
 router.all('/', () => {
     throw new ApiError(404, 'NOT_FOUND');

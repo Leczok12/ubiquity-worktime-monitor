@@ -60,7 +60,7 @@ class LoggerService {
     }
 
     public middleware(req: Request, res: Response, next: NextFunction): void {
-        this.info(`${req.method} ${req.url}`);
+        this.info(`${req.ip} ${req.user?.email || 'Anonymous'} ${req.method} ${req.url}`);
         next();
     }
 

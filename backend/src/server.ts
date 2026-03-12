@@ -3,6 +3,7 @@ import errorHandler from './middlewares/error-handler';
 
 import { passport } from './config/passport/passport';
 import { session } from './config/session';
+import { createAdmin } from './config/create-admin';
 
 import { logger } from './utils/logger';
 
@@ -19,6 +20,8 @@ const startServer = async () => {
     try {
         await config.initialize();
         await ubiquitiAccessSync.initialize();
+
+        await createAdmin();
 
         const port = await config.getValue('SERVER_PORT');
 
@@ -44,8 +47,7 @@ const startServer = async () => {
             logger.success(`Server is running on port ${port}`);
         });
     } catch (error) {
-        console.error('Failed to start server:', error instanceof Error ? error.message : error);
-        // logger.error(`Failed to start server: ${error}`);
+        logger.error(`Failed to start server: ${error instanceof Error ? error.message : error}`);
         process.exit(1);
     }
 };

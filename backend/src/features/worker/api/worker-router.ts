@@ -10,8 +10,4 @@ router.get('/find', findWorkers);
 
 router.use('/group', workerGroupRouter);
 
-router.all('/', () => {
-    throw new ApiError(404, 'NOT_FOUND');
-});
-
 export { router as workerRouter };

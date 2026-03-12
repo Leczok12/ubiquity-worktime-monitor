@@ -13,8 +13,5 @@ router.use((req: Request, res: Response, next: Function) => {
 
 router.get('/all', getAllConfig);
 router.post('/', setConfigValue);
-router.all('/', () => {
-    throw new ApiError(404, 'NOT_FOUND');
-});
 
 export { router as configRouter };

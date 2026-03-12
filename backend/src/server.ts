@@ -15,6 +15,7 @@ import { groupRouter } from './features/group/group-router';
 import { workerRouter } from './features/worker/api/worker-router';
 import { deviceRouter } from './features/device/device-router';
 import { authRouter } from './features/auth/auth-router';
+import { ApiError } from './types/api-error';
 
 const startServer = async () => {
     try {
@@ -41,6 +42,10 @@ const startServer = async () => {
         app.use('/api/group', groupRouter);
         app.use('/api/worker', workerRouter);
         app.use('/api/device', deviceRouter);
+
+        app.use((req, res, next) => {
+            throw new ApiError(404, 'NOT_FOUND');
+        });
 
         app.use(errorHandler);
         app.listen(port, () => {

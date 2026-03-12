@@ -17,8 +17,4 @@ router.post(
 
 router.post('/callback/logout', logout);
 
-router.all('/', () => {
-    throw new ApiError(404, 'NOT_FOUND');
-});
-
 export { router as authRouter };

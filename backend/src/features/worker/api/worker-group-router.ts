@@ -6,8 +6,4 @@ const router = express.Router();
 
 router.get('/:id/all', getAllWorkersInGroup);
 
-router.all('/', () => {
-    throw new ApiError(404, 'NOT_FOUND');
-});
-
 export { router as workerGroupRouter };

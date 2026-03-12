@@ -17,13 +17,12 @@ export const getAllConfig = async (req: Request, res: Response) => {
 };
 
 export const setConfigValue = async (req: Request, res: Response) => {
-    const rawKey = req.body.key;
-    const rawValue = req.body.value;
+    const rawKey = req.body?.key;
+    const rawValue = req.body?.value;
 
-    if (typeof rawKey !== 'string' || !(rawKey in defaultConfig)) {
-        throw new ApiError(400, 'INVALID_ARGS');
-    }
-    if (typeof rawValue !== 'string') throw new ApiError(400, 'INVALID_ARGS');
+    if (typeof rawKey !== 'string' || !(rawKey in defaultConfig))
+        throw new ApiError(400, 'INVALID_ARGS', "Missing or invalid 'key' field");
+    if (typeof rawValue !== 'string') throw new ApiError(400, 'INVALID_ARGS', "Missing or invalid 'value' field");
 
     const key = rawKey as ConfigKey;
     const type = typeof defaultConfig[key];

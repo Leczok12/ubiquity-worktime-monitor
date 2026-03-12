@@ -1,8 +1,39 @@
-import { ApiConfigRowResponse } from '@shared/api-config';
+import express from 'express';
 import { ApiResponse } from '@shared/api-response';
 import { Request, Response } from 'express';
-import { config, ConfigKey, defaultConfig } from 'src/services/config';
 import { ApiError } from 'src/types/api-error';
+import { ApiLoginConfigResponse } from '@shared/api-login-config';
+import { config } from 'src/services/config';
+
+export const getConfig = async (req: express.Request, res: express.Response) => {
+    const response: ApiResponse<ApiLoginConfigResponse> = {
+        status: 'SUCCESS',
+        data: {
+            local: {
+                enabled: await config.getValue('LOGIN_LOCAL_STRATEGY_ENABLED'),
+            },
+            microsoft: {
+                label: await config.getValue('LOGIN_MICROSOFT_LABEL'),
+                enabled: await config.getValue('LOGIN_MICROSOFT_STRATEGY_ENABLED'),
+            },
+        },
+    };
+
+    res.status(200).json(response);
+};
+
+export const loginLocalError = (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err.status === 400) throw new ApiError(400, 'INVALID_ARGS');
+    if (err.status === 401) throw new ApiError(401, 'INVALID_CREDENTIALS');
+    else throw new ApiError(500, 'ERROR');
+};
+
+export const loginLocalSuccess = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const response: ApiResponse<undefined> = {
+        status: 'SUCCESS',
+    };
+    res.status(201).json(response);
+};
 
 export const logout = async (req: Request, res: Response) => {
     req.logout((err) => {

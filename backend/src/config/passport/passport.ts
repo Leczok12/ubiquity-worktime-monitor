@@ -4,15 +4,13 @@ import { database } from '../database';
 import { User } from '@prisma/client';
 
 passport.serializeUser<string>(async (user, done) => {
-    console.log('Serializing user:', (user as User).id);
-    done(null, (user as User).id);
+    done(null, user.id);
 });
 
 passport.deserializeUser<string>(async (id, done) => {
-    console.log('Deserializing user with id:', id);
     const user = await database.prisma.user.findUnique({ where: { id: String(id) } });
 
-    console.log('Deserialized user:', user);
+    if (!user) return done(new Error('User not found'), null);
 
     done(null, user);
 });

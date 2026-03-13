@@ -13,7 +13,6 @@ passport.deserializeUser<string>(async (id, done) => {
     if (!user) return done(new Error('User not found'), null);
 
     const { password, ...userWithoutPassword } = user;
-    console.log('Deserialized user:', userWithoutPassword);
     done(null, userWithoutPassword);
 });
 

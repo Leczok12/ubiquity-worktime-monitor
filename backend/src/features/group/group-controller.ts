@@ -6,13 +6,7 @@ import { database } from 'src/config/database';
 export const getAllGroups = async (req: Request, res: Response) => {
     const response: ApiResponse<ApiGroupResponse[]> = {
         status: 'SUCCESS',
-        data:
-            (await database.prisma.group.findMany({
-                select: {
-                    id: true,
-                    name: true,
-                },
-            })) ?? [],
+        data: (await database.prisma.group.findMany({})) ?? [],
     };
 
     res.status(200).json(response);

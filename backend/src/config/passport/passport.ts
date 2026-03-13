@@ -12,7 +12,9 @@ passport.deserializeUser<string>(async (id, done) => {
 
     if (!user) return done(new Error('User not found'), null);
 
-    done(null, user);
+    const { password, ...userWithoutPassword } = user;
+    console.log('Deserialized user:', userWithoutPassword);
+    done(null, userWithoutPassword);
 });
 
 passport.use(localStrategy);

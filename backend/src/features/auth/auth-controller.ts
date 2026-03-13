@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { ApiError } from 'src/types/api-error';
 import { ApiLoginConfigResponse } from '@shared/api-login-config';
 import { config } from 'src/services/config';
+import { ApiAuthUserResponse } from '@shared/api-auth';
 
 export const getConfig = async (req: express.Request, res: express.Response) => {
     const response: ApiResponse<ApiLoginConfigResponse> = {
@@ -17,6 +18,19 @@ export const getConfig = async (req: express.Request, res: express.Response) => 
                 enabled: await config.getValue('LOGIN_MICROSOFT_STRATEGY_ENABLED'),
             },
         },
+    };
+
+    res.status(200).json(response);
+};
+
+export const getUser = async (req: Request, res: Response) => {
+    if (!req.user) {
+        throw new ApiError(401, 'UNAUTHORIZED');
+    }
+
+    const response: ApiResponse<ApiAuthUserResponse> = {
+        status: 'SUCCESS',
+        data: req.user,
     };
 
     res.status(200).json(response);

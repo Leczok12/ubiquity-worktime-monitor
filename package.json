@@ -1,8 +1,15 @@
 {
-  "dependencies": {
-    "express-session": "^1.19.0"
-  },
-  "devDependencies": {
-    "@types/express-session": "^1.18.2"
-  }
+    "name": "ubiquity-worktime-monitor",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "install": "cd frontend && npm install && cd ../backend && npm install",
+        "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""
+    },
+    "author": "Leczok12",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
 }

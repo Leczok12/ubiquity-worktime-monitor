@@ -12,7 +12,8 @@
         "moduleResolution": "bundler",
         "baseUrl": ".",
         "paths": {
-            "@shared/*": ["../types/*"]
+            "@shared/*": ["../types/*"],
+            "@src/*": ["./src/*"]
         },
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,

@@ -8,6 +8,7 @@ export default defineConfig({
     plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
     resolve: {
         alias: {
+            '@src': path.resolve(__dirname, './src'),
             '@shared': path.resolve(__dirname, '../types'),
             '@bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
         },

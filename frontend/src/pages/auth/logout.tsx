@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import type { ApiResponse } from '@shared/api-response';
+import { useNavigate } from 'react-router';
 
 const LogoutPage: React.FC = () => {
     const [error, setError] = useState<string | undefined>(undefined);
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
@@ -15,6 +17,7 @@ const LogoutPage: React.FC = () => {
                 throw new Error('Logout failed');
             }
             console.log('Logout successful');
+            navigate('/auth/login', { replace: true });
         } catch {
             setError('Failed to logout');
         }

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router';
-import LoginPage from '../pages/login';
+import LoginPage from '../pages/auth/login';
 import AuthLayout from '../layout/auth';
-import LogoutPage from '../pages/logout';
+import LogoutPage from '../pages/auth/logout';
 
 const router = createBrowserRouter([
     {

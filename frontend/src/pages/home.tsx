@@ -1,0 +1,94 @@
+import { Card } from 'react-bootstrap';
+
+const HomePage: React.FC = () => {
+    return (
+        <Card className="mx-auto mt-5" style={{ maxWidth: '400px' }}>
+            <Card.Header>
+                <h1>Home</h1>
+            </Card.Header>
+            <Card.Body>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+                <p>asdasdasd</p>
+            </Card.Body>
+        </Card>
+    );
+};
+
+export default HomePage;

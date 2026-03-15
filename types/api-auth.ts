@@ -7,7 +7,7 @@ export interface ApiAuthUserResponse {
     roles: string[];
 }
 
-export interface ApiLoginConfigResponse {
+export interface ApiAuthConfigResponse {
     local: {
         enabled: boolean;
     };

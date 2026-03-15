@@ -1,9 +1,9 @@
-import NavBar from '@src/components/navbar';
+import { Navbar } from '@src/components/navbar';
 import { useAuthUser } from '@src/hooks/use-auth-user';
 import { Outlet, useNavigate } from 'react-router';
 
 const RootLayout = () => {
-    const { data, isLoading, isError, error } = useAuthUser();
+    const { data, error } = useAuthUser();
     const navigator = useNavigate();
 
     if (error?.message === 'UNAUTHORIZED') {
@@ -16,8 +16,7 @@ const RootLayout = () => {
 
     return (
         <div>
-            <NavBar user={data} />
-            {data ? <div>Welcome, {data.email}!</div> : <div>Please log in.</div>}
+            <Navbar user={data} />
             <Outlet />
         </div>
     );

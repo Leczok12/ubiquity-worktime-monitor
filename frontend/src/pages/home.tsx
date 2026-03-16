@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
     // }
 
     return (
-        <Container>
+        <Container style={{ maxWidth: '800px' }}>
             <SearchBar
                 onSearch={(e) => {
                     setKeyword(e === '' ? undefined : e);

@@ -1,17 +1,23 @@
-.searchBar {
-    margin: 20px 0;
-    height: 45px;
-    > form {
-        height: inherit;
-        display: flex;
+.searchForm {
+    margin: 10px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    > input {
         width: 100%;
-        flex-direction: row;
-        gap: 10px;
+        padding: 16px;
+        padding-right: 70px;
     }
-    button {
+
+    > button {
+        width: 50px;
+        height: calc(100% - 16px);
+        position: absolute;
+        right: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        aspect-ratio: 1;
     }
 }

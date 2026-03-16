@@ -1,26 +1,32 @@
 import { useState, type FC } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import styles from './search-bar.module.scss';
 import { BsSearch } from 'react-icons/bs';
+import styles from './search-bar.module.scss';
+import { Button, Form } from 'react-bootstrap';
 
 const SearchBar: FC<{ onSearch: (keyword: string) => void; disabled?: boolean }> = ({ onSearch, disabled = false }) => {
     const [keyword, setKeyword] = useState('');
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!disabled) {
+            onSearch(keyword);
+        }
+    };
+
     return (
-        <div className={styles.searchBar}>
-            <Form onSubmit={(e) => e.preventDefault()}>
-                <Form.Control
-                    type="text"
-                    placeholder="Search..."
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                    disabled={disabled}
-                />
-                <Button type="submit" onClick={() => onSearch(keyword)} disabled={disabled}>
-                    <BsSearch />
-                </Button>
-            </Form>
-        </div>
+        <Form onSubmit={handleSubmit} className={styles.searchForm}>
+            <Form.Control
+                type="text"
+                placeholder="Search..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                disabled={disabled}
+                className={styles.input}
+            />
+            <Button type="submit" disabled={disabled} className={styles.button}>
+                <BsSearch />
+            </Button>
+        </Form>
     );
 };
 

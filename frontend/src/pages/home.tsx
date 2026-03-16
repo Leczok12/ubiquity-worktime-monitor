@@ -1,11 +1,12 @@
 import { Pagination } from '@src/components/pagination';
+import { WorkerRow } from '@src/components/worker-row';
 import { useWorker } from '@src/hooks/use-worker';
 import { useState } from 'react';
-import { Card, Container } from 'react-bootstrap';
+import { Card, Container, ListGroup } from 'react-bootstrap';
 
 const HomePage: React.FC = () => {
     const [pageNumber, setPageNumber] = useState(1);
-    const { data, isLoading, isError, error } = useWorker({ pageNumber, pageSize: 10 });
+    const { data, isLoading } = useWorker({ pageNumber, pageSize: 10 });
 
     if (isLoading || data === undefined) {
         return <div>Loading...</div>;
@@ -13,18 +14,11 @@ const HomePage: React.FC = () => {
 
     return (
         <Container>
-            <Card className="mx-auto mt-3 mb-6" style={{ maxWidth: '800px' }}>
-                <Card.Header>
-                    <h1>Home</h1>
-                </Card.Header>
-                <Card.Body>
-                    {data?.data?.map((worker) => (
-                        <div key={worker.id}>
-                            <h2>{worker.name}</h2>
-                        </div>
-                    ))}
-                </Card.Body>
-            </Card>
+            <ListGroup>
+                {data.data?.map((worker) => (
+                    <WorkerRow key={worker.id} worker={worker} />
+                ))}
+            </ListGroup>
             <br />
             <br />
             <br />

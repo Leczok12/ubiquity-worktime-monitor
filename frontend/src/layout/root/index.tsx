@@ -11,7 +11,7 @@ const RootLayout = () => {
     }
 
     if (data === undefined) {
-        return <div>Loading...</div>;
+        return <></>;
     }
 
     return (

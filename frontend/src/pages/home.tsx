@@ -10,9 +10,9 @@ const HomePage: React.FC = () => {
     const [keyword, setKeyword] = useState<string | undefined>(undefined);
     const { data, isLoading } = useWorker({ pageNumber, pageSize: 10, keyword });
 
-    if (isLoading || data === undefined) {
-        return <div>Loading...</div>;
-    }
+    // if (isLoading || data === undefined) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <Container>
@@ -21,21 +21,22 @@ const HomePage: React.FC = () => {
                     setKeyword(e === '' ? undefined : e);
                     setPageNumber(1);
                 }}
+                disabled={isLoading}
             />
-            <ListGroup>
-                {data.data?.map((worker) => (
-                    <WorkerRow key={worker.id} worker={worker} />
-                ))}
-            </ListGroup>
-            <br />
-            <br />
-            <br />
-            <br />
-            <Pagination
-                pageNumber={data?.pagination?.page ?? 1}
-                totalPages={Math.ceil((data.pagination?.total ?? 1) / (data.pagination?.pageSize ?? 1))}
-                onPageChange={setPageNumber}
-            />
+            {data !== undefined && (
+                <>
+                    <ListGroup>
+                        {data.data?.map((worker) => (
+                            <WorkerRow key={worker.id} worker={worker} />
+                        ))}
+                    </ListGroup>
+                    <Pagination
+                        pageNumber={data?.pagination?.page ?? 1}
+                        totalPages={Math.ceil((data.pagination?.total ?? 1) / (data.pagination?.pageSize ?? 1))}
+                        onPageChange={setPageNumber}
+                    />
+                </>
+            )}
         </Container>
     );
 };

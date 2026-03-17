@@ -14,6 +14,7 @@ export const defaultConfig: Config = {
     UBIQUITI_ACCESS_END_WORK_DAY: '23:59:00',
 
     LOGIN_LOCAL_STRATEGY_ENABLED: true,
+    LOGIN_LOCAL_LABEL: 'Login with Local Account',
     LOGIN_MICROSOFT_STRATEGY_ENABLED: false,
     LOGIN_MICROSOFT_LABEL: 'Login with Microsoft',
 

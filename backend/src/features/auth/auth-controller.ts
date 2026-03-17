@@ -2,15 +2,16 @@ import express from 'express';
 import { ApiResponse } from '@shared/api-response';
 import { Request, Response } from 'express';
 import { ApiError } from 'src/types/api-error';
-import { ApiLoginConfigResponse } from '@shared/api-login-config';
+import { ApiAuthConfigResponse } from '@shared/api-auth';
 import { config } from 'src/services/config';
 import { ApiAuthUserResponse } from '@shared/api-auth';
 
 export const getConfig = async (req: express.Request, res: express.Response) => {
-    const response: ApiResponse<ApiLoginConfigResponse> = {
+    const response: ApiResponse<ApiAuthConfigResponse> = {
         status: 'SUCCESS',
         data: {
             local: {
+                label: await config.getValue('LOGIN_LOCAL_LABEL'),
                 enabled: await config.getValue('LOGIN_LOCAL_STRATEGY_ENABLED'),
             },
             microsoft: {

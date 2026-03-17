@@ -9,6 +9,7 @@ export interface Config {
     UBIQUITI_ACCESS_END_WORK_DAY: string;
 
     LOGIN_LOCAL_STRATEGY_ENABLED: boolean;
+    LOGIN_LOCAL_LABEL: string;
     LOGIN_MICROSOFT_STRATEGY_ENABLED: boolean;
     LOGIN_MICROSOFT_LABEL: string;
 

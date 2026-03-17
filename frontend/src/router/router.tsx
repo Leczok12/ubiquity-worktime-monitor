@@ -1,9 +1,8 @@
 import { createBrowserRouter } from 'react-router';
-import LoginPage from '../pages/login';
+import { LoginPage, LogoutPage } from '../pages/auth';
 import AuthLayout from '../layout/auth';
-import LogoutPage from '../pages/logout';
 import RootLayout from '@src/layout/root';
-import HomePage from '@src/pages/home';
+import { HomePage } from '@src/pages/home';
 
 const router = createBrowserRouter([
     {
@@ -18,10 +17,7 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <RootLayout />,
-        children: [
-            { path: '/', element: <HomePage /> },
-            { path: '/asdasd', element: <HomePage /> },
-        ],
+        children: [{ path: '/', element: <HomePage /> }],
     },
 
     //   {

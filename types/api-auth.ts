@@ -9,6 +9,7 @@ export interface ApiAuthUserResponse {
 
 export interface ApiAuthConfigResponse {
     local: {
+        label: string;
         enabled: boolean;
     };
     microsoft: {

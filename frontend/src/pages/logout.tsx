@@ -9,8 +9,8 @@ const LogoutPage: React.FC = () => {
     });
 
     return (
-        <Card className="mx-auto mt-5" style={{ maxWidth: '400px' }}>
-            <Card.Header>
+        <Card className="mx-auto mt-5" style={{ width: '400px' }}>
+            <Card.Header style={{ display: 'flex', justifyContent: 'center' }}>
                 <h1>Logout</h1>
             </Card.Header>
             <Card.Body>
@@ -20,7 +20,7 @@ const LogoutPage: React.FC = () => {
                     </div>
                 )}
 
-                <Button variant="primary" disabled={isError} className="mt-4" onClick={logout}>
+                <Button style={{ width: '100%' }} variant="primary" disabled={isError} onClick={logout}>
                     Logout
                 </Button>
             </Card.Body>

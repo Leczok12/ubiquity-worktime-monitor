@@ -1,4 +1,4 @@
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Spinner } from 'react-bootstrap';
 import LoginLocalForm from '@src/forms/login-local-form';
 import { useAuthConfig } from '@src/hooks/use-auth-config';
 import { useNavigate } from 'react-router';
@@ -8,11 +8,11 @@ const LoginPage: React.FC = () => {
     const navigator = useNavigate();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Spinner animation="border" />;
     }
 
     return (
-        <Card className="mx-auto mt-5" style={{ maxWidth: '400px' }}>
+        <Card className="mx-auto mt-5" style={{ width: '300px' }}>
             <Card.Header>
                 <h1>Login</h1>
             </Card.Header>

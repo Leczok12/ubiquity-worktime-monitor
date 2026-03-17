@@ -27,7 +27,13 @@ const HomePage: React.FC = () => {
                 <>
                     <ListGroup>
                         {data.data?.map((worker) => (
-                            <WorkerRow key={worker.id} worker={worker} />
+                            <WorkerRow
+                                key={worker.id}
+                                worker={worker}
+                                onClick={() => {
+                                    console.log(worker.id);
+                                }}
+                            />
                         ))}
                     </ListGroup>
                     <Pagination

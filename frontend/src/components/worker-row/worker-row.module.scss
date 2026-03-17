@@ -1,16 +1,32 @@
 .workerRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr 50px 50px;
+    display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 20px;
+    cursor: pointer;
 
-    > p {
-        font-size: 1.2rem;
-        margin: 0;
-        padding: 0;
+    > div {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
     }
+
     > button {
         height: 50px;
         width: 50px;
     }
+
+    p {
+        opacity: 0.6;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+    }
+}
+.workerRow:hover {
+    p {
+        opacity: 1;
+    }
+    // background-color: lighten($primary, 40%);
 }

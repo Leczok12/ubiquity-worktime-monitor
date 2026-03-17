@@ -12,7 +12,7 @@ import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 
 import { configRouter } from './features/config/config-router';
 import { groupRouter } from './features/group/group-router';
-import { workerRouter } from './features/worker/api/worker-router';
+import { workerRouter } from './features/worker/worker-router';
 import { deviceRouter } from './features/device/device-router';
 import { authRouter } from './features/auth/auth-router';
 import { ApiError } from './types/api-error';

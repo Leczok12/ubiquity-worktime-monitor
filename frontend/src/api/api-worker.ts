@@ -24,7 +24,7 @@ export const apiWorker = async ({
             keyword !== undefined
                 ? `/api/worker/find?keyword=${encodeURIComponent(keyword)}`
                 : groupId !== undefined
-                  ? `/api/worker/group/${groupId}/all`
+                  ? `/api/group/${groupId}/worker/all`
                   : `/api/worker/all`;
 
         const finalUrl = params.length > 0 ? (keyword !== undefined ? `${url}&${params}` : `${url}?${params}`) : url;

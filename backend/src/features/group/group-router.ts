@@ -1,6 +1,6 @@
 import express from 'express';
 import { ApiError } from 'src/types/api-error';
-import { getAllGroups } from './group-controller';
+import { getAllGroups, getAllWorkersInGroup } from './group-controller';
 import { Request, Response } from 'express';
 import { roleCheck } from 'src/utils/role-check';
 
@@ -12,5 +12,7 @@ router.use((req: Request, res: Response, next: Function) => {
 });
 
 router.get('/all', getAllGroups);
+
+router.get('/:id/worker/all', getAllWorkersInGroup);
 
 export { router as groupRouter };

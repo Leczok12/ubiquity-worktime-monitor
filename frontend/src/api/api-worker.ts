@@ -36,7 +36,7 @@ export const apiWorker = async ({
 
     const payload = (await response.json()) as ApiResponse<ApiWorkerResponse[]>;
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
-        throw new Error(payload.errorMessage ?? 'Failed to fetch worker data');
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker data');
     }
 
     return payload;

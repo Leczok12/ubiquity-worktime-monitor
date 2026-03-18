@@ -12,7 +12,7 @@ export const apiAuthUser = async (): Promise<ApiAuthUserResponse> => {
     }
 
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
-        throw new Error(payload.errorMessage ?? 'Failed to fetch user information');
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch user information');
     }
 
     return payload.data;

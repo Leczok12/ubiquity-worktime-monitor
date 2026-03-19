@@ -11,12 +11,12 @@ const WorkerRow: FC<{ worker: ApiWorkerResponse; onClick: () => void }> = ({ wor
                 <p>
                     {worker.name} {worker.lastname}
                 </p>
-                <p>{worker.email}</p>
+                {/* <p>{worker.email}</p> */}
             </div>
 
-            <Button variant="outline-primary" size="sm">
+            {/* <Button variant="outline-primary" size="sm">
                 <BsStarFill size={20} />
-            </Button>
+            </Button> */}
         </ListGroupItem>
     );
 };

@@ -6,7 +6,7 @@ import styles from './auth.module.scss';
 import { IconButton } from '@src/components/icon-button';
 import { BsBoxArrowLeft } from 'react-icons/bs';
 
-const LogoutPage: React.FC = () => {
+const LogoutPage = () => {
     const navigate = useNavigate();
     const { logout, isError, error } = useAuthLogout(() => {
         navigate('/auth/login', { replace: true });

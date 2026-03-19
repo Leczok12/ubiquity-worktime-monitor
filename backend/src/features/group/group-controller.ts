@@ -34,9 +34,14 @@ export const getAllWorkersInGroup = async (req: Request, res: Response) => {
                     skip: (pageNumber - 1) * pageSize,
                     take: pageSize,
                     where: {
-                        groups: {
-                            some: { id: groupId.toString() },
-                        },
+                        AND: [
+                            { sync: true },
+                            {
+                                groups: {
+                                    some: { id: groupId.toString() },
+                                },
+                            },
+                        ],
                     },
                     orderBy: { lastname: 'asc' },
                 })
@@ -52,9 +57,14 @@ export const getAllWorkersInGroup = async (req: Request, res: Response) => {
             page: pageNumber,
             total: await database.prisma.worker.count({
                 where: {
-                    groups: {
-                        some: { id: groupId.toString() },
-                    },
+                    AND: [
+                        { sync: true },
+                        {
+                            groups: {
+                                some: { id: groupId.toString() },
+                            },
+                        },
+                    ],
                 },
             }),
             pageSize: pageSize,

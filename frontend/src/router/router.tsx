@@ -3,6 +3,7 @@ import { LoginPage, LogoutPage } from '../pages/auth';
 import AuthLayout from '../layout/auth';
 import RootLayout from '@src/layout/root';
 import { HomePage } from '@src/pages/home';
+import { WorkerPage } from '@src/pages/worker';
 
 const router = createBrowserRouter([
     {
@@ -17,7 +18,10 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <RootLayout />,
-        children: [{ path: '/', element: <HomePage /> }],
+        children: [
+            { path: '/', element: <HomePage /> },
+            { path: '/worker/:workerId', element: <WorkerPage /> },
+        ],
     },
 
     //   {

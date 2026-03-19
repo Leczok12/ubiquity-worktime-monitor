@@ -8,7 +8,7 @@ import styles from './auth.module.scss';
 import { IconButton } from '@src/components/icon-button';
 import { BsMicrosoft } from 'react-icons/bs';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
     const navigator = useNavigate();
     const [searchParams] = useSearchParams();
     const redirect = searchParams.get('redirect');

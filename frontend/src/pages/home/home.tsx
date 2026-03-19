@@ -7,7 +7,7 @@ import { Container, ListGroup } from 'react-bootstrap';
 import { useGroup } from '@src/hooks/use-group';
 import { Loader } from '@src/components/loader';
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [keyword, setKeyword] = useState<string | undefined>(undefined);
     const [groupId, setGroupId] = useState<string | undefined>(undefined);

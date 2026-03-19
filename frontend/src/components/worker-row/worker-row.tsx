@@ -1,13 +1,19 @@
 import type { ApiWorkerResponse } from '@shared/api-worker';
 import type { FC } from 'react';
-import { Button, ListGroupItem } from 'react-bootstrap';
+import { ListGroupItem } from 'react-bootstrap';
 import styles from './worker-row.module.scss';
-import { BsStar, BsStarFill } from 'react-icons/bs';
+import { useNavigate } from 'react-router';
 
-const WorkerRow: FC<{ worker: ApiWorkerResponse; onClick: () => void }> = ({ worker, onClick }) => {
+const WorkerRow: FC<{ worker: ApiWorkerResponse }> = ({ worker }) => {
+    const navigateor = useNavigate();
+
     return (
-        <ListGroupItem className={styles.workerRow}>
-            <div onClick={onClick}>
+        <ListGroupItem action className={styles.workerRow}>
+            <div
+                onClick={() => {
+                    navigateor('/worker/' + worker.id);
+                }}
+            >
                 <p>
                     {worker.name} {worker.lastname}
                 </p>

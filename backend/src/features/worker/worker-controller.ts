@@ -22,6 +22,7 @@ export const getAllWorkers = async (req: Request, res: Response) => {
                     skip: (pageNumber - 1) * pageSize,
                     take: pageSize,
                     orderBy: { lastname: 'asc' },
+                    where: { sync: true },
                 })
             ).map((worker) => ({
                 id: worker.id,
@@ -59,11 +60,14 @@ export const findWorkers = async (req: Request, res: Response) => {
                     skip: (pageNumber - 1) * pageSize,
                     take: pageSize,
                     where: {
-                        OR: [
-                            { name: { contains: keyword, mode: 'insensitive' } },
-                            { lastname: { contains: keyword, mode: 'insensitive' } },
-                            { email: { contains: keyword, mode: 'insensitive' } },
-                        ],
+                        AND: {
+                            sync: true,
+                            OR: [
+                                { name: { contains: keyword, mode: 'insensitive' } },
+                                { lastname: { contains: keyword, mode: 'insensitive' } },
+                                { email: { contains: keyword, mode: 'insensitive' } },
+                            ],
+                        },
                     },
                     orderBy: { lastname: 'asc' },
                 })
@@ -79,11 +83,14 @@ export const findWorkers = async (req: Request, res: Response) => {
             page: pageNumber,
             total: await database.prisma.worker.count({
                 where: {
-                    OR: [
-                        { name: { contains: keyword, mode: 'insensitive' } },
-                        { lastname: { contains: keyword, mode: 'insensitive' } },
-                        { email: { contains: keyword, mode: 'insensitive' } },
-                    ],
+                    AND: {
+                        sync: true,
+                        OR: [
+                            { name: { contains: keyword, mode: 'insensitive' } },
+                            { lastname: { contains: keyword, mode: 'insensitive' } },
+                            { email: { contains: keyword, mode: 'insensitive' } },
+                        ],
+                    },
                 },
             }),
             pageSize: pageSize,

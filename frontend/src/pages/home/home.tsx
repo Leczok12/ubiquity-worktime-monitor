@@ -1,7 +1,7 @@
 import { Pagination } from '@src/components/pagination';
 import { WorkerSearchBar } from '@src/components/worker-search-bar';
 import { WorkerRow } from '@src/components/worker-row';
-import { useWorker } from '@src/hooks/use-worker';
+import { useWorkers } from '@src/hooks/use-workers';
 import { useState } from 'react';
 import { Container, ListGroup } from 'react-bootstrap';
 import { useGroup } from '@src/hooks/use-group';
@@ -15,11 +15,11 @@ const HomePage = () => {
 
     const { data: groupData, isLoading: isGroupLoading, error: groupError, isError: isGroupError } = useGroup();
     const {
-        data: workerData,
-        isLoading: isWorkerLoading,
-        error: workerError,
-        isError: isWorkerError,
-    } = useWorker({ pageNumber, pageSize: 15, keyword, groupId });
+        data: workersData,
+        isLoading: isWorkersLoading,
+        error: workersError,
+        isError: isWorkersError,
+    } = useWorkers({ pageNumber, pageSize: 15, keyword, groupId });
 
     return (
         <Container className={styles.home}>
@@ -31,21 +31,21 @@ const HomePage = () => {
                     setPageNumber(1);
                 }}
                 groups={groupData?.map((group) => ({ id: group.id, name: group.name })) ?? []}
-                disabled={isWorkerLoading}
+                disabled={isWorkersLoading}
             />
 
             {!isGroupLoading &&
-                (workerData !== undefined ? (
+                (workersData !== undefined ? (
                     <>
                         <ListGroup>
-                            {workerData.data?.map((worker) => (
+                            {workersData.data?.map((worker) => (
                                 <WorkerRow key={worker.id} worker={worker} />
                             ))}
                         </ListGroup>
                         <Pagination
-                            pageNumber={workerData.pagination?.page ?? 1}
+                            pageNumber={workersData.pagination?.page ?? 1}
                             totalPages={Math.ceil(
-                                (workerData.pagination?.total ?? 1) / (workerData.pagination?.pageSize ?? 1)
+                                (workersData.pagination?.total ?? 1) / (workersData.pagination?.pageSize ?? 1)
                             )}
                             onPageChange={setPageNumber}
                         />

@@ -7,6 +7,11 @@ export interface ApiAuthUserResponse {
     roles: string[];
 }
 
+export interface ApiAuthLoginLocalRequest {
+    username: string;
+    password: string;
+}
+
 export interface ApiAuthConfigResponse {
     local: {
         label: string;

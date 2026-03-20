@@ -1,3 +1,4 @@
+import type { ApiAuthLoginLocalRequest } from '@shared/api-auth';
 import { apiAuthLocalLogin } from '@src/api/api-auth-local-login';
 import { useState } from 'react';
 
@@ -6,12 +7,12 @@ export const useAuthLogin = (onSuccess: () => void) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | undefined>(undefined);
 
-    const loginLocal = async (username: string, password: string) => {
+    const loginLocal = async (credentials: ApiAuthLoginLocalRequest) => {
         setIsError(false);
         setError(undefined);
         setIsLoading(true);
 
-        await apiAuthLocalLogin({ username: username, password: password })
+        await apiAuthLocalLogin(credentials)
             .then(() => {
                 onSuccess();
             })

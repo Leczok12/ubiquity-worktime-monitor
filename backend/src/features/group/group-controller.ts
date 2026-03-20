@@ -4,11 +4,17 @@ import { ApiResponse } from '@shared/api-response';
 import { database } from 'src/config/database';
 import { ApiWorkerResponse } from '@shared/api-worker';
 import { ApiError } from 'src/types/api-error';
+import { pagination } from 'src/utils/pagination';
 
 export const getAllGroups = async (req: Request, res: Response) => {
     const response: ApiResponse<ApiGroupResponse[]> = {
         status: 'SUCCESS',
-        data: (await database.prisma.group.findMany({})) ?? [],
+        data:
+            (await database.prisma.group.findMany()).map((group) => ({
+                id: group.id,
+                name: group.name,
+                sync: true, // TOOD: add sync to group model
+            })) ?? [],
     };
 
     res.status(200).json(response);
@@ -16,15 +22,12 @@ export const getAllGroups = async (req: Request, res: Response) => {
 
 export const getAllWorkersInGroup = async (req: Request, res: Response) => {
     const groupId = req.params.id;
-    const pageNumber = parseInt(req.query.pageNumber as string) || 1;
-    const pageSize = parseInt(req.query.pageSize as string) || 9999;
 
-    if (!groupId || pageNumber < 1 || pageSize < 1) {
-        throw new ApiError(400, 'INVALID_ARGS');
-    }
     if (!(await database.prisma.group.findUnique({ where: { id: groupId.toString() } }))) {
         throw new ApiError(404, 'NOT_FOUND');
     }
+
+    const { pageNumber, pageSize } = pagination(req);
 
     const response: ApiResponse<ApiWorkerResponse[]> = {
         status: 'SUCCESS',

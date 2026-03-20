@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Container, ListGroup } from 'react-bootstrap';
 import { useGroup } from '@src/hooks/use-group';
 import { Loader } from '@src/components/loader';
+import styles from './home.module.scss';
 
 const HomePage = () => {
     const [pageNumber, setPageNumber] = useState(1);
@@ -21,7 +22,7 @@ const HomePage = () => {
     } = useWorker({ pageNumber, pageSize: 15, keyword, groupId });
 
     return (
-        <Container style={{ maxWidth: '800px' }}>
+        <Container className={styles.home}>
             {isGroupLoading ? <Loader /> : null}
             <WorkerSearchBar
                 onSearch={(keyword, groupId) => {
@@ -38,13 +39,7 @@ const HomePage = () => {
                     <>
                         <ListGroup>
                             {workerData.data?.map((worker) => (
-                                <WorkerRow
-                                    key={worker.id}
-                                    worker={worker}
-                                    onClick={() => {
-                                        console.log(worker.id);
-                                    }}
-                                />
+                                <WorkerRow key={worker.id} worker={worker} />
                             ))}
                         </ListGroup>
                         <Pagination

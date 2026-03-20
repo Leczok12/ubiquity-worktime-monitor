@@ -42,7 +42,10 @@ const SearchWorkerForm: FC<{
             <Form.Select
                 disabled={disabled}
                 {...register('groupId', {
-                    onChange: () => setValue('keyword', ''),
+                    onChange: () => {
+                        setValue('keyword', '');
+                        handleSubmit(handleFormSubmit)();
+                    },
                 })}
                 isInvalid={!!errors.groupId}
             >

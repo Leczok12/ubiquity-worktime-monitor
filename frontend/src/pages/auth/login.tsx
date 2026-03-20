@@ -52,7 +52,7 @@ const LoginPage = () => {
                 {configData.local.enabled && (
                     <LoginLocalForm
                         onSubmit={(data) => {
-                            loginLocal(data.username, data.password);
+                            loginLocal({ username: data.username, password: data.password });
                         }}
                         label={configData.local.label}
                         disabled={isLoginLoading}

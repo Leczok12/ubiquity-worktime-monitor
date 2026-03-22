@@ -30,7 +30,7 @@ export const getAllWorkers = async (req: Request, res: Response) => {
             })) ?? [],
         pagination: {
             page: pageNumber,
-            total: await database.prisma.worker.count(),
+            total: await database.prisma.worker.count({ where: { sync: true } }),
             pageSize: pageSize,
         },
     };

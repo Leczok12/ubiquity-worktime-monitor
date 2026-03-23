@@ -5,7 +5,7 @@ export const useAuthUser = () => {
     return useQuery({
         queryKey: ['auth', 'user'],
         queryFn: apiAuthUser,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
         retry: false,
     });
 };

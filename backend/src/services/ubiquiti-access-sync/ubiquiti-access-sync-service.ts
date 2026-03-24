@@ -68,7 +68,11 @@ class UbiquitiAccessSyncService {
             await this._sync(axiosInstance);
             logger.success('Finished sync with Ubiquiti Access API');
         } catch (error) {
-            logger.error(`Ubiquiti Access sync failed: ${error instanceof Error ? error.message : error}`);
+            try {
+                await this._fullSync(axiosInstance);
+            } catch (fullSyncError) {
+                logger.error(`Ubiquiti Access sync failed: ${error instanceof Error ? error.message : error}`);
+            }
         }
     }
 

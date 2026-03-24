@@ -5,14 +5,14 @@ import { useParams } from 'react-router';
 import styles from './worker.module.scss';
 import { WorkerHero } from '@src/components/worker-hero';
 import { useWorkEvents } from '@src/hooks/use-work-events';
-import { WorkEvent } from '@src/components/work-event';
+import { WorkDay } from '@src/components/work-day';
 
 const WorkerPage = () => {
     const { workerId } = useParams<{ workerId: string }>();
     const { data, isLoading, error, isError } = useWorker({ workerId: workerId ?? '' });
     const { data: workEventsData } = useWorkEvents(
         workerId ?? '',
-        new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 50),
+        new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 30),
         new Date()
     );
 
@@ -24,8 +24,8 @@ const WorkerPage = () => {
         <Container className={styles.worker}>
             <WorkerHero worker={data.data} />
             <ListGroup>
-                {workEventsData?.events.map((event, index) => (
-                    <WorkEvent key={index} event={event} />
+                {workEventsData?.days.map((day, index) => (
+                    <WorkDay key={index} day={day} />
                 ))}
             </ListGroup>
         </Container>

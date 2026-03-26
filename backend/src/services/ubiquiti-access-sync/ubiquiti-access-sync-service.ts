@@ -12,6 +12,7 @@ import nodeCron, { ScheduledTask } from 'node-cron';
 import { config } from '../config';
 import { CronJob } from 'src/utils/cron-job';
 import { hostCheck } from 'src/utils/host-check';
+import { jobQueue } from '../job-queue';
 
 class UbiquitiAccessSyncService {
     private fullSyncCronJob: CronJob | null = null;
@@ -23,13 +24,17 @@ class UbiquitiAccessSyncService {
         this.fullSyncCronJob = new CronJob(
             'Ubiquiti Access Full Sync',
             await config.getValue('UBIQUITI_ACCESS_FULL_SYNC_CRON'),
-            this.fullSync.bind(this)
+            async () => {
+                jobQueue.push(this.fullSync.bind(this));
+            }
         );
 
         this.syncCronJob = new CronJob(
             'Ubiquiti Access Sync',
             await config.getValue('UBIQUITI_ACCESS_SYNC_CRON'),
-            this.sync.bind(this)
+            async () => {
+                jobQueue.push(this.sync.bind(this));
+            }
         );
 
         if ((await hostCheck(await config.getValue('UBIQUITI_ACCESS_API_URL'))) === false) {
@@ -40,14 +45,7 @@ class UbiquitiAccessSyncService {
         }
 
         if ((await config.getValue('UBIQUITY_ACCESS_SYNC_ON_STARTUP')) === false) return;
-
-        try {
-            await this.fullSync();
-        } catch (error) {
-            // logger.error(
-            //     `Initial full sync with Ubiquiti Access API failed: ${error instanceof Error ? error.message : error}`
-            // );
-        }
+        jobQueue.push(this.fullSync.bind(this));
     }
 
     public async fullSync(): Promise<void> {

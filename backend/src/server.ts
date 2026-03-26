@@ -21,19 +21,6 @@ import { jobQueue } from './services/job-queue';
 
 const startServer = async () => {
     try {
-        jobQueue.push(async () => {
-            console.log('Running initial job... 1');
-        });
-        jobQueue.push(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            console.log('Running initial job... 2');
-        });
-        jobQueue.push(async () => {
-            console.log('Running initial job... 3');
-        });
-
-        await new Promise((resolve) => setTimeout(resolve, 2000000));
-        process.exit(0);
         await config.initialize();
         await ubiquitiAccessSync.initialize();
 

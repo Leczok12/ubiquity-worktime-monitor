@@ -1,28 +1,38 @@
+import { Job, JobOptions } from './job-queue-types';
+
 class JobQueueService {
-    private queue: (() => Promise<void>)[] = [];
-    private intervalId: NodeJS.Timeout | null = null;
+    private queue: Job[] = [];
     private isProcessing = false;
 
-    constructor() {
-        this.intervalId = setInterval(() => {
-            if (this.isProcessing) return;
-            this.isProcessing = true;
-            this.process().finally(() => {
-                this.isProcessing = false;
-            });
-        }, 1000 * 10);
+    public push(job: () => Promise<void>, options?: JobOptions): void {
+        this.queue.push({ job, ...options });
+        this.processAllJobs();
     }
 
-    public async push(job: () => Promise<void>): Promise<void> {
-        this.queue.push(job);
+    public async processAllJobs(): Promise<void> {
+        if (this.isProcessing) return;
+        this.isProcessing = true;
+        try {
+            await this._processAllJobs();
+        } finally {
+            this.isProcessing = false;
+        }
     }
 
-    public async process(): Promise<void> {
+    private async _processAllJobs(): Promise<void> {
         while (this.queue.length > 0) {
-            const job = this.queue.shift();
+            await this._processJob();
+        }
+    }
 
-            if (!job) return;
-            await job();
+    private async _processJob(): Promise<void> {
+        const job = this.queue.shift();
+        if (!job) return;
+        try {
+            await job.job();
+            job.onSuccess?.();
+        } catch (error) {
+            job.onError?.(error as Error);
         }
     }
 }

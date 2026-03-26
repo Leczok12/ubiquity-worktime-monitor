@@ -6,6 +6,6 @@ import { getWorkerWorkEvents } from './work-events-controller';
 
 const router = express.Router();
 
-router.get('/:id', getWorkerWorkEvents);
+router.get('/worker/:id', getWorkerWorkEvents);
 
 export { router as workEventsRouter };

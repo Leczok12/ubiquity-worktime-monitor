@@ -5,9 +5,9 @@ import { useParams } from 'react-router';
 import styles from './worker.module.scss';
 import { WorkerHero } from '@src/components/worker-hero';
 import { useWorkEvents } from '@src/hooks/use-work-events';
-import { WorkDay } from '@src/components/work-day';
 import { WorkDaySearchBar } from '@src/components/work-day-search-bar';
 import { useState } from 'react';
+import { WorkDay } from '@src/organisms/work-day';
 
 const WorkerPage = () => {
     const { workerId } = useParams<{ workerId: string }>();
@@ -18,7 +18,11 @@ const WorkerPage = () => {
     });
 
     const { data, isLoading, error, isError } = useWorker({ workerId: workerId ?? '' });
-    const { data: workEventsData } = useWorkEvents(workerId ?? '', searchRange.since, searchRange.until);
+    const { data: workEventsData, isLoading: isWorkEventsLoading } = useWorkEvents(
+        workerId ?? '',
+        searchRange.since,
+        searchRange.until
+    );
 
     if (isLoading || data?.data === undefined) {
         return <Loader />;
@@ -28,11 +32,16 @@ const WorkerPage = () => {
         <Container className={styles.worker}>
             <WorkerHero worker={data.data} />
             <WorkDaySearchBar onSearch={setSearchRange} />
-            <ListGroup>
-                {workEventsData?.days.map((day, index) => (
-                    <WorkDay key={index} day={day} />
-                ))}
-            </ListGroup>
+
+            {isWorkEventsLoading ? (
+                <Loader compact />
+            ) : (
+                <ListGroup>
+                    {workEventsData?.days.map((day, index) => (
+                        <WorkDay key={index} day={day} />
+                    ))}
+                </ListGroup>
+            )}
         </Container>
     );
 };

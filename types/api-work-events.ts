@@ -8,13 +8,11 @@ export interface ApiWorkEvent {
 }
 
 export interface ApiWorkDay {
-    seconds: number;
     dayStart: Date;
     dayEnd: Date;
     events: ApiWorkEvent[];
 }
 
 export interface ApiWorkEventsResponse {
-    seconds: number;
     days: ApiWorkDay[];
 }

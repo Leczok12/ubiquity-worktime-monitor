@@ -1,0 +1,21 @@
+.workEventListHeader,
+.workEventListItem {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    > p {
+        margin: 0;
+        padding: 0;
+    }
+    > div {
+        display: flex;
+        gap: 10px;
+        > button {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}

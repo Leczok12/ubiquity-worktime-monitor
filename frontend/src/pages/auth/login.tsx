@@ -27,7 +27,6 @@ const LoginPage = () => {
     } = useAuthLogin(() => {
         navigator(redirect || '/');
     });
-    console.log('Login successful, navigating to:', redirect);
 
     if (isConfigError) {
         return <Alert variant="danger">{configError?.message}</Alert>;

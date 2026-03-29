@@ -1,3 +1,35 @@
+.workDaySearchBar {
+    > form {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 50px;
+        height: 50px;
+        gap: 10px;
+
+        > button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        > div[role='alert'] {
+            display: none;
+            grid-column: 1 / span 3;
+        }
+    }
+    @media screen and (max-width: 750px) {
+        > form {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 50px 50px;
+            gap: 10px;
+            height: 110px;
+        }
+
+        > form > button {
+            grid-column: 1 / span 2;
+        }
+    }
+}
 // .searchForm {
 //     margin: 10px 0;
 //     position: relative;

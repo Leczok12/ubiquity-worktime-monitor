@@ -13,7 +13,7 @@ const WorkerPage = () => {
     const { workerId } = useParams<{ workerId: string }>();
 
     const [searchRange, setSearchRange] = useState<{ since: Date; until: Date }>({
-        since: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        since: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
         until: new Date(),
     });
 

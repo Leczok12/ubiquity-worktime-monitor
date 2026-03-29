@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { BsSearch } from 'react-icons/bs';
 
@@ -56,6 +56,7 @@ const SearchWorkDayForm: FC<{
             <Button disabled={disabled} type="submit">
                 <BsSearch />
             </Button>
+            <Alert variant="danger">asdasd</Alert>
         </Form>
     );
 };

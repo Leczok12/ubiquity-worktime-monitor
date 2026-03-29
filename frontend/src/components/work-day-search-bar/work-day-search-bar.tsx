@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-// import styles from './work-day-search-bar.module.scss';
+import styles from './work-day-search-bar.module.scss';
 import SearchWorkDayForm from '@src/forms/search-work-day-from';
 
 const WorkDaySearchBar: FC<{
@@ -8,7 +8,7 @@ const WorkDaySearchBar: FC<{
     disabled?: boolean;
 }> = ({ onSearch, defaultRange, disabled = false }) => {
     return (
-        <div>
+        <div className={styles.workDaySearchBar}>
             <SearchWorkDayForm
                 disabled={disabled}
                 onSubmit={onSearch}

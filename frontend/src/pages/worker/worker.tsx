@@ -13,7 +13,7 @@ const WorkerPage = () => {
     const { workerId } = useParams<{ workerId: string }>();
 
     const [searchRange, setSearchRange] = useState<{ since: Date; until: Date }>({
-        since: new Date(),
+        since: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
         until: new Date(),
     });
 
@@ -31,7 +31,7 @@ const WorkerPage = () => {
     return (
         <Container className={styles.worker}>
             <WorkerHero worker={data.data} />
-            <WorkDaySearchBar onSearch={setSearchRange} />
+            <WorkDaySearchBar onSearch={setSearchRange} defaultRange={searchRange} />
 
             {isWorkEventsLoading ? (
                 <Loader compact />

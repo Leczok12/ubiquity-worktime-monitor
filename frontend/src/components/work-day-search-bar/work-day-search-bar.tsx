@@ -4,11 +4,17 @@ import SearchWorkDayForm from '@src/forms/search-work-day-from';
 
 const WorkDaySearchBar: FC<{
     onSearch: ({ since, until }: { since: Date; until: Date }) => void;
+    defaultRange: { since: Date; until: Date };
     disabled?: boolean;
-}> = ({ onSearch, disabled = false }) => {
+}> = ({ onSearch, defaultRange, disabled = false }) => {
     return (
         <div>
-            <SearchWorkDayForm disabled={disabled} onSubmit={onSearch} />
+            <SearchWorkDayForm
+                disabled={disabled}
+                onSubmit={onSearch}
+                defaultSince={defaultRange.since}
+                defaultUntil={defaultRange.until}
+            />
         </div>
     );
 };

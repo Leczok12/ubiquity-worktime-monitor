@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { Button, ListGroup, type ListGroupProps } from 'react-bootstrap';
 import styles from './work-event-list.module.scss';
 import type { WorkEventListEvent } from './work-event-list-types';
-import { BsCopy, BsPenFill, BsTrash, BsTrash2Fill } from 'react-icons/bs';
+import { BsCopy, BsPenFill, BsTrash } from 'react-icons/bs';
 
 const WorkEventListItem: FC<
     { event: WorkEventListEvent; onDelete: () => void; onEdit: () => void } & ListGroupProps

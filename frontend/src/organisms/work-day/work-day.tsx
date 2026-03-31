@@ -1,4 +1,4 @@
-import type { ApiWorkDay } from '@shared/api-work-events';
+import type { ApiWorkDay, ApiWorkEvent } from '@shared/api-work-events';
 import { useEffect, useMemo, useState, type FC } from 'react';
 import { Button, ListGroup } from 'react-bootstrap';
 import styles from './work-day.module.scss';
@@ -7,7 +7,7 @@ import { Timeline } from '@src/components/timeline';
 import { WorkEventList, WorkEventListItem } from '@src/components/work-event-list';
 import { BsPlus } from 'react-icons/bs';
 
-const WorkDay: FC<{ day: ApiWorkDay }> = ({ day }) => {
+const WorkDay: FC<{ day: ApiWorkDay; onEdit: (apiWorkEvent?: ApiWorkEvent) => void }> = ({ day, onEdit }) => {
     const [events, setEvents] = useState(day.events);
     const [hoveredEventId, setHoveredEventId] = useState<string | undefined>(undefined);
     const totalTime = useMemo(() => calculateWorkTime(events), [events]);
@@ -50,23 +50,13 @@ const WorkDay: FC<{ day: ApiWorkDay }> = ({ day }) => {
                                     timeEnd: new Date(event.timeEnd),
                                     placeEnd: event.placeEnd ?? '---',
                                 }}
-                                onDelete={() => {
-                                    setEvents(events.filter((e) => e.id != event.id));
-                                }}
-                                onEdit={() => {
-                                    console.log('edit', event.id);
-                                }}
+                                onClick={() => onEdit(event)}
                                 onMouseEnter={() => setHoveredEventId(event.id)}
                                 onMouseLeave={() => setHoveredEventId(undefined)}
                             />
                         ))}
                     </WorkEventList>
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            console.log('add event');
-                        }}
-                    >
+                    <Button variant="outline" onClick={() => onEdit()}>
                         <BsPlus size={30} />
                     </Button>
                 </div>

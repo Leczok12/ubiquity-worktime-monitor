@@ -5,7 +5,8 @@ export const useWorkEvents = (workerId: string, since: Date, until: Date) => {
     return useQuery({
         queryKey: ['work-events', workerId, since.getTime(), until.getTime()],
         queryFn: () => apiWorkEvents(workerId, since, until),
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
+        refetchInterval: 1000 * 60 * 5,
         retry: false,
     });
 };

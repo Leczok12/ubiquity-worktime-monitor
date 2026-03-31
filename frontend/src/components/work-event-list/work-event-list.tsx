@@ -13,7 +13,6 @@ const WorkEventList: FC<PropsWithChildren> = ({ children }) => {
                 <p>Time</p>
                 <p>Start Place</p>
                 <p>End Place</p>
-                <p>Actions</p>
             </ListGroup.Item>
             {children}
         </ListGroup>

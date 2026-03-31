@@ -1,8 +1,8 @@
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { SplashScreen } from '../splash-screen';
-import { Button, Card, CloseButton, Form, Spinner } from 'react-bootstrap';
+import { Alert, Button, Card, CloseButton, Form, Spinner } from 'react-bootstrap';
 import type { ApiWorkEvent } from '@shared/api-work-events';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import styles from './work-event-editor.module.scss';
 import { BsCheck2, BsCopy, BsPen, BsTrash } from 'react-icons/bs';
 import { apiDeleteWorkEvent } from '@src/api/api-work-events';
@@ -23,18 +23,43 @@ const WorkEventEditor: FC<{
     onSuccess: () => Promise<void>;
     data?: ApiWorkEvent;
 }> = ({ show, onHide, onSuccess, data }) => {
-    const [deleting, setDeleting] = useState(false);
+    const [deleting, setDeleting] = useState(true);
     const [updating, setUpdating] = useState(false);
+    const [error, setError] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (show) {
+            setDeleting(false);
+            setUpdating(false);
+            setError(undefined);
+        }
+    }, [show]);
 
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<Inputs>();
 
+    useEffect(() => {
+        if (!show) {
+            return;
+        }
+
+        reset({
+            type: data?.type ?? 'WORK',
+            dateStart: data ? new Date(data.timeStart).toISOString().split('T')[0] : '',
+            hourStart: data ? new Date(data.timeStart).getHours() : 0,
+            minuteStart: data ? new Date(data.timeStart).getMinutes() : 0,
+            dateEnd: data ? new Date(data.timeEnd).toISOString().split('T')[0] : '',
+            hourEnd: data ? new Date(data.timeEnd).getHours() : 0,
+            minuteEnd: data ? new Date(data.timeEnd).getMinutes() : 0,
+        });
+    }, [data, show, reset]);
+
     const onSubmit = async (data: Inputs) => {
         setUpdating(true);
-        console.log(data);
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setUpdating(false);
     };
@@ -46,7 +71,11 @@ const WorkEventEditor: FC<{
             await onSuccess();
             onHide();
         } catch (error) {
-            console.error('Failed to delete work event:', error);
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
         } finally {
             setDeleting(false);
         }
@@ -67,7 +96,7 @@ const WorkEventEditor: FC<{
         return null;
     }
 
-    const disabled = deleting || updating;
+    const disabled = deleting || updating || !!error;
 
     return (
         <SplashScreen onClick={onHide}>
@@ -78,6 +107,7 @@ const WorkEventEditor: FC<{
                 </Card.Header>
 
                 <Card.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <h6>Type</h6>
                         <Form.Control

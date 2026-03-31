@@ -1,7 +1,8 @@
 .workEventListHeader,
 .workEventListItem {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    cursor: pointer;
+    grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
     > p {

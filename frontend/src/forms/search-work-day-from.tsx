@@ -32,8 +32,6 @@ const SearchWorkDayForm: FC<{
         });
     };
 
-    console.log('defaultSince', defaultSince.toLocaleDateString());
-
     return (
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
             <Form.Control

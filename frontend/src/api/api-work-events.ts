@@ -17,3 +17,19 @@ export const apiWorkEvents = async (userId: string, since: Date, until: Date): P
 
     return payload.data;
 };
+
+export const apiDeleteWorkEvent = async (id: string) => {
+    const response = await fetch(`/api/work-events/${id}`, {
+        method: 'DELETE',
+    });
+
+    const payload = (await response.json()) as ApiResponse<ApiWorkEventsResponse>;
+
+    if (payload.status !== 'SUCCESS') {
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch work events');
+    }
+
+    return payload.data;
+};
+
+export const apiCreateWorkEvent = async () => {};

@@ -42,8 +42,8 @@ export const getWorkerWorkEvents = async (req: Request, res: Response) => {
                     nextDay.setDate(nextDay.getDate() + 1);
 
                     days.push({
-                        dayEnd: new Date(nextDay),
-                        dayStart: new Date(currentDay),
+                        dayEnd: new Date(nextDay).toISOString(),
+                        dayStart: new Date(currentDay).toISOString(),
                         events: [],
                     });
 
@@ -62,7 +62,12 @@ export const getWorkerWorkEvents = async (req: Request, res: Response) => {
     for (const day of response.data.days) {
         const workEvents = await database.prisma.workEvent.findMany({
             where: {
-                AND: [{ workerId: workerId }, { timeStart: { gte: day.dayStart } }, { timeEnd: { lte: day.dayEnd } }],
+                AND: [
+                    { workerId: workerId },
+                    { timeStart: { gte: day.dayStart } },
+                    { timeEnd: { lte: day.dayEnd } },
+                    { isDeleted: { equals: false } },
+                ],
             },
             orderBy: { timeStart: 'desc' },
         });
@@ -70,16 +75,35 @@ export const getWorkerWorkEvents = async (req: Request, res: Response) => {
         workEvents.forEach((event) => {
             day.events.push({
                 id: event.id,
-                timeStart: event.timeStart,
+                timeStart: event.timeStart.toISOString(),
                 placeStart: event.placeStart ?? '',
-                timeEnd: event.timeEnd,
+                timeEnd: event.timeEnd.toISOString(),
                 placeEnd: event.placeEnd ?? '',
                 type: event.type,
             });
         });
 
-        day.events.sort((a, b) => a.timeStart.getTime() - b.timeStart.getTime());
+        day.events.sort((a, b) => new Date(a.timeStart).getTime() - new Date(b.timeStart).getTime());
     }
+
+    res.status(200).json(response);
+};
+
+export const deleteWorkEvent = async (req: Request, res: Response) => {
+    const workEventId = req.params.id as string;
+
+    const xd = await database.prisma.workEvent.updateMany({
+        where: { id: workEventId, isDeleted: false },
+        data: { isDeleted: true },
+    });
+
+    if (xd.count === 0) {
+        throw new ApiError(404, 'NOT_FOUND', 'Work event not exists');
+    }
+
+    const response: ApiResponse<null> = {
+        status: 'SUCCESS',
+    };
 
     res.status(200).json(response);
 };

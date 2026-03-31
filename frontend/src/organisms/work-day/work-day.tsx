@@ -1,5 +1,5 @@
 import type { ApiWorkDay } from '@shared/api-work-events';
-import { useMemo, useState, type FC } from 'react';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import { Button, ListGroup } from 'react-bootstrap';
 import styles from './work-day.module.scss';
 import { calculateWorkTime } from '@src/utils/calculate-work-time';
@@ -11,6 +11,10 @@ const WorkDay: FC<{ day: ApiWorkDay }> = ({ day }) => {
     const [events, setEvents] = useState(day.events);
     const [hoveredEventId, setHoveredEventId] = useState<string | undefined>(undefined);
     const totalTime = useMemo(() => calculateWorkTime(events), [events]);
+
+    useEffect(() => {
+        setEvents(day.events);
+    }, [day.events]);
 
     return (
         <ListGroup.Item className={styles.workDay}>
@@ -42,9 +46,9 @@ const WorkDay: FC<{ day: ApiWorkDay }> = ({ day }) => {
                                 event={{
                                     id: event.id,
                                     timeStart: new Date(event.timeStart),
-                                    placeStart: event.placeStart,
+                                    placeStart: event.placeStart ?? '---',
                                     timeEnd: new Date(event.timeEnd),
-                                    placeEnd: event.placeEnd,
+                                    placeEnd: event.placeEnd ?? '---',
                                 }}
                                 onDelete={() => {
                                     setEvents(events.filter((e) => e.id != event.id));

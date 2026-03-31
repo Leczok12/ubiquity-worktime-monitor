@@ -92,6 +92,7 @@ model WorkEvent {
   timeEnd     DateTime
   placeStart  String? 
   placeEnd    String?
+  isDeleted   Boolean         @default(false)
 
   lastModifiedByUser User? @relation(fields: [lastModifiedByUserId], references: [id])
   worker    Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)

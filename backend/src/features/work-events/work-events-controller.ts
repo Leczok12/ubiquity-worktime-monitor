@@ -6,7 +6,7 @@ import { ApiWorkerResponse } from '@shared/api-worker';
 import { roleCheck } from 'src/utils/role-check';
 import { pagination } from 'src/utils/pagination';
 import { dateRange } from 'src/utils/date-range';
-import { ApiWorkDay, ApiWorkEventsResponse } from '@shared/api-work-events';
+import { ApiWorkDay, ApiWorkEventRequest, ApiWorkEventsResponse } from '@shared/api-work-events';
 import { config } from 'src/services/config';
 
 export const getWorkerWorkEvents = async (req: Request, res: Response) => {
@@ -91,6 +91,34 @@ export const getWorkerWorkEvents = async (req: Request, res: Response) => {
 
 export const deleteWorkEvent = async (req: Request, res: Response) => {
     const workEventId = req.params.id as string;
+
+    const xd = await database.prisma.workEvent.updateMany({
+        where: { id: workEventId, isDeleted: false },
+        data: { isDeleted: true },
+    });
+
+    if (xd.count === 0) {
+        throw new ApiError(404, 'NOT_FOUND', 'Work event not exists');
+    }
+
+    const response: ApiResponse<null> = {
+        status: 'SUCCESS',
+    };
+
+    res.status(200).json(response);
+};
+
+export const postWorkEvent = async (req: Request, res: Response) => {
+    const data = req.body as ApiWorkEventRequest;
+
+    if (
+        data.workerId === undefined ||
+        data.timeStart === undefined ||
+        data.timeEnd === undefined ||
+        data.type === undefined
+    ) {
+        throw new ApiError(400, 'INVALID_ARGS');
+    }
 
     const xd = await database.prisma.workEvent.updateMany({
         where: { id: workEventId, isDeleted: false },

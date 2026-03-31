@@ -1,11 +1,11 @@
-export interface ApiWorkEvent {
+export type ApiWorkEvent = {
     id: string;
     timeStart: string;
     placeStart?: string;
     timeEnd: string;
     placeEnd?: string;
     type: 'WORK' | 'BREAK';
-}
+};
 
 export interface ApiWorkDay {
     dayStart: string;
@@ -16,3 +16,5 @@ export interface ApiWorkDay {
 export interface ApiWorkEventsResponse {
     days: ApiWorkDay[];
 }
+
+export type ApiWorkEventRequest = { workerId?: string } & ApiWorkEvent;

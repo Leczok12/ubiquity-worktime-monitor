@@ -1,15 +1,15 @@
 export interface ApiWorkEvent {
     id: string;
-    timeStart: Date;
-    placeStart: string;
-    timeEnd: Date;
-    placeEnd: string;
+    timeStart: string;
+    placeStart?: string;
+    timeEnd: string;
+    placeEnd?: string;
     type: 'WORK' | 'BREAK';
 }
 
 export interface ApiWorkDay {
-    dayStart: Date;
-    dayEnd: Date;
+    dayStart: string;
+    dayEnd: string;
     events: ApiWorkEvent[];
 }
 

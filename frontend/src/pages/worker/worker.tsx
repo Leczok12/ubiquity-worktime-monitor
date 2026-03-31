@@ -1,6 +1,6 @@
 import { Loader } from '@src/components/loader';
 import { useWorker } from '@src/hooks/use-worker';
-import { Container, ListGroup } from 'react-bootstrap';
+import { Container, ListGroup, Toast, ToastContainer } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import styles from './worker.module.scss';
 import { WorkerHero } from '@src/components/worker-hero';
@@ -31,7 +31,7 @@ const WorkerPage = () => {
     return (
         <Container className={styles.worker}>
             <WorkerHero worker={data.data} />
-            <WorkDaySearchBar onSearch={setSearchRange} defaultRange={searchRange} />
+            <WorkDaySearchBar disabled={isWorkEventsLoading} onSearch={setSearchRange} defaultRange={searchRange} />
 
             {isWorkEventsLoading ? (
                 <Loader compact />

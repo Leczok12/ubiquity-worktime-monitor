@@ -51,4 +51,21 @@ export const apiUpdateWorkEvent = async (data: ApiWorkEventRequest) => {
     return payload.data;
 };
 
-export const apiCreateWorkEvent = async () => {};
+export const apiCreateWorkEvent = async (data: ApiWorkEventRequest) => {
+    const { timeStart, timeEnd, type } = data;
+    const response = await fetch(`/api/work-events`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ timeStart, timeEnd, type, workerId: data.workerId }),
+    });
+
+    const payload = (await response.json()) as ApiResponse<ApiWorkEventsResponse>;
+
+    if (payload.status !== 'SUCCESS') {
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch work events');
+    }
+
+    return payload.data;
+};

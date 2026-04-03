@@ -38,6 +38,7 @@ const WorkerPage = () => {
             <WorkEventEditor
                 show={showEventEditor}
                 data={dataEventEditor}
+                workerId={workerData.data.id}
                 onSuccess={async () => {
                     await refetchWorkEvents();
                 }}

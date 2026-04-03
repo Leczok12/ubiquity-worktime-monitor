@@ -130,13 +130,13 @@ export const updateWorkEvent = async (req: Request, res: Response) => {
     }
 
     const [h, m, s] = (await config.getValue('UBIQUITI_ACCESS_END_WORK_DAY')).split(':').map(Number);
-    const oldDayEnd = new Date(new Date(oldWorkEvent.timeStart).setHours(h, m, s, 0));
-    const oldDayBegin = new Date(new Date(oldDayEnd).setDate(oldDayEnd.getDate() - 1));
+    const oldDayEnd = new Date(new Date(oldWorkEvent.timeEnd).setHours(h, m, s, 0));
+    const oldDayStart = new Date(new Date(new Date(oldDayEnd).setDate(oldDayEnd.getDate() - 1)).getTime() + 1000);
 
     if (
-        new Date(data.timeStart).getTime() < oldDayBegin.getTime() ||
+        new Date(data.timeStart).getTime() < oldDayStart.getTime() ||
         new Date(data.timeStart).getTime() > oldDayEnd.getTime() ||
-        new Date(data.timeEnd).getTime() < oldDayBegin.getTime() ||
+        new Date(data.timeEnd).getTime() < oldDayStart.getTime() ||
         new Date(data.timeEnd).getTime() > oldDayEnd.getTime() ||
         new Date(data.timeStart).getTime() >= new Date(data.timeEnd).getTime()
     ) {
@@ -149,6 +149,8 @@ export const updateWorkEvent = async (req: Request, res: Response) => {
             timeStart: new Date(data.timeStart),
             timeEnd: new Date(data.timeEnd),
             type: data.type,
+            lastModified: new Date(),
+            lastModifiedByUserId: req.user?.id ?? null,
         },
     });
 
@@ -171,14 +173,31 @@ export const createWorkEvent = async (req: Request, res: Response) => {
         throw new ApiError(400, 'INVALID_ARGS');
     }
 
-    const xd = await database.prisma.workEvent.updateMany({
-        where: { id: workEventId, isDeleted: false },
-        data: { isDeleted: true },
+    if (
+        new Date(data.timeStart).getTime() >= new Date(data.timeEnd).getTime() ||
+        new Date(data.timeEnd).getTime() - new Date(data.timeStart).getTime() >= 1000 * 60 * 60 * 24
+    ) {
+        throw new ApiError(400, 'INVALID_ARGS', 'Invalid time range');
+    }
+
+    const worker = await database.prisma.worker.findUnique({
+        where: { id: data.workerId },
     });
 
-    if (xd.count === 0) {
-        throw new ApiError(404, 'NOT_FOUND', 'Work event not exists');
+    if (!worker) {
+        throw new ApiError(404, 'NOT_FOUND', 'Worker not found');
     }
+
+    await database.prisma.workEvent.create({
+        data: {
+            workerId: data.workerId,
+            timeStart: new Date(data.timeStart),
+            timeEnd: new Date(data.timeEnd),
+            type: data.type,
+            lastModified: new Date(),
+            lastModifiedByUserId: req.user?.id ?? null,
+        },
+    });
 
     const response: ApiResponse<null> = {
         status: 'SUCCESS',

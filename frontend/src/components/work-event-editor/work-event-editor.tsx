@@ -5,7 +5,7 @@ import type { ApiWorkEvent } from '@shared/api-work-events';
 import { useForm } from 'react-hook-form';
 import styles from './work-event-editor.module.scss';
 import { BsCheck2, BsCopy, BsPen, BsTrash } from 'react-icons/bs';
-import { apiDeleteWorkEvent, apiUpdateWorkEvent } from '@src/api/api-work-events';
+import { apiCreateWorkEvent, apiDeleteWorkEvent, apiUpdateWorkEvent } from '@src/api/api-work-events';
 
 type Inputs = {
     type: ApiWorkEvent['type'];
@@ -22,17 +22,19 @@ const WorkEventEditor: FC<{
     onHide: () => void;
     onSuccess: () => Promise<void>;
     data?: ApiWorkEvent;
-}> = ({ show, onHide, onSuccess, data }) => {
+    workerId?: string;
+}> = ({ show, onHide, onSuccess, data, workerId }) => {
     const [deleting, setDeleting] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        if (show) {
+        return () => {
+            console.log('Cleaning up WorkEventEditor state');
             setDeleting(false);
             setUpdating(false);
             setError(undefined);
-        }
+        };
     }, [show]);
 
     const {
@@ -61,16 +63,31 @@ const WorkEventEditor: FC<{
     const onSubmit = async (formData: Inputs) => {
         setUpdating(true);
         try {
+            const startTime = new Date(
+                `${formData.dateStart}T${formData.hourStart.toString().padStart(2, '0')}:${formData.minuteStart
+                    .toString()
+                    .padStart(2, '0')}:00`
+            );
+            const endTime = new Date(
+                `${formData.dateEnd}T${formData.hourEnd.toString().padStart(2, '0')}:${formData.minuteEnd
+                    .toString()
+                    .padStart(2, '0')}:00`
+            );
+
             if (data) {
                 await apiUpdateWorkEvent({
                     id: data.id,
-                    timeStart: new Date(
-                        `${formData.dateStart}T${formData.hourStart.toString().padStart(2, '0')}:${formData.minuteStart.toString().padStart(2, '0')}:00`
-                    ).toISOString(),
-                    timeEnd: new Date(
-                        `${formData.dateEnd}T${formData.hourEnd.toString().padStart(2, '0')}:${formData.minuteEnd.toString().padStart(2, '0')}:00`
-                    ).toISOString(),
+                    timeStart: startTime.toISOString(),
+                    timeEnd: endTime.toISOString(),
                     type: formData.type,
+                });
+            } else {
+                await apiCreateWorkEvent({
+                    id: '',
+                    timeStart: startTime.toISOString(),
+                    timeEnd: endTime.toISOString(),
+                    type: formData.type,
+                    workerId: workerId ?? '',
                 });
             }
 

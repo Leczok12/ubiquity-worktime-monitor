@@ -2,10 +2,10 @@ import { useEffect, useState, type FC } from 'react';
 import { SplashScreen } from '../splash-screen';
 import { Alert, Button, Card, CloseButton, Form, Spinner } from 'react-bootstrap';
 import type { ApiWorkEvent } from '@shared/api-work-events';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import styles from './work-event-editor.module.scss';
 import { BsCheck2, BsCopy, BsPen, BsTrash } from 'react-icons/bs';
-import { apiDeleteWorkEvent } from '@src/api/api-work-events';
+import { apiDeleteWorkEvent, apiUpdateWorkEvent } from '@src/api/api-work-events';
 
 type Inputs = {
     type: ApiWorkEvent['type'];
@@ -58,10 +58,33 @@ const WorkEventEditor: FC<{
         });
     }, [data, show, reset]);
 
-    const onSubmit = async (data: Inputs) => {
+    const onSubmit = async (formData: Inputs) => {
         setUpdating(true);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setUpdating(false);
+        try {
+            if (data) {
+                await apiUpdateWorkEvent({
+                    id: data.id,
+                    timeStart: new Date(
+                        `${formData.dateStart}T${formData.hourStart.toString().padStart(2, '0')}:${formData.minuteStart.toString().padStart(2, '0')}:00`
+                    ).toISOString(),
+                    timeEnd: new Date(
+                        `${formData.dateEnd}T${formData.hourEnd.toString().padStart(2, '0')}:${formData.minuteEnd.toString().padStart(2, '0')}:00`
+                    ).toISOString(),
+                    type: formData.type,
+                });
+            }
+
+            await onSuccess();
+            onHide();
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        } finally {
+            setUpdating(false);
+        }
     };
 
     const onDelete = async () => {

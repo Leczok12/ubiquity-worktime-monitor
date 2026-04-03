@@ -1,5 +1,5 @@
 import { type ApiResponse } from '@shared/api-response';
-import type { ApiWorkEventsResponse } from '@shared/api-work-events';
+import type { ApiWorkEventRequest, ApiWorkEventsResponse } from '@shared/api-work-events';
 
 export const apiWorkEvents = async (userId: string, since: Date, until: Date): Promise<ApiWorkEventsResponse> => {
     const response = await fetch(
@@ -21,6 +21,25 @@ export const apiWorkEvents = async (userId: string, since: Date, until: Date): P
 export const apiDeleteWorkEvent = async (id: string) => {
     const response = await fetch(`/api/work-events/${id}`, {
         method: 'DELETE',
+    });
+
+    const payload = (await response.json()) as ApiResponse<ApiWorkEventsResponse>;
+
+    if (payload.status !== 'SUCCESS') {
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch work events');
+    }
+
+    return payload.data;
+};
+
+export const apiUpdateWorkEvent = async (data: ApiWorkEventRequest) => {
+    const { id, timeStart, timeEnd, type } = data;
+    const response = await fetch(`/api/work-events/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ timeStart, timeEnd, type }),
     });
 
     const payload = (await response.json()) as ApiResponse<ApiWorkEventsResponse>;

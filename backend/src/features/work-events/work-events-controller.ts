@@ -108,7 +108,58 @@ export const deleteWorkEvent = async (req: Request, res: Response) => {
     res.status(200).json(response);
 };
 
-export const postWorkEvent = async (req: Request, res: Response) => {
+export const updateWorkEvent = async (req: Request, res: Response) => {
+    const data = req.body as ApiWorkEventRequest;
+    data.id = req.params.id as string;
+
+    if (
+        data.id === undefined ||
+        data.timeStart === undefined ||
+        data.timeEnd === undefined ||
+        data.type === undefined
+    ) {
+        throw new ApiError(400, 'INVALID_ARGS', 'Missing required fields');
+    }
+
+    const oldWorkEvent = await database.prisma.workEvent.findUnique({
+        where: { id: data.id },
+    });
+
+    if (!oldWorkEvent || oldWorkEvent.isDeleted) {
+        throw new ApiError(404, 'NOT_FOUND');
+    }
+
+    const [h, m, s] = (await config.getValue('UBIQUITI_ACCESS_END_WORK_DAY')).split(':').map(Number);
+    const oldDayEnd = new Date(new Date(oldWorkEvent.timeStart).setHours(h, m, s, 0));
+    const oldDayBegin = new Date(new Date(oldDayEnd).setDate(oldDayEnd.getDate() - 1));
+
+    if (
+        new Date(data.timeStart).getTime() < oldDayBegin.getTime() ||
+        new Date(data.timeStart).getTime() > oldDayEnd.getTime() ||
+        new Date(data.timeEnd).getTime() < oldDayBegin.getTime() ||
+        new Date(data.timeEnd).getTime() > oldDayEnd.getTime() ||
+        new Date(data.timeStart).getTime() >= new Date(data.timeEnd).getTime()
+    ) {
+        throw new ApiError(400, 'INVALID_ARGS', 'Invalid time range');
+    }
+
+    await database.prisma.workEvent.update({
+        where: { id: data.id },
+        data: {
+            timeStart: new Date(data.timeStart),
+            timeEnd: new Date(data.timeEnd),
+            type: data.type,
+        },
+    });
+
+    const response: ApiResponse<null> = {
+        status: 'SUCCESS',
+    };
+
+    res.status(200).json(response);
+};
+
+export const createWorkEvent = async (req: Request, res: Response) => {
     const data = req.body as ApiWorkEventRequest;
 
     if (

@@ -2,23 +2,38 @@ import { Request, Response } from 'express';
 import { ApiResponse } from '@shared/api-response';
 import { database } from 'src/config/database';
 import { ApiError } from 'src/types/api-error';
-import { ApiWorkerResponse } from '@shared/api-worker';
+import { ApiGetWorkerResponse } from '@shared/api-worker';
 import { roleCheck } from 'src/utils/role-check';
 import { pagination } from 'src/utils/pagination';
+import { group } from 'node:console';
+import { Prisma } from '@prisma/client';
 
 export const getAllWorkers = async (req: Request, res: Response) => {
-    roleCheck(req, 'VIEWER');
+    const groupId = req.params.groupId as string | undefined;
     const { pageNumber, pageSize } = pagination(req);
 
-    const response: ApiResponse<ApiWorkerResponse[]> = {
+    const workerWhere: Prisma.WorkerWhereInput = !groupId
+        ? { sync: true }
+        : {
+              AND: [
+                  { sync: true },
+                  {
+                      groups: {
+                          some: { id: groupId },
+                      },
+                  },
+              ],
+          };
+
+    const response: ApiResponse<ApiGetWorkerResponse[]> = {
         status: 'SUCCESS',
         data:
             (
                 await database.prisma.worker.findMany({
                     skip: (pageNumber - 1) * pageSize,
                     take: pageSize,
-                    orderBy: { lastname: 'asc' },
-                    where: { sync: true },
+                    orderBy: [{ lastname: 'asc' }, { name: 'asc' }],
+                    where: workerWhere,
                 })
             ).map((worker) => ({
                 id: worker.id,
@@ -26,11 +41,10 @@ export const getAllWorkers = async (req: Request, res: Response) => {
                 lastname: worker.lastname,
                 email: worker.email,
                 active: worker.active,
-                sync: worker.sync,
             })) ?? [],
         pagination: {
             page: pageNumber,
-            total: await database.prisma.worker.count({ where: { sync: true } }),
+            total: await database.prisma.worker.count({ where: workerWhere }),
             pageSize: pageSize,
         },
     };
@@ -38,29 +52,33 @@ export const getAllWorkers = async (req: Request, res: Response) => {
     res.status(200).json(response);
 };
 
-export const findWorkers = async (req: Request, res: Response) => {
-    roleCheck(req, 'VIEWER');
+export const getFindWorkers = async (req: Request, res: Response) => {
     const keyword = req.query.keyword as string | undefined;
+
+    if (!keyword) throw new ApiError(400, 'INVALID_ARGS');
+
     const { pageNumber, pageSize } = pagination(req);
 
-    const response: ApiResponse<ApiWorkerResponse[]> = {
+    const workerWhere: Prisma.WorkerWhereInput = {
+        AND: {
+            sync: true,
+            OR: [
+                { name: { contains: keyword, mode: 'insensitive' } },
+                { lastname: { contains: keyword, mode: 'insensitive' } },
+                { email: { contains: keyword, mode: 'insensitive' } },
+            ],
+        },
+    };
+
+    const response: ApiResponse<ApiGetWorkerResponse[]> = {
         status: 'SUCCESS',
         data:
             (
                 await database.prisma.worker.findMany({
                     skip: (pageNumber - 1) * pageSize,
                     take: pageSize,
-                    where: {
-                        AND: {
-                            sync: true,
-                            OR: [
-                                { name: { contains: keyword, mode: 'insensitive' } },
-                                { lastname: { contains: keyword, mode: 'insensitive' } },
-                                { email: { contains: keyword, mode: 'insensitive' } },
-                            ],
-                        },
-                    },
-                    orderBy: { lastname: 'asc' },
+                    where: workerWhere,
+                    orderBy: [{ lastname: 'asc' }, { name: 'asc' }],
                 })
             ).map((worker) => ({
                 id: worker.id,
@@ -68,21 +86,11 @@ export const findWorkers = async (req: Request, res: Response) => {
                 lastname: worker.lastname,
                 email: worker.email,
                 active: worker.active,
-                sync: worker.sync,
             })) ?? [],
         pagination: {
             page: pageNumber,
             total: await database.prisma.worker.count({
-                where: {
-                    AND: {
-                        sync: true,
-                        OR: [
-                            { name: { contains: keyword, mode: 'insensitive' } },
-                            { lastname: { contains: keyword, mode: 'insensitive' } },
-                            { email: { contains: keyword, mode: 'insensitive' } },
-                        ],
-                    },
-                },
+                where: workerWhere,
             }),
             pageSize: pageSize,
         },
@@ -91,19 +99,25 @@ export const findWorkers = async (req: Request, res: Response) => {
     res.status(200).json(response);
 };
 
-export const getWorkerById = async (req: Request, res: Response) => {
-    roleCheck(req, 'WORKER');
-    const workerId = req.params.id;
+export const getWorker = async (req: Request, res: Response) => {
+    const rawWorkerId = req.params.workerId as string;
+    const workerId = rawWorkerId === undefined ? req.user?.id : rawWorkerId;
 
-    const worker = await database.prisma.worker.findUnique({ where: { id: workerId.toString() } });
+    const worker = await database.prisma.worker.findUnique({
+        where: { id: workerId, sync: true },
+    });
 
-    if (!worker) {
-        throw new ApiError(404, 'NOT_FOUND');
-    }
+    if (!worker) throw new ApiError(404, 'NOT_FOUND');
 
-    const response: ApiResponse<ApiWorkerResponse> = {
+    const response: ApiResponse<ApiGetWorkerResponse> = {
         status: 'SUCCESS',
-        data: worker,
+        data: {
+            id: worker.id,
+            name: worker.name,
+            lastname: worker.lastname,
+            email: worker.email,
+            active: worker.active,
+        },
     };
 
     res.status(200).json(response);

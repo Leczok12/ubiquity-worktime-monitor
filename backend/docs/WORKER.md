@@ -1,35 +1,171 @@
 # /api/worker
 
-## /all
+## GET /all
 
-Returns list of all workers.
+### Permissions
 
-### Params
+VIEWER
 
-|    Name    | Required |      Type       |
-| :--------: | :------: | :-------------: |
-| pageNumber |    F     | Integer above 0 |
-|  pageSize  |    F     | Integer above 0 |
+### Description
 
-## /find
+Get all workers
 
-Returns list of workers matching keyword.
+### URL Params
 
-### Params
+|    Name    | Required |  Type  |
+| :--------: | :------: | :----: |
+|  pageSize  |    F     | number |
+| pageNumber |    F     | number |
 
-|    Name    | Required |      Type       |
-| :--------: | :------: | :-------------: |
-|  keyword   |    T     |     String      |
-| pageNumber |    F     | Integer above 0 |
-|  pageSize  |    F     | Integer above 0 |
+### Response type
 
-## /group/[groupId]/all
+```ts
+{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+        lastname: string;
+        email: string | undefined;
+        active: boolean;
+    }
+    [] | undefined;
+    pagination: {
+        page: number;
+        total: number;
+        pageSize: number;
+    } | undefined
+}
+```
 
-Returns list of all workers in group
+## GET /group/:groupId/all
 
-### Params
+### Permissions
 
-|    Name    | Required |      Type       |
-| :--------: | :------: | :-------------: |
-| pageNumber |    F     | Integer above 0 |
-|  pageSize  |    F     | Integer above 0 |
+VIEWER
+
+### Description
+
+Get all workers in group
+
+### URL Params
+
+|    Name    | Required |  Type  |
+| :--------: | :------: | :----: |
+|  pageSize  |    F     | number |
+| pageNumber |    F     | number |
+
+### Response type
+
+```ts
+{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+        lastname: string;
+        email: string | undefined;
+        active: boolean;
+    }
+    [] | undefined;
+    pagination: {
+        page: number;
+        total: number;
+        pageSize: number;
+    } | undefined
+}
+```
+
+## GET /find
+
+### Permissions
+
+VIEWER
+
+### Description
+
+Find workes based on `keyword`
+
+### URL Params
+
+|    Name    | Required |  Type  |
+| :--------: | :------: | :----: |
+|  keyword   |    T     | string |
+|  pageSize  |    F     | number |
+| pageNumber |    F     | number |
+
+### Response type
+
+```ts
+{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+        lastname: string;
+        email: string | undefined;
+        active: boolean;
+    }
+    [] | undefined;
+    pagination: {
+        page: number;
+        total: number;
+        pageSize: number;
+    } | undefined
+}
+```
+
+## GET /me
+
+### Permissions
+
+WORKER
+
+### Description
+
+based on logged user id get worker details
+
+### Response type
+
+```ts
+{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+        lastname: string;
+        email: string | undefined;
+        active: boolean;
+    } | undefined;
+}
+```
+
+## GET /:workerId
+
+### Permissions
+
+VIEWER
+
+### Description
+
+based on `workerId` get worker details
+
+### Response type
+
+```ts
+{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+        lastname: string;
+        email: string | undefined;
+        active: boolean;
+    } | undefined;
+}
+```

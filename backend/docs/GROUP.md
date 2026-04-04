@@ -1,40 +1,25 @@
 # /api/group
 
-## [GET] /api/group/all
+## GET /all
+
+### Permissions
+
+VIEWER
 
 ### Description
 
-Returns list of all groups.
+Get all groups where `sync` is true
 
-### Params
+### Response type
 
-| Name | Required | Type |
-| :--: | :------: | :--: |
-
-### Data type
-
-```js
+```ts
 {
-    id: string;
-    name: string;
-}
-[];
-```
-
-## GET /api/group/[groupId]/all
-
-Returns list of all workers in group
-
-### Params
-
-|    Name    | Required |      Type       |
-| :--------: | :------: | :-------------: |
-| pageNumber |    F     | Integer above 0 |
-|  pageSize  |    F     | Integer above 0 |
-
-### Return type
-
-```js
-{
+    status: string;
+    errorMessage: string | undefined;
+    data: {
+        id: string;
+        name: string;
+    }
+    [] | undefined;
 }
 ```

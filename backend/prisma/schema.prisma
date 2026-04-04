@@ -51,9 +51,10 @@ model Worker {
 }
 
 model Group {
-  id      String   @id
-  name    String
-  
+  id        String  @id
+  name      String
+  sync      Boolean @default(true)
+
   workers Worker[] @relation("WorkerGroups")
 }
 

@@ -1,14 +1,22 @@
 ## [METHOD] /ednpoint
 
+### Permissions
+
 ### Description
 
-### Params
+### URL Params
 
 | Name | Required | Type |
 | :--: | :------: | :--: |
 
-### Data type
+### Request type
 
-```js
+```ts
+
+```
+
+### Response type
+
+```ts
 
 ```

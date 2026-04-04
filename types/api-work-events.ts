@@ -1,20 +1,40 @@
-export type ApiWorkEvent = {
+/* API Work Events Types */
+export type ApiWorkEventType = 'WORK' | 'BREAK';
+
+/* API Get Worker Work Events Response */
+export interface ApiGetWorkerWorkEventsResponse {
+    seconds: number;
+    days: ApiWorkDay[];
+}
+export interface ApiWorkDay {
+    seconds: number;
+    dayStart: string;
+    dayEnd: string;
+    events: ApiWorkEvent[];
+}
+export interface ApiWorkEvent {
     id: string;
     timeStart: string;
     placeStart?: string;
     timeEnd: string;
     placeEnd?: string;
-    type: 'WORK' | 'BREAK';
-};
-
-export interface ApiWorkDay {
-    dayStart: string;
-    dayEnd: string;
-    events: ApiWorkEvent[];
+    type: ApiWorkEventType;
 }
 
-export interface ApiWorkEventsResponse {
-    days: ApiWorkDay[];
+/* API create Work Event Request */
+export interface ApiCreateWorkEventRequest {
+    timeStart: string;
+    placeStart?: string;
+    timeEnd: string;
+    placeEnd?: string;
+    type: ApiWorkEventType;
 }
 
-export type ApiWorkEventRequest = { workerId?: string } & ApiWorkEvent;
+/* API Update Work Event Request */
+export interface ApiUpdateWorkEventRequest {
+    timeStart: string;
+    placeStart?: string;
+    timeEnd: string;
+    placeEnd?: string;
+    type: ApiWorkEventType;
+}

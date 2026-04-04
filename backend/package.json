@@ -27,7 +27,8 @@
         "passport": "^0.7.0",
         "passport-local": "^1.0.0",
         "prisma": "^7.4.0",
-        "save-dev": "^0.0.1-security"
+        "save-dev": "^0.0.1-security",
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@types/bcrypt": "^6.0.0",

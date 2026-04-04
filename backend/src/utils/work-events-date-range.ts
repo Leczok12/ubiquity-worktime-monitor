@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { ApiError } from 'src/types/api-error';
 
-export const dateRange = (req: Request) => {
+export const workEventsDateRange = (req: Request) => {
     const rawSince = parseInt((req.query.since as string | undefined) ?? '-1');
     const rawUntil = parseInt((req.query.until as string | undefined) ?? '-1');
 

@@ -1,6 +1,6 @@
 # /api/work-events
 
-## GET /me
+## GET /worker/me
 
 ### Permissions
 
@@ -41,7 +41,7 @@ based on logged user id get work events with worked secods from `since` to `unti
 }
 ```
 
-## GET /:workerId
+## GET /worker/:workerId
 
 ### Permissions
 

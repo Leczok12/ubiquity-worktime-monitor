@@ -3,8 +3,7 @@ import { WorkerSearchBar } from '@src/components/worker-search-bar';
 import { WorkerRow } from '@src/components/worker-row';
 import { useWorkers } from '@src/hooks/use-workers';
 import { useState } from 'react';
-import { Container, ListGroup } from 'react-bootstrap';
-import { useGroup } from '@src/hooks/use-group';
+import { Alert, Container, ListGroup } from 'react-bootstrap';
 import { Loader } from '@src/components/loader';
 import styles from './home.module.scss';
 
@@ -13,46 +12,42 @@ const HomePage = () => {
     const [keyword, setKeyword] = useState<string | undefined>(undefined);
     const [groupId, setGroupId] = useState<string | undefined>(undefined);
 
-    const { data: groupData, isLoading: isGroupLoading, error: groupError, isError: isGroupError } = useGroup();
-    const {
-        data: workersData,
-        isLoading: isWorkersLoading,
-        error: workersError,
-        isError: isWorkersError,
-    } = useWorkers({ pageNumber, pageSize: 15, keyword, groupId });
+    const { data, isLoading, error, isError } = useWorkers({ pageNumber, pageSize: 15, keyword, groupId });
 
     return (
         <Container className={styles.home}>
-            {isGroupLoading ? <Loader /> : null}
             <WorkerSearchBar
                 onSearch={(keyword, groupId) => {
                     setKeyword(keyword);
                     setGroupId(groupId);
                     setPageNumber(1);
                 }}
-                groups={groupData?.map((group) => ({ id: group.id, name: group.name })) ?? []}
-                disabled={isWorkersLoading}
+                disabled={isLoading}
             />
 
-            {!isGroupLoading &&
-                (workersData !== undefined ? (
-                    <>
-                        <ListGroup>
-                            {workersData.data?.map((worker) => (
-                                <WorkerRow key={worker.id} worker={worker} />
-                            ))}
-                        </ListGroup>
-                        <Pagination
-                            pageNumber={workersData.pagination?.page ?? 1}
-                            totalPages={Math.ceil(
-                                (workersData.pagination?.total ?? 1) / (workersData.pagination?.pageSize ?? 1)
-                            )}
-                            onPageChange={setPageNumber}
-                        />
-                    </>
-                ) : (
-                    <Loader compact />
-                ))}
+            {(() => {
+                if (isError) {
+                    return <Alert variant="danger">{error?.message}</Alert>;
+                }
+                if (isLoading || data === undefined || data.data === undefined) {
+                    return <Loader compact />;
+                }
+                if (data.data.length === 0) {
+                    return <Alert variant="primary">No workers found</Alert>;
+                }
+                return (
+                    <ListGroup>
+                        {data.data.map((worker) => (
+                            <WorkerRow key={worker.id} worker={worker} />
+                        ))}
+                    </ListGroup>
+                );
+            })()}
+            <Pagination
+                pageNumber={data?.pagination?.page ?? 1}
+                totalPages={Math.ceil((data?.pagination?.total ?? 1) / (data?.pagination?.pageSize ?? 1))}
+                onPageChange={setPageNumber}
+            />
         </Container>
     );
 };

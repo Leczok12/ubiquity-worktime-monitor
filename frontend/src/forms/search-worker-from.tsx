@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { BsSearch } from 'react-icons/bs';
 
@@ -10,7 +10,7 @@ type Inputs = {
 
 const SearchWorkerForm: FC<{
     onSubmit: SubmitHandler<Inputs>;
-    groups: { id: string; name: string }[];
+    groups?: { id: string; name: string }[];
     disabled?: boolean;
 }> = ({ onSubmit, groups, disabled = false }) => {
     const {
@@ -39,23 +39,29 @@ const SearchWorkerForm: FC<{
                     onChange: () => setValue('groupId', ''),
                 })}
             />
-            <Form.Select
-                disabled={disabled}
-                {...register('groupId', {
-                    onChange: () => {
-                        setValue('keyword', '');
-                        handleSubmit(handleFormSubmit)();
-                    },
-                })}
-                isInvalid={!!errors.groupId}
-            >
-                <option value="">None</option>
-                {groups.map((group) => (
-                    <option key={group.id} value={group.id}>
-                        {group.name}
-                    </option>
-                ))}
-            </Form.Select>
+            {groups ? (
+                <Form.Select
+                    disabled={disabled}
+                    {...register('groupId', {
+                        onChange: () => {
+                            setValue('keyword', '');
+                            handleSubmit(handleFormSubmit)();
+                        },
+                    })}
+                    isInvalid={!!errors.groupId}
+                >
+                    <option value="">None</option>
+                    {groups.map((group) => (
+                        <option key={group.id} value={group.id}>
+                            {group.name}
+                        </option>
+                    ))}
+                </Form.Select>
+            ) : (
+                <div>
+                    <Spinner size="sm" />
+                </div>
+            )}
             <Button disabled={disabled} type="submit">
                 <BsSearch />
             </Button>

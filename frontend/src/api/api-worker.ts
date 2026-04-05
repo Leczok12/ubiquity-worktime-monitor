@@ -1,5 +1,5 @@
 import { type ApiResponse } from '@shared/api-response';
-import type { ApiWorkerResponse } from '@shared/api-worker';
+import type { ApiGetWorkerResponse } from '@shared/api-worker';
 
 export const apiWorkerAll = async ({
     pageSize,
@@ -7,7 +7,7 @@ export const apiWorkerAll = async ({
 }: {
     pageSize?: number;
     pageNumber?: number;
-}): Promise<ApiResponse<ApiWorkerResponse[]>> => {
+}): Promise<ApiResponse<ApiGetWorkerResponse[]>> => {
     const response = await (async () => {
         const params =
             pageNumber !== undefined && pageSize !== undefined
@@ -21,7 +21,7 @@ export const apiWorkerAll = async ({
         });
     })();
 
-    const payload = (await response.json()) as ApiResponse<ApiWorkerResponse[]>;
+    const payload = (await response.json()) as ApiResponse<ApiGetWorkerResponse[]>;
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
         throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker data');
     }
@@ -37,7 +37,7 @@ export const apiWorkerGroup = async ({
     pageSize?: number;
     pageNumber?: number;
     groupId: string;
-}): Promise<ApiResponse<ApiWorkerResponse[]>> => {
+}): Promise<ApiResponse<ApiGetWorkerResponse[]>> => {
     const response = await (async () => {
         const params =
             pageNumber !== undefined && pageSize !== undefined
@@ -46,12 +46,12 @@ export const apiWorkerGroup = async ({
                   ? `?pageSize=${pageSize}`
                   : '';
 
-        return await fetch(`/api/group/${groupId}/worker/all` + params, {
+        return await fetch(`/api/worker/group/${groupId}/all` + params, {
             method: 'GET',
         });
     })();
 
-    const payload = (await response.json()) as ApiResponse<ApiWorkerResponse[]>;
+    const payload = (await response.json()) as ApiResponse<ApiGetWorkerResponse[]>;
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
         throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker data');
     }
@@ -67,7 +67,7 @@ export const apiWorkerKeyword = async ({
     pageSize?: number;
     pageNumber?: number;
     keyword: string;
-}): Promise<ApiResponse<ApiWorkerResponse[]>> => {
+}): Promise<ApiResponse<ApiGetWorkerResponse[]>> => {
     const response = await (async () => {
         const params =
             pageNumber !== undefined && pageSize !== undefined
@@ -81,7 +81,7 @@ export const apiWorkerKeyword = async ({
         });
     })();
 
-    const payload = (await response.json()) as ApiResponse<ApiWorkerResponse[]>;
+    const payload = (await response.json()) as ApiResponse<ApiGetWorkerResponse[]>;
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
         throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker data');
     }
@@ -89,12 +89,12 @@ export const apiWorkerKeyword = async ({
     return payload;
 };
 
-export const apiWorker = async ({ workerId }: { workerId: string }): Promise<ApiResponse<ApiWorkerResponse>> => {
+export const apiWorker = async ({ workerId }: { workerId: string }): Promise<ApiResponse<ApiGetWorkerResponse>> => {
     const response = await fetch(`/api/worker/${workerId}`, {
         method: 'GET',
     });
 
-    const payload = (await response.json()) as ApiResponse<ApiWorkerResponse>;
+    const payload = (await response.json()) as ApiResponse<ApiGetWorkerResponse>;
     if (payload.status !== 'SUCCESS' || payload.data === undefined) {
         throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker data');
     }

@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { ApiError } from 'src/types/api-error';
 
-const permissionCheck = (role: string) => {
+const permissionCheck = (role?: string) => {
     return async (req: Request, res: Response, next: NextFunction) => {
+        if (!role && !!req.user) {
+            next();
+            return;
+        }
+
         if (!req.user) {
             throw new ApiError(401, 'UNAUTHORIZED');
         }

@@ -1,12 +1,12 @@
 import { type ApiResponse } from '@shared/api-response';
-import type { ApiGroupResponse } from '@shared/api-group';
+import type { ApiGetGroupResponse } from '@shared/api-group';
 
-export const apiGroup = async (): Promise<ApiGroupResponse[]> => {
+export const apiGroup = async (): Promise<ApiGetGroupResponse[]> => {
     const response = await fetch('/api/group/all', {
         method: 'GET',
     });
 
-    const payload = (await response.json()) as ApiResponse<ApiGroupResponse[]>;
+    const payload = (await response.json()) as ApiResponse<ApiGetGroupResponse[]>;
     if (payload.status === 'UNAUTHORIZED') {
         throw new Error('UNAUTHORIZED');
     }

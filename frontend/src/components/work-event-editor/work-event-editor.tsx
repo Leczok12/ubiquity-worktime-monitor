@@ -49,14 +49,17 @@ const WorkEventEditor: FC<{
             return;
         }
 
+        const timeStart = data ? new Date(data.timeStart) : new Date();
+        const timeEnd = data ? new Date(data.timeEnd) : new Date();
+
         reset({
             type: data?.type ?? 'WORK',
-            dateStart: data ? new Date(data.timeStart).toISOString().split('T')[0] : '',
-            hourStart: data ? new Date(data.timeStart).getHours() : 0,
-            minuteStart: data ? new Date(data.timeStart).getMinutes() : 0,
-            dateEnd: data ? new Date(data.timeEnd).toISOString().split('T')[0] : '',
-            hourEnd: data ? new Date(data.timeEnd).getHours() : 0,
-            minuteEnd: data ? new Date(data.timeEnd).getMinutes() : 0,
+            dateStart: `${timeStart.getFullYear()}-${(timeStart.getMonth() + 1).toString().padStart(2, '0')}-${timeStart.getDate().toString().padStart(2, '0')}`,
+            hourStart: timeStart.getHours(),
+            minuteStart: timeStart.getMinutes(),
+            dateEnd: `${timeEnd.getFullYear()}-${(timeEnd.getMonth() + 1).toString().padStart(2, '0')}-${timeEnd.getDate().toString().padStart(2, '0')}`,
+            hourEnd: timeEnd.getHours(),
+            minuteEnd: timeEnd.getMinutes(),
         });
     }, [data, show, reset]);
 
@@ -75,19 +78,16 @@ const WorkEventEditor: FC<{
             );
 
             if (data) {
-                await apiUpdateWorkEvent({
-                    id: data.id,
+                await apiUpdateWorkEvent(data.id, {
                     timeStart: startTime.toISOString(),
                     timeEnd: endTime.toISOString(),
                     type: formData.type,
                 });
             } else {
-                await apiCreateWorkEvent({
-                    id: '',
+                await apiCreateWorkEvent(workerId ?? '', {
                     timeStart: startTime.toISOString(),
                     timeEnd: endTime.toISOString(),
                     type: formData.type,
-                    workerId: workerId ?? '',
                 });
             }
 
@@ -136,7 +136,7 @@ const WorkEventEditor: FC<{
         return null;
     }
 
-    const disabled = deleting || updating || !!error;
+    const disabled = deleting || updating;
 
     return (
         <SplashScreen onClick={onHide}>
@@ -154,7 +154,6 @@ const WorkEventEditor: FC<{
                             disabled={disabled}
                             isInvalid={!!errors.type}
                             as="select"
-                            defaultValue={data?.type ?? 'WORK'}
                             {...register('type', { required: true })}
                         >
                             <option value="WORK">Work</option>
@@ -166,7 +165,6 @@ const WorkEventEditor: FC<{
                                 disabled={disabled}
                                 isInvalid={!!errors.dateStart}
                                 type="date"
-                                defaultValue={data ? new Date(data.timeStart).toISOString().split('T')[0] : undefined}
                                 {...register('dateStart', { required: true })}
                             />
                             <Form.Control
@@ -175,7 +173,6 @@ const WorkEventEditor: FC<{
                                 type="number"
                                 min={0}
                                 max={23}
-                                defaultValue={data ? new Date(data.timeStart).getHours() : 0}
                                 {...register('hourStart', { required: true })}
                             />
                             <p>:</p>
@@ -185,7 +182,6 @@ const WorkEventEditor: FC<{
                                 type="number"
                                 min={0}
                                 max={59}
-                                defaultValue={data ? new Date(data.timeStart).getMinutes() : 0}
                                 {...register('minuteStart', { required: true })}
                             />
                         </Form.Group>
@@ -195,7 +191,6 @@ const WorkEventEditor: FC<{
                                 disabled={disabled}
                                 isInvalid={!!errors.dateEnd}
                                 type="date"
-                                defaultValue={data ? new Date(data.timeEnd).toISOString().split('T')[0] : undefined}
                                 {...register('dateEnd', { required: true })}
                             />
                             <Form.Control
@@ -204,7 +199,6 @@ const WorkEventEditor: FC<{
                                 type="number"
                                 min={0}
                                 max={23}
-                                defaultValue={data ? new Date(data.timeEnd).getHours() : 0}
                                 {...register('hourEnd', { required: true })}
                             />
                             <p>:</p>
@@ -214,7 +208,6 @@ const WorkEventEditor: FC<{
                                 type="number"
                                 min={0}
                                 max={59}
-                                defaultValue={data ? new Date(data.timeEnd).getMinutes() : 0}
                                 {...register('minuteEnd', { required: true })}
                             />
                         </Form.Group>

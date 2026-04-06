@@ -11,34 +11,30 @@ const permissionCheck = (role?: string) => {
         if (!req.user) {
             throw new ApiError(401, 'UNAUTHORIZED');
         }
-        const userRoles = req.user?.roles;
+        const userRole = req.user?.role;
 
         switch (role) {
             case 'SYSTEM_ADMIN':
-                if (!userRoles.includes('SYSTEM_ADMIN')) {
+                if (userRole !== 'SYSTEM_ADMIN') {
                     throw new ApiError(403, 'FORBIDDEN');
                 }
                 break;
             case 'MANAGER':
-                if (!userRoles.includes('MANAGER') && !userRoles.includes('SYSTEM_ADMIN')) {
+                if (userRole !== 'MANAGER' && userRole !== 'SYSTEM_ADMIN') {
                     throw new ApiError(403, 'FORBIDDEN');
                 }
                 break;
             case 'VIEWER':
-                if (
-                    !userRoles.includes('VIEWER') &&
-                    !userRoles.includes('MANAGER') &&
-                    !userRoles.includes('SYSTEM_ADMIN')
-                ) {
+                if (userRole !== 'VIEWER' && userRole !== 'MANAGER' && userRole !== 'SYSTEM_ADMIN') {
                     throw new ApiError(403, 'FORBIDDEN');
                 }
                 break;
             case 'WORKER':
                 if (
-                    !userRoles.includes('WORKER') &&
-                    !userRoles.includes('MANAGER') &&
-                    !userRoles.includes('SYSTEM_ADMIN') &&
-                    !userRoles.includes('VIEWER')
+                    userRole !== 'WORKER' &&
+                    userRole !== 'MANAGER' &&
+                    userRole !== 'SYSTEM_ADMIN' &&
+                    userRole !== 'VIEWER'
                 ) {
                     throw new ApiError(403, 'FORBIDDEN');
                 }

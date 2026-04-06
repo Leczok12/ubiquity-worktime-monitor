@@ -18,7 +18,7 @@ const NavBar: FC = () => {
                     Ubiquiti Worktime Monitor
                 </BsNavbar.Brand>
                 <Nav className="ms-auto my-2 my-lg-0">
-                    {user.roles.length == 1 && user.roles[0] == 'WORKER' ? (
+                    {user.role == 'WORKER' ? (
                         <Nav.Link to={'/'} as={Link}>
                             {user.email}
                         </Nav.Link>
@@ -27,7 +27,7 @@ const NavBar: FC = () => {
                             <NavDropdown.Item to={'/'} as={Link}>
                                 Home page
                             </NavDropdown.Item>
-                            {user.roles.includes('SYSTEM_ADMIN') && (
+                            {user.role == 'SYSTEM_ADMIN' && (
                                 <NavDropdown.Item to={'/admin'} as={Link}>
                                     Admin panel
                                 </NavDropdown.Item>

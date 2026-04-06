@@ -1,10 +1,11 @@
+export type ApiAuthUserRoles = 'SYSTEM_ADMIN' | 'MANAGER' | 'VIEWER' | 'WORKER';
 export interface ApiAuthUserResponse {
     id: string;
     email: string;
     name: string;
     lastname: string;
     locked: boolean;
-    roles: string[];
+    role: ApiAuthUserRoles;
 }
 
 export interface ApiAuthLoginLocalRequest {

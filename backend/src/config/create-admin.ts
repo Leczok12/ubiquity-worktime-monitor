@@ -2,16 +2,16 @@ import { database } from './database';
 import argon2 from 'argon2';
 
 export const createAdmin = async () => {
+    const username = process.env.ADMIN_USERNAME ?? 'admin';
+    const password = process.env.ADMIN_PASSWORD ?? 'admin';
+
     const admin = await database.prisma.user.findFirst({
-        where: { roles: { hasSome: ['SYSTEM_ADMIN'] } },
+        where: { email: username },
     });
 
     if (admin) {
         return;
     }
-
-    const username = process.env.ADMIN_USERNAME;
-    const password = process.env.ADMIN_PASSWORD;
 
     if (!username || !password) {
         throw new Error('Admin credentials are not set in environment variables (ADMIN_USERNAME and ADMIN_PASSWORD)');
@@ -24,7 +24,7 @@ export const createAdmin = async () => {
                 lastname: '',
                 name: username,
                 password: await argon2.hash(password),
-                roles: ['SYSTEM_ADMIN'],
+                role: 'SYSTEM_ADMIN',
                 locked: false,
             },
         });

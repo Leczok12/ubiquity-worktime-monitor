@@ -19,13 +19,16 @@ model Log {
   message   String
 }
 model User {
-  id String           @id @default(uuid())
-  email    String     @unique
-  password String
-  name     String
-  lastname String
-  locked   Boolean    @default(false)
-  role     UserRole   @default(WORKER)
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  password           String
+  name               String
+  lastname           String
+  lastLogin          DateTime?  
+  lastPasswordChange DateTime   @default(now())
+  isPasswordChange   Boolean    @default(false)
+  isLocked           Boolean    @default(false)
+  role               UserRole   @default(WORKER)
 
   modifiedWorkEvents WorkEvent[]
 }

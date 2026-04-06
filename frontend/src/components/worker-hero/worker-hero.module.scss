@@ -1,26 +1,60 @@
 .workerHero {
-    > div {
+    height: 120px;
+
+    > .loading {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
+    }
+
+    > .content {
+        display: grid;
+        grid-template-areas:
+            'name status'
+            'email status';
+        grid-template-columns: 1fr 50px;
         gap: 10px;
-        > div {
-            display: flex;
-            flex-direction: column;
-            align-items: left;
-            gap: 10px;
-            h1 {
-                margin: 0;
-                padding: 0;
-            }
-            p {
-                margin: 0;
-                padding: 0;
-                color: var(--text-secondary);
-            }
+        h1 {
+            grid-area: name;
+            margin: 0;
+            padding: 0;
         }
-        > svg {
-            margin-right: 5%;
+        p {
+            grid-area: email;
+            margin: 0;
+            padding: 0;
+            color: var(--text-secondary);
+        }
+        .status {
+            grid-area: status;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     }
+
+    // > div {
+    //     display: flex;
+    //     justify-content: space-between;
+    //     align-items: center;
+    //     gap: 10px;
+    //     > div {
+    //         display: flex;
+    //         flex-direction: column;
+    //         align-items: left;
+    //         gap: 10px;
+    //         h1 {
+    //             margin: 0;
+    //             padding: 0;
+    //         }
+    //         p {
+    //             margin: 0;
+    //             padding: 0;
+    //             color: var(--text-secondary);
+    //         }
+    //     }
+    //     > svg {
+    //         margin-right: 5%;
+    //     }
+    // }
 }

@@ -6,7 +6,10 @@ import { Timeline } from '@src/components/timeline';
 import { WorkEventList, WorkEventListItem } from '@src/components/work-event-list';
 import { BsPlus } from 'react-icons/bs';
 
-const WorkDay: FC<{ day: ApiWorkDay; onEdit: (apiWorkEvent?: ApiWorkEvent) => void }> = ({ day, onEdit }) => {
+const WorkDay: FC<{ day: ApiWorkDay; onEdit: (apiWorkEvent?: ApiWorkEvent, defaultData?: Date) => void }> = ({
+    day,
+    onEdit,
+}) => {
     const [events, setEvents] = useState(day.events);
     const [hoveredEventId, setHoveredEventId] = useState<string | undefined>(undefined);
 
@@ -54,7 +57,7 @@ const WorkDay: FC<{ day: ApiWorkDay; onEdit: (apiWorkEvent?: ApiWorkEvent) => vo
                             />
                         ))}
                     </WorkEventList>
-                    <Button variant="outline" onClick={() => onEdit()}>
+                    <Button variant="outline" onClick={() => onEdit(undefined, new Date(day.dayEnd))}>
                         <BsPlus size={30} />
                     </Button>
                 </div>

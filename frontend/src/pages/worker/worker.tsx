@@ -15,14 +15,15 @@ const WorkerPage = () => {
     const { workerId } = useParams<{ workerId: string }>();
 
     const [showEventEditor, setShowEventEditor] = useState(false);
-    const [dataEventEditor, setDataEventEditor] = useState<undefined | ApiWorkEvent>(undefined);
+    const [dataEventEditor, setDataEventEditor] = useState<[ApiWorkEvent | undefined, Date | undefined]>([
+        undefined,
+        undefined,
+    ]);
 
     const [searchRange, setSearchRange] = useState<{ since: Date; until: Date }>({
         since: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
         until: new Date(),
     });
-
-    const { data: workerData, isLoading: isWorkerLoading } = useWorker({ workerId: workerId ?? '' });
 
     const {
         data: workEventsData,
@@ -30,15 +31,17 @@ const WorkerPage = () => {
         refetch: refetchWorkEvents,
     } = useWorkEvents(workerId ?? '', searchRange.since, searchRange.until);
 
-    if (isWorkerLoading || workerData?.data === undefined) {
-        return <Loader />;
+    if (!workerId) {
+        return null;
     }
+
     return (
         <Container className={styles.worker}>
             <WorkEventEditor
                 show={showEventEditor}
-                data={dataEventEditor}
-                workerId={workerData.data.id}
+                data={dataEventEditor[0]}
+                defaultDate={dataEventEditor[1]}
+                workerId={workerId}
                 onSuccess={async () => {
                     await refetchWorkEvents();
                 }}
@@ -47,7 +50,8 @@ const WorkerPage = () => {
                 }}
             />
 
-            <WorkerHero worker={workerData?.data} />
+            <WorkerHero workerId={workerId} onError={() => {}} />
+
             <WorkDaySearchBar disabled={isWorkEventsLoading} onSearch={setSearchRange} defaultRange={searchRange} />
 
             {isWorkEventsLoading ? (
@@ -58,8 +62,8 @@ const WorkerPage = () => {
                         <WorkDay
                             key={day.dayStart}
                             day={day}
-                            onEdit={(event) => {
-                                setDataEventEditor(event);
+                            onEdit={(event, defaultData) => {
+                                setDataEventEditor([event, defaultData]);
                                 setShowEventEditor(true);
                             }}
                         />

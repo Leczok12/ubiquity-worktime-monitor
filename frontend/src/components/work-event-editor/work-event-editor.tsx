@@ -22,19 +22,19 @@ const WorkEventEditor: FC<{
     onHide: () => void;
     onSuccess: () => Promise<void>;
     data?: ApiWorkEvent;
+    defaultDate?: Date;
     workerId?: string;
-}> = ({ show, onHide, onSuccess, data, workerId }) => {
-    const [deleting, setDeleting] = useState(true);
+}> = ({ show, onHide, onSuccess, data, workerId, defaultDate }) => {
+    const [deleting, setDeleting] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        return () => {
-            console.log('Cleaning up WorkEventEditor state');
+        if (!show) {
             setDeleting(false);
             setUpdating(false);
             setError(undefined);
-        };
+        }
     }, [show]);
 
     const {
@@ -49,8 +49,9 @@ const WorkEventEditor: FC<{
             return;
         }
 
-        const timeStart = data ? new Date(data.timeStart) : new Date();
-        const timeEnd = data ? new Date(data.timeEnd) : new Date();
+        const baseDate = defaultDate ?? new Date();
+        const timeStart = data ? new Date(data.timeStart) : new Date(new Date(baseDate).setHours(0, 0, 0, 0));
+        const timeEnd = data ? new Date(data.timeEnd) : new Date(new Date(baseDate).setHours(0, 0, 0, 0));
 
         reset({
             type: data?.type ?? 'WORK',
@@ -61,7 +62,7 @@ const WorkEventEditor: FC<{
             hourEnd: timeEnd.getHours(),
             minuteEnd: timeEnd.getMinutes(),
         });
-    }, [data, show, reset]);
+    }, [data, show, reset, defaultDate]);
 
     const onSubmit = async (formData: Inputs) => {
         setUpdating(true);

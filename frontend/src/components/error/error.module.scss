@@ -1,5 +1,5 @@
 .compactError {
-    width: 100%;
+    width: 100% !important;
     margin: auto;
 }
 
@@ -8,4 +8,22 @@
     flex-direction: column;
     justify-content: center;
     justify-self: center;
+
+    width: 400px;
+
+    > div {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        gap: 10px;
+
+        > button {
+            height: 50px;
+            width: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
 }

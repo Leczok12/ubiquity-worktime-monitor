@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Alert, Container, ListGroup } from 'react-bootstrap';
 import { Loader } from '@src/components/loader';
 import styles from './home.module.scss';
+import { Error } from '@src/components/error';
 
 const HomePage = () => {
     const [pageNumber, setPageNumber] = useState(1);
@@ -27,7 +28,7 @@ const HomePage = () => {
 
             {(() => {
                 if (isError) {
-                    return <Alert variant="danger">{error?.message}</Alert>;
+                    return <Error compact message={error.message ?? 'An unknown error'} />;
                 }
                 if (isLoading || data === undefined || data.data === undefined) {
                     return <Loader compact />;

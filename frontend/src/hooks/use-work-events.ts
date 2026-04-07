@@ -7,6 +7,5 @@ export const useWorkEvents = (workerId: string, since: Date, until: Date) => {
         queryFn: () => apiWorkerWorkEvents(workerId, since, until),
         staleTime: 0,
         refetchInterval: 1000 * 60 * 5,
-        retry: false,
     });
 };

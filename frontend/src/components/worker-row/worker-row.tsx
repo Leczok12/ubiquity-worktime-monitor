@@ -1,10 +1,10 @@
-import type { ApiWorkerResponse } from '@shared/api-worker';
+import type { ApiGetWorkerResponse } from '@shared/api-worker';
 import type { FC } from 'react';
 import { ListGroupItem } from 'react-bootstrap';
 import styles from './worker-row.module.scss';
 import { useNavigate } from 'react-router';
 
-const WorkerRow: FC<{ worker: ApiWorkerResponse }> = ({ worker }) => {
+const WorkerRow: FC<{ worker: ApiGetWorkerResponse }> = ({ worker }) => {
     const navigateor = useNavigate();
 
     return (

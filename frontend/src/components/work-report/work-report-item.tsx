@@ -6,6 +6,7 @@ import styles from './work-report.module.scss';
 import { Timeline } from '@src/components/timeline';
 import { BsPlus } from 'react-icons/bs';
 import { dateToString } from '@src/utils/date-to-string';
+import { dateToStringHours } from '@src/utils/date-to-string-hours';
 
 const WorkReportItem: FC<{ day: ApiWorkDay; onEdit?: (event?: ApiWorkEvent, defaultData?: Date) => void }> = ({
     day,
@@ -52,7 +53,7 @@ const WorkReportItem: FC<{ day: ApiWorkDay; onEdit?: (event?: ApiWorkEvent, defa
                                     onMouseLeave={() => setHoveredEventId(undefined)}
                                     onClick={() => onEdit?.(e)}
                                 >
-                                    <p>{dateToString([new Date(e.timeStart), new Date(e.timeEnd)])}</p>
+                                    <p>{dateToStringHours([new Date(e.timeStart), new Date(e.timeEnd)])}</p>
                                     <p>{e.placeStart || '---'}</p>
                                     <p>{e.placeEnd || '---'}</p>
                                 </ListGroup.Item>

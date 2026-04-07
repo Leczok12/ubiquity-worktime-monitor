@@ -1,5 +1,7 @@
 .authWrapper {
-    width: 350px;
+    min-width: 350px;
+    max-width: 400px;
+    width: 90%;
     h1 {
         text-align: center;
     }

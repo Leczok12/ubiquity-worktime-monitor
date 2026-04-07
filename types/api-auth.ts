@@ -12,6 +12,10 @@ export interface ApiAuthLoginLocalRequest {
     username: string;
     password: string;
 }
+export interface ApiAuthChangePasswordRequest {
+    password: string;
+    passwordConfirm: string;
+}
 
 export interface ApiAuthConfigResponse {
     local: {

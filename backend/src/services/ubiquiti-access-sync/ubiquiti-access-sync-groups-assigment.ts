@@ -8,7 +8,9 @@ export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInsta
 
     await prisma.$executeRaw`DELETE FROM "_WorkerGroups"`;
 
-    const groups = await prisma.group.findMany();
+    const groups = await prisma.group.findMany({
+        where: { sync: true },
+    });
 
     for (const group of groups) {
         logger.info(`Syncing workers assigment for group ${group.name}`);

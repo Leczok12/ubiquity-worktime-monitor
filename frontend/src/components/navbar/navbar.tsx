@@ -33,6 +33,9 @@ const NavBar: FC = () => {
                                 </NavDropdown.Item>
                             )}
                             <NavDropdown.Divider />
+                            <NavDropdown.Item to={'/auth/change-password'} as={Link}>
+                                Change password
+                            </NavDropdown.Item>
                             <NavDropdown.Item to={'/auth/logout'} as={Link}>
                                 Logout
                             </NavDropdown.Item>

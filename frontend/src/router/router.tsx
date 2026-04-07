@@ -4,6 +4,7 @@ import AuthLayout from '../layout/auth';
 import RootLayout from '@src/layout/root';
 import { HomePage } from '@src/pages/home';
 import { WorkerPage } from '@src/pages/worker';
+import ChangePasswordPage from '@src/pages/auth/change-password';
 
 const router = createBrowserRouter([
     {
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
         children: [
             { path: 'login', element: <LoginPage /> },
             { path: 'logout', element: <LogoutPage /> },
+            { path: 'change-password', element: <ChangePasswordPage /> },
         ],
         errorElement: <div>Auth route error</div>,
     },

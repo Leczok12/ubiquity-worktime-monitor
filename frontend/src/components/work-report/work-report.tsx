@@ -22,7 +22,7 @@ const WorkReport: FC<{
             <ListGroupItem className={styles.workReportHeader}>
                 <h6>
                     {'Report: '}
-                    {dateToString([new Date(data.days[0].dayStart), new Date(data.days[data.days.length - 1].dayEnd)])}
+                    {dateToString([new Date(data.days[data.days.length - 1].dayStart), new Date(data.days[0].dayEnd)])}
                 </h6>
                 <p>{secondsToString(data.seconds)} h</p>
             </ListGroupItem>

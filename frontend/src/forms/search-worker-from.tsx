@@ -12,13 +12,20 @@ const SearchWorkerForm: FC<{
     onSubmit: SubmitHandler<Inputs>;
     groups?: { id: string; name: string }[];
     disabled?: boolean;
-}> = ({ onSubmit, groups, disabled = false }) => {
+    defaultKeyword?: string;
+    defaultGroupId?: string;
+}> = ({ onSubmit, groups, disabled = false, defaultKeyword, defaultGroupId }) => {
     const {
         register,
         handleSubmit,
         setValue,
         formState: { errors },
-    } = useForm<Inputs>();
+    } = useForm<Inputs>({
+        defaultValues: {
+            keyword: defaultKeyword ?? '',
+            groupId: defaultGroupId ?? '',
+        },
+    });
 
     const handleFormSubmit: SubmitHandler<Inputs> = (data) => {
         const newData: Inputs = {

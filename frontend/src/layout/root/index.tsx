@@ -10,7 +10,9 @@ const RootLayout = () => {
     const navigator = useNavigate();
 
     if (error?.message === 'UNAUTHORIZED') {
-        return <Navigate to={`/auth/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+        return (
+            <Navigate to={`/auth/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />
+        );
     }
 
     if (data === undefined || isLoading) {

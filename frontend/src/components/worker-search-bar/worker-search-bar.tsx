@@ -6,12 +6,16 @@ import { useGroup } from '@src/hooks/use-group';
 const WorkerSearchBar: FC<{
     onSearch: (keyword?: string, groupId?: string) => void;
     disabled?: boolean;
-}> = ({ onSearch, disabled = false }) => {
+    defaultKeyword?: string;
+    defaultGroupId?: string;
+}> = ({ onSearch, disabled = false, defaultKeyword, defaultGroupId }) => {
     const { data: groupsData, isLoading: groupsLoading } = useGroup();
 
     return (
         <div className={styles.workerSearchBar}>
             <SearchWorkerForm
+                defaultKeyword={defaultKeyword}
+                defaultGroupId={defaultGroupId}
                 disabled={disabled || groupsLoading}
                 groups={groupsData?.map((group) => ({ id: group.id, name: group.name }))}
                 onSubmit={({ keyword, groupId }) => {

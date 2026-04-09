@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { ApiResponse } from '@shared/api-response';
 import { database } from 'src/config/database';
-import { ApiDeviceResponse } from '@shared/api-device';
+import { ApiAdminUpdateDeviceRequest } from '@shared/api-admin-device';
 import { ApiError } from 'src/types/api-error';
-import { DeviceType } from '@prisma/client';
+import { $Enums, DeviceType } from '@prisma/client';
+import z from 'zod';
 
 export const getAllDevices = async (req: Request, res: Response) => {
-    const d = await database.prisma.device.findMany();
-    const response: ApiResponse<ApiDeviceResponse[]> = {
+    const response: ApiResponse<ApiAdminUpdateDeviceRequest[]> = {
         status: 'SUCCESS',
         data: (await database.prisma.device.findMany()) ?? [],
     };
@@ -15,36 +15,45 @@ export const getAllDevices = async (req: Request, res: Response) => {
     res.status(200).json(response);
 };
 
-export const setDeviceType = async (req: Request, res: Response) => {
-    const rawId = req.body?.id;
-    const rawType = req.body?.type;
+/* Update device */
 
-    if (typeof rawId !== 'string') throw new ApiError(400, 'INVALID_ARGS', "Missing or invalid 'id' field");
-    if (typeof rawType !== 'string' || !Object.values(DeviceType).includes(rawType as DeviceType))
-        throw new ApiError(400, 'INVALID_ARGS', "Missing or invalid 'type' field");
+const updateDevicesSchema: z.Schema<ApiAdminUpdateDeviceRequest[]> = z.array(
+    z.object({
+        id: z.string(),
+        type: z.enum($Enums.DeviceType),
+    })
+);
 
-    const device = await database.prisma.device.findFirst({
-        where: {
-            id: rawId,
-        },
+export const updateDevices = async (req: Request, res: Response) => {
+    console.log('Updating devices for worker', req.body);
+    const data = updateDevicesSchema.safeParse(req.body.data);
+
+    if (data.success === false)
+        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+
+    database.prisma.$transaction(async (prisma) => {
+        for (const device of data.data) {
+            const existingDevice = prisma.device.findUnique({
+                where: {
+                    id: device.id,
+                },
+            });
+
+            if (!existingDevice) throw new ApiError(404, 'NOT_FOUND', `Device with id ${device.id} not found`);
+
+            await prisma.device.update({
+                where: {
+                    id: device.id,
+                },
+                data: {
+                    type: device.type,
+                },
+            });
+        }
     });
 
-    if (!device) {
-        throw new ApiError(404, 'NOT_FOUND', 'Device not found');
-    }
-
-    const updatedDevice = await database.prisma.device.update({
-        where: {
-            id: rawId,
-        },
-        data: {
-            type: rawType as DeviceType,
-        },
-    });
-
-    const response: ApiResponse<ApiDeviceResponse> = {
+    const response: ApiResponse<undefined> = {
         status: 'SUCCESS',
-        data: updatedDevice,
     };
 
     res.status(200).json(response);

@@ -10,6 +10,12 @@ export const createAdmin = async () => {
     });
 
     if (admin) {
+        if (admin.role !== 'SYSTEM_ADMIN') {
+            await database.prisma.user.update({
+                where: { id: admin.id },
+                data: { role: 'SYSTEM_ADMIN' },
+            });
+        }
         return;
     }
 

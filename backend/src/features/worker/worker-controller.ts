@@ -3,9 +3,7 @@ import { ApiResponse } from '@shared/api-response';
 import { database } from 'src/config/database';
 import { ApiError } from 'src/types/api-error';
 import { ApiGetWorkerResponse } from '@shared/api-worker';
-import { roleCheck } from 'src/utils/role-check';
 import { pagination } from 'src/utils/pagination';
-import { group } from 'node:console';
 import { Prisma } from '@prisma/client';
 
 export const getAllWorkers = async (req: Request, res: Response) => {

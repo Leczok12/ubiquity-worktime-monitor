@@ -10,6 +10,7 @@
         "outDir": "./dist",
         "baseUrl": ".",
         "paths": {
+            "src/*": ["src/*"],
             "@shared/*": ["../types/*"]
         },
         "moduleResolution": "node"

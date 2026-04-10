@@ -3,56 +3,49 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const rootDir = path.resolve(__dirname, '..');
-const distDir = path.join(rootDir, 'dist');
+const backendDistDir = path.join(rootDir, 'backend', 'dist');
 
-console.log('🔨 Rozpoczynanie budowania aplikacji...\n');
+console.log('Starting build process...\n');
 
-// 1. Usuń stary dist folder
-console.log('📦 Usuwanie starego folderu dist...');
-if (fs.existsSync(distDir)) {
-    fs.rmSync(distDir, { recursive: true, force: true });
+// 1. Clean backend dist directory
+console.log('Cleaning backend dist directory...');
+if (fs.existsSync(backendDistDir)) {
+    fs.rmSync(backendDistDir, { recursive: true, force: true });
 }
-fs.mkdirSync(distDir, { recursive: true });
-console.log('✅ Folder dist usunięty i nowo utworzony\n');
+fs.mkdirSync(backendDistDir, { recursive: true });
+console.log('Backend dist directory is ready.\n');
 
 try {
-    // 2. Buduj frontend
-    console.log('🎨 Budowanie frontend...');
+    // 2. Build backend first
+    console.log('Building backend...');
+    execSync('npm run build --prefix backend', {
+        cwd: rootDir,
+        stdio: 'inherit',
+    });
+    console.log('Backend build completed.\n');
+
+    // 3. Build frontend
+    console.log('Building frontend...');
     execSync('npm run build --prefix frontend', {
         cwd: rootDir,
         stdio: 'inherit',
     });
-    console.log('✅ Frontend zbudowany\n');
+    console.log('Frontend build completed.\n');
 
-    // 3. Buduj backend
-    console.log('⚙️  Budowanie backend...');
-    execSync('tsc --project backend/tsconfig.json', {
-        cwd: rootDir,
-        stdio: 'inherit',
-    });
-    console.log('✅ Backend zbudowany\n');
-
-    // 4. Kopiuj wyniki frontend do dist
-    console.log('📋 Kopiowanie wyników frontend...');
+    // 4. Copy frontend build output into backend/dist
+    console.log('Copying frontend files into backend/dist...');
     const frontendDistSrc = path.join(rootDir, 'frontend', 'dist');
     if (fs.existsSync(frontendDistSrc)) {
-        fs.cpSync(frontendDistSrc, distDir, { recursive: true, force: true });
-        console.log('✅ Frontend skopiowany do dist\n');
+        fs.cpSync(frontendDistSrc, backendDistDir, { recursive: true, force: true });
+        console.log('Frontend files copied successfully.\n');
+    } else {
+        throw new Error(`Frontend dist folder not found: ${frontendDistSrc}`);
     }
 
-    // 5. Kopiuj wyniki backend do dist/backend
-    console.log('📋 Kopiowanie wyników backend...');
-    const backendDistSrc = path.join(rootDir, 'backend', 'dist');
-    const backendDistDest = path.join(distDir, 'backend');
-    if (fs.existsSync(backendDistSrc)) {
-        fs.cpSync(backendDistSrc, backendDistDest, { recursive: true, force: true });
-        console.log('✅ Backend skopiowany do dist/backend\n');
-    }
-
-    console.log('🎉 Budowanie zakończone pomyślnie!');
-    console.log(`📁 Wyniki znajdują się w: ${distDir}`);
+    console.log('Build finished successfully.');
+    console.log(`Output directory: ${backendDistDir}`);
     process.exit(0);
 } catch (error) {
-    console.error('\n❌ Błąd podczas budowania:', error.message);
+    console.error('\nBuild failed:', error.message);
     process.exit(1);
 }

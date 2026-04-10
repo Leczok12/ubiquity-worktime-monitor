@@ -1,4 +1,6 @@
 import express, { Request, Response, RequestHandler } from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
 import errorHandler from './middlewares/error-handler';
 
 import { passport } from './config/passport/passport';
@@ -43,9 +45,43 @@ const startServer = async () => {
         app.use('/api/work-events', workEventsRouter);
         app.use('/api/admin', adminRouter);
 
-        app.use((req, res, next) => {
+        app.use('/api', (_req, _res) => {
             throw new ApiError(404, 'NOT_FOUND');
         });
+
+        /* Static file serving for frontend */
+
+        const cwd = process.cwd();
+        const frontendDistCandidates = [
+            path.resolve(cwd, 'backend', 'dist'),
+            path.resolve(cwd, 'dist'),
+            path.resolve(cwd, 'frontend', 'dist'),
+            path.resolve(__dirname, '../../../'),
+            path.resolve(__dirname, '../../../../'),
+            path.resolve(__dirname, '../../dist'),
+            path.resolve(__dirname, '../../../dist'),
+            path.resolve(__dirname, '../../../../dist'),
+        ];
+
+        const frontendDistPath = frontendDistCandidates.find((candidatePath) => {
+            const indexPath = path.join(candidatePath, 'index.html');
+            const assetsPath = path.join(candidatePath, 'assets');
+            return fs.existsSync(indexPath) && fs.existsSync(assetsPath);
+        });
+
+        if (frontendDistPath) {
+            app.use(express.static(frontendDistPath));
+            app.use((req, res, next) => {
+                if (req.path.startsWith('/api')) {
+                    next();
+                    return;
+                }
+
+                res.sendFile(path.join(frontendDistPath, 'index.html'));
+            });
+        } else {
+            logger.warn('Frontend dist not found. Static Vite app serving is disabled.');
+        }
 
         app.use(errorHandler);
         app.listen(port, () => {

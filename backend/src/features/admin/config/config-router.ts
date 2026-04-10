@@ -1,10 +1,10 @@
-import express from 'express';
-import { getAllConfig, setConfigValue } from './config-controller';
-import { Request, Response } from 'express';
+// import express from 'express';
+// import { getAllConfig, setConfigValue } from './config-controller';
+// import { Request, Response } from 'express';
 
-const router = express.Router();
+// const router = express.Router();
 
-router.get('/all', getAllConfig);
-router.post('/', setConfigValue);
+// router.get('/all', getAllConfig);
+// router.post('/', setConfigValue);
 
-export { router as configRouter };
+// export { router as configRouter };

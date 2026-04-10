@@ -15,6 +15,7 @@ import { workerRouter } from './features/worker/worker-router';
 import { authRouter } from './features/auth/auth-router';
 import { ApiError } from './types/api-error';
 import { workEventsRouter } from './features/work-events/work-events-router';
+import { adminRouter } from './features/admin/admin-router';
 
 const startServer = async () => {
     try {
@@ -40,6 +41,7 @@ const startServer = async () => {
         app.use('/api/group', groupRouter);
         app.use('/api/worker', workerRouter);
         app.use('/api/work-events', workEventsRouter);
+        app.use('/api/admin', adminRouter);
 
         app.use((req, res, next) => {
             throw new ApiError(404, 'NOT_FOUND');

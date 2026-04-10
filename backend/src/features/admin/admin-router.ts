@@ -1,18 +1,13 @@
 import express from 'express';
-import { ApiError } from 'src/types/api-error';
 import { Request, Response } from 'express';
 import { roleCheck } from 'src/utils/role-check';
+import permissionCheck from 'src/middlewares/permissions-check';
+import { deviceRouter } from './device/device-router';
 
 const router = express.Router();
 
-router.use((req: Request, res: Response, next: Function) => {
-    roleCheck(req, 'SYSTEM_ADMIN');
-    next();
-});
+router.use(permissionCheck('SYSTEM_ADMIN'));
 
-// router.get('/worker', getAllWorkers);
-// router.get('/find', findWorkers);
-// router.get('/:id', getWorkerById);
-// router.post('/:id', postWorkerById);
+router.use('/device', deviceRouter);
 
-export { router as workerRouter };
+export { router as adminRouter };

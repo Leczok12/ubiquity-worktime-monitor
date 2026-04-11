@@ -1,19 +1,19 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "module": "commonjs",
+        "module": "Node16",
         "lib": ["ES2020"],
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
+        "rootDir": "..",
         "outDir": "./dist",
-        "baseUrl": ".",
         "paths": {
-            "src/*": ["src/*"],
+            "src/*": ["./src/*"],
             "@shared/*": ["../types/*"]
         },
-        "moduleResolution": "node"
+        "moduleResolution": "node16"
     },
     "include": ["src/**/*", "../types/**/*"],
     "ts-node": {

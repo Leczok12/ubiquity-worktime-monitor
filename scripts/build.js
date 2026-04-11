@@ -3,7 +3,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const rootDir = path.resolve(__dirname, '..');
-const backendDistDir = path.join(rootDir, 'backend', 'dist');
+const backendDistDir = path.join(rootDir, 'backend', 'dist', 'frontend');
 
 console.log('Starting build process...\n');
 

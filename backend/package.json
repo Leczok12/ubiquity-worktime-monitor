@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "nodemon --watch src --ext ts --exec \"ts-node -r tsconfig-paths/register src/server.ts\"",
         "build": "tsc --project tsconfig.json && tsc-alias --project tsconfig.json",
-        "start:prod": "node dist/backend/src/server.js"
+        "start": "node dist/backend/src/server.js"
     },
     "keywords": [],
     "author": "",

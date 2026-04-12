@@ -25,7 +25,7 @@ Get all door device
 }
 ```
 
-## POST /
+## PUT /
 
 ### Permissions
 

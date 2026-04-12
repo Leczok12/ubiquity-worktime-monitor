@@ -31,7 +31,7 @@ FROM node:22-alpine AS runtime
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV DEBUG=false
 EXPOSE 9999
 
 COPY --from=build /app/backend/node_modules ./backend/node_modules

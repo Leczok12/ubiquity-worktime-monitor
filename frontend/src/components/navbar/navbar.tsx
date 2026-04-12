@@ -24,14 +24,21 @@ const NavBar: FC = () => {
                         </Nav.Link>
                     ) : (
                         <NavDropdown title={user.email} align={'end'}>
+                            {user.role == 'SYSTEM_ADMIN' && (
+                                <>
+                                    <NavDropdown.ItemText>Admin panel</NavDropdown.ItemText>
+                                    <NavDropdown.Item to={'/admin/device'} as={Link}>
+                                        - Devices
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item to={'/admin/group'} as={Link}>
+                                        - Groups
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Divider />
+                                </>
+                            )}
                             <NavDropdown.Item to={'/'} as={Link}>
                                 Home page
                             </NavDropdown.Item>
-                            {user.role == 'SYSTEM_ADMIN' && (
-                                <NavDropdown.Item to={'/admin'} as={Link}>
-                                    Admin panel
-                                </NavDropdown.Item>
-                            )}
                             <NavDropdown.Divider />
                             <NavDropdown.Item to={'/auth/change-password'} as={Link}>
                                 Change password

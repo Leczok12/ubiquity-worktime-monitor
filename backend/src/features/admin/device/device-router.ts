@@ -6,6 +6,6 @@ import { Request, Response } from 'express';
 const router = express.Router();
 
 router.get('/all', getAllDevices);
-router.post('/', updateDevices);
+router.put('/', updateDevices);
 
 export { router as deviceRouter };

@@ -4,7 +4,6 @@ export interface ApiAuthUserResponse {
     email: string;
     name: string;
     lastname: string;
-    locked: boolean;
     role: ApiAuthUserRoles;
 }
 

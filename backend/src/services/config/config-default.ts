@@ -18,5 +18,5 @@ export const defaultConfig: Config = {
     LOGIN_MICROSOFT_STRATEGY_ENABLED: false,
     LOGIN_MICROSOFT_LABEL: 'Login with Microsoft',
 
-    SERVER_PORT: process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3000,
+    SERVER_PORT: process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 9999,
 };

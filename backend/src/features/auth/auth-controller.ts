@@ -34,7 +34,13 @@ export const getUser = async (req: Request, res: Response) => {
 
     const response: ApiResponse<ApiAuthUserResponse> = {
         status: 'SUCCESS',
-        data: req.user,
+        data: {
+            id: req.user.id,
+            email: req.user.email,
+            name: req.user.name,
+            lastname: req.user.lastname,
+            role: req.user.role,
+        },
     };
 
     res.status(200).json(response);

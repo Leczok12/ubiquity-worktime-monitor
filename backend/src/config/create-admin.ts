@@ -31,7 +31,6 @@ export const createAdmin = async () => {
                 name: username,
                 password: await argon2.hash(password),
                 role: 'SYSTEM_ADMIN',
-                locked: false,
             },
         });
     } catch (error) {

@@ -2,6 +2,7 @@ import { UbiquitiAccessResponse, UbiquitiAccessDevice } from './ubiquiti-access-
 import { AxiosInstance } from 'axios';
 import { PrismaTransaction } from 'src/types/prisma-transaction';
 import { logger } from '../../utils/logger';
+import { exit } from 'node:process';
 
 export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting devices sync with Ubiquiti Access API');
@@ -13,7 +14,11 @@ export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: Axio
         throw new Error('Invalid response from Ubiquiti Access API');
     }
 
-    for (const rDevice of response.data.data) {
+    const filteredDevices = response.data.data.filter(
+        (d) => d[0].capabilities.includes('is_reader') || d[0].capabilities.includes('is_hub')
+    );
+
+    for (const rDevice of filteredDevices) {
         const device = rDevice[0];
         if (!device.id) {
             throw new Error(`Invalid response from Ubiquiti Access API`);
@@ -46,7 +51,7 @@ export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: Axio
         where: {
             NOT: {
                 id: {
-                    in: response.data.data.map((u) => u[0].id),
+                    in: filteredDevices.map((u) => u[0].id),
                 },
             },
         },

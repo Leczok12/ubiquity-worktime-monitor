@@ -3,4 +3,5 @@ export type UbiquitiAccessDevice = {
     id: string;
     name: string;
     type: string;
+    capabilities: string[];
 };

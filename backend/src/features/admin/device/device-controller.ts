@@ -12,7 +12,13 @@ export const getAllDevices = async (req: Request, res: Response) => {
     const response: ApiResponse<ApiAdminGetDeviceResponse[]> = {
         status: 'SUCCESS',
         data:
-            (await database.prisma.device.findMany()).map((device) => ({
+            (
+                await database.prisma.device.findMany({
+                    orderBy: {
+                        name: 'asc',
+                    },
+                })
+            ).map((device) => ({
                 id: device.id,
                 type: device.type,
                 name: device.name,

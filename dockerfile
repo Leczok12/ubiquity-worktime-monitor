@@ -37,9 +37,10 @@ EXPOSE 9999
 COPY --from=build /app/backend/node_modules ./backend/node_modules
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/backend/prisma ./backend/prisma
+COPY --from=build /app/backend/prisma.config.ts ./backend/prisma.config.ts
 
 
 WORKDIR /app/backend
 
 # Teraz ścieżka jest relatywna do /app/backend
-CMD ["node", "dist/backend/src/server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && exec node dist/backend/src/server.js"]

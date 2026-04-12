@@ -1,0 +1,41 @@
+name: ubiquity-worktime-monitor
+services:
+    ubiquity-worktime-monitor:
+        container_name: ubiquity-worktime-monitor
+        restart: always
+        ports:
+            - '9999:9999'
+        environment:
+            SERVER_PORT: 9999
+            DATABASE_URL: postgresql://admin:12345678admin@postgresd:5432/ubiquityWorktimeMonitor
+            DEBUG: true
+            UBIQUITI_ACCESS_API_URL:
+            UBIQUITI_ACCESS_API_KEY:
+            UBIQUITY_ACCESS_SYNC_ON_STARTUP: true
+            ADMIN_USERNAME: 'admin'
+            ADMIN_PASSWORD: 'admin'
+        build:
+            context: ./ubiquity-worktime-monitor
+            dockerfile: dockerfile
+        depends_on:
+            - postgresd
+
+    postgresd:
+        container_name: postgresd
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: 12345678admin
+        ports:
+            - '5432:5432'
+
+    pgadmind:
+        container_name: pgadmind
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@example.com
+            PGADMIN_DEFAULT_PASSWORD: 12345678admin
+        ports:
+            - '80:80'
+        depends_on:
+            - postgresd

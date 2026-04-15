@@ -1,5 +1,5 @@
 import { DeviceRow } from '@src/components/device-row';
-import { Error } from '@src/components/error';
+import { Error as ErrorComponent } from '@src/components/error';
 import { Loader } from '@src/components/loader';
 import { useAdminDevice } from '@src/hooks/use-admin-device';
 import { Container, ListGroup } from 'react-bootstrap';
@@ -13,18 +13,28 @@ import { SettingsHero } from '@src/components/setting-hero';
 const DevicePage = () => {
     const [pageNumber, setPageNumber] = useState(1);
 
-    const { data, isLoading, error, isError, refetch } = useAdminDevice(pageNumber, 10);
+    const { data, isLoading, error: apiError, refetch } = useAdminDevice(pageNumber, 10);
     const [disabled, setDisabled] = useState(false);
+    const [error, setError] = useState<string | null>(apiError ? apiError.message : null);
 
     const updateDevice = async (id: string, type: ApiAdminDeviceType) => {
-        setDisabled(true);
-        await apiAdminUpdateDevice(id, { type: type });
-        await refetch();
-        setDisabled(false);
+        try {
+            setDisabled(true);
+            await apiAdminUpdateDevice(id, { type: type });
+            await refetch();
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        } finally {
+            setDisabled(false);
+        }
     };
 
-    if (isError) {
-        return <Error message={error.message} />;
+    if (error) {
+        return <ErrorComponent message={error} />;
     }
 
     if (isLoading || data === undefined) {

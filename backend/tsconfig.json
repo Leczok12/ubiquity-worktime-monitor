@@ -10,12 +10,13 @@
         "rootDir": "..",
         "outDir": "./dist",
         "paths": {
-            "src/*": ["./src/*"],
-            "@shared/*": ["../types/*"]
+            "@sharedtypes/*": ["../types/*"], // remove
+            "@src/*": ["./src/*"],
+            "@shared/*": ["../shared/*"]
         },
         "moduleResolution": "node16"
     },
-    "include": ["src/**/*", "../types/**/*"],
+    "include": ["src/**/*", "../types/**/*", "../shared/**/*"],
     "ts-node": {
         "require": ["tsconfig-paths/register"],
         "transpileOnly": true

@@ -1,6 +1,6 @@
-import { ApiResponse } from '@shared/api-response';
+import { ApiResponse } from '@sharedtypes/api-response';
 import { NextFunction, Request, Response } from 'express';
-import { ApiError } from 'src/types/api-error';
+import { ApiError } from '@src/types/api-error';
 import { logger } from '../utils/logger';
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {

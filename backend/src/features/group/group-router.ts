@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllGroups } from './group-controller';
-import permissionCheck from 'src/middlewares/permissions-check';
+import permissionCheck from '@src/middlewares/permissions-check';
 
 const router = express.Router();
 

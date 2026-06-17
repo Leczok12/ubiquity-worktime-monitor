@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { ApiError } from 'src/types/api-error';
+import { ApiError } from '@src/types/api-error';
 
 export const pagination = (req: Request) => {
     const pageNumber = parseInt((req.query.pageNumber as string | undefined) ?? '1');

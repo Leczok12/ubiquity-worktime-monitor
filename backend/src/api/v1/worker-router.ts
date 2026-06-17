@@ -2,12 +2,14 @@ import { ApiResponse } from '@shared/types/api/api-response';
 import { ApiCreateWorker, ApiGetWorker, ApiUpdateWorker } from '@shared/types/api/api-worker';
 import { workerController } from '@src/controllers/worker-controller';
 import { ApiError } from '@src/types/api-error';
+import { pagination } from '@src/utils/pagination';
 import express from 'express';
+import { skip } from 'node:test';
 import z from 'zod';
 
 const router = express.Router();
 
-// === Create worker ===
+// === Create worker === [ADMIN]
 
 const createWorkerSchema: z.Schema<ApiCreateWorker> = z.object({
     id: z.string().optional(),
@@ -24,7 +26,7 @@ router.post('/', async (req, res) => {
     if (!data.success)
         throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
 
-    const worker = await workerController().createWorker(data.data);
+    await workerController().createWorker(data.data);
 
     const response: ApiResponse<undefined> = {
         status: 'SUCCESS',
@@ -36,10 +38,13 @@ router.post('/', async (req, res) => {
 
 router.get('/:workerId', async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
+    const skipSync = req.query.skipSync as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'Worker ID is required');
+    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
 
-    const worker = await workerController().getWorker(workerId);
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+
+    const worker = await workerController().getWorker(workerId, skipSync === 'true');
 
     const response: ApiResponse<ApiGetWorker> = {
         status: 'SUCCESS',
@@ -49,13 +54,37 @@ router.get('/:workerId', async (req, res) => {
             lastname: worker.lastname,
             email: worker.email,
             active: worker.active,
-            sync: true ? worker.sync : undefined, // TODO: Only if role of user is admin
+            sync: worker.sync,
         },
     };
     res.status(200).json(response);
 });
 
-// === Update worker ===
+router.get('/all', async (req, res) => {
+    const skipSync = req.query.skipSync as string | undefined;
+
+    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+
+    const { pageNumber, pageSize } = pagination(req);
+    const groupId = req.query.groupId as string | undefined;
+
+    const workers = await workerController().getWorkers();
+
+    const response: ApiResponse<ApiGetWorker[]> = {
+        status: 'SUCCESS',
+        data: workers.map((worker) => ({
+            id: worker.id,
+            name: worker.name,
+            lastname: worker.lastname,
+            email: worker.email,
+            active: worker.active,
+            sync: worker.sync,
+        })),
+    };
+    res.status(200).json(response);
+});
+
+// === Update worker === [ADMIN]
 
 const updateWorkerSchema: z.Schema<ApiUpdateWorker> = z.object({
     name: z.string().optional(),
@@ -68,11 +97,9 @@ const updateWorkerSchema: z.Schema<ApiUpdateWorker> = z.object({
 router.put('/:workerId', async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'Worker ID is required');
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
 
     const data = updateWorkerSchema.safeParse(req.body);
-
-    if (data.data?.sync !== undefined && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
 
     if (!data.success)
         throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
@@ -85,12 +112,12 @@ router.put('/:workerId', async (req, res) => {
     res.status(200).json(response);
 });
 
-// === Delete worker ===
+// === Delete worker === [ADMIN]
 
 router.delete('/:workerId', async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'Worker ID is required');
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
 
     await workerController().deleteWorker(workerId);
 

@@ -6,7 +6,10 @@
     "scripts": {
         "dev": "nodemon --watch src --ext ts --exec \"ts-node -r tsconfig-paths/register src/server.ts\"",
         "build": "tsc --project tsconfig.json && tsc-alias --project tsconfig.json",
-        "start": "node dist/backend/src/server.js"
+        "start": "node dist/backend/src/server.js",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate:dev": "prisma migrate dev",
+        "prisma:migrate:deploy": "prisma migrate deploy"
     },
     "keywords": [],
     "author": "",

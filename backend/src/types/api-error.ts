@@ -1,4 +1,4 @@
-import { ApiResponseStatus } from '@shared/api-response';
+import { ApiResponseStatus } from '@shared/types/api/api-response';
 
 export class ApiError {
     statusCode: number;

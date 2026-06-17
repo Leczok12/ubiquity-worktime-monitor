@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ApiError } from 'src/types/api-error';
+import { ApiError } from '@src/types/api-error';
 
 const permissionCheck = (role?: string) => {
     return async (req: Request, res: Response, next: NextFunction) => {

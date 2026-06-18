@@ -68,11 +68,11 @@ router.get('/all', async (req, res) => {
     const { pageNumber, pageSize } = pagination(req);
     const groupId = req.query.groupId as string | undefined;
 
-    const workers = await workerController().getWorkers();
+    const workers = await workerController().getWorkers(pageSize, pageNumber, groupId, skipSync === 'true');
 
     const response: ApiResponse<ApiGetWorker[]> = {
         status: 'SUCCESS',
-        data: workers.map((worker) => ({
+        data: workers.data.map((worker) => ({
             id: worker.id,
             name: worker.name,
             lastname: worker.lastname,
@@ -80,6 +80,7 @@ router.get('/all', async (req, res) => {
             active: worker.active,
             sync: worker.sync,
         })),
+        pagination: workers.pagination,
     };
     res.status(200).json(response);
 });

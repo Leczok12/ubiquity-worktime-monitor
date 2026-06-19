@@ -31,34 +31,10 @@ router.post('/', async (req, res) => {
     const response: ApiResponse<undefined> = {
         status: 'SUCCESS',
     };
-    res.status(201).json(response);
+    res.status(200).json(response);
 });
 
 // === Get worker ===
-
-router.get('/:workerId', async (req, res) => {
-    const workerId = req.params.workerId as string | undefined;
-    const skipSync = req.query.skipSync as string | undefined;
-
-    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
-
-    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
-
-    const worker = await workerController().getWorker(workerId, skipSync === 'true');
-
-    const response: ApiResponse<ApiGetWorker> = {
-        status: 'SUCCESS',
-        data: {
-            id: worker.id,
-            name: worker.name,
-            lastname: worker.lastname,
-            email: worker.email,
-            active: worker.active,
-            sync: worker.sync,
-        },
-    };
-    res.status(200).json(response);
-});
 
 router.get('/all', async (req, res) => {
     const skipSync = req.query.skipSync as string | undefined;
@@ -78,9 +54,61 @@ router.get('/all', async (req, res) => {
             lastname: worker.lastname,
             email: worker.email,
             active: worker.active,
-            sync: worker.sync,
+            sync: skipSync === 'true' ? worker.sync : undefined,
         })),
         pagination: workers.pagination,
+    };
+    res.status(200).json(response);
+});
+
+router.get('/find', async (req, res) => {
+    const keyword = req.query.keyword as string | undefined;
+
+    if (!keyword) throw new ApiError(400, 'INVALID_ARGS', 'Keyword is required');
+
+    const skipSync = req.query.skipSync as string | undefined;
+
+    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+
+    const { pageNumber, pageSize } = pagination(req);
+
+    const workers = await workerController().findWorkers(pageSize, pageNumber, keyword, skipSync === 'true');
+
+    const response: ApiResponse<ApiGetWorker[]> = {
+        status: 'SUCCESS',
+        data: workers.data.map((worker) => ({
+            id: worker.id,
+            name: worker.name,
+            lastname: worker.lastname,
+            email: worker.email,
+            active: worker.active,
+            sync: skipSync === 'true' ? worker.sync : undefined,
+        })),
+        pagination: workers.pagination,
+    };
+    res.status(200).json(response);
+});
+
+router.get('/:workerId', async (req, res) => {
+    const workerId = req.params.workerId as string | undefined;
+    const skipSync = req.query.skipSync as string | undefined;
+
+    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+
+    const worker = await workerController().getWorker(workerId, skipSync === 'true');
+
+    const response: ApiResponse<ApiGetWorker> = {
+        status: 'SUCCESS',
+        data: {
+            id: worker.id,
+            name: worker.name,
+            lastname: worker.lastname,
+            email: worker.email,
+            active: worker.active,
+            sync: skipSync === 'true' ? worker.sync : undefined,
+        },
     };
     res.status(200).json(response);
 });

@@ -54,7 +54,7 @@ model Worker {
 }
 
 model Group {
-  id        String  @id
+  id        String  @id @default(uuid())
   name      String
   sync      Boolean @default(true)
 

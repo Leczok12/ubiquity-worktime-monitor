@@ -1,5 +1,6 @@
 import { ApiCreateGroup, ApiGetGroup, ApiUpdateGroup } from '@shared/types/api/api-group';
 import { ApiResponse } from '@shared/types/api/api-response';
+import { ApiGetWorker } from '@shared/types/api/api-worker';
 import { groupController } from '@src/controllers/group-controller';
 import { ApiError } from '@src/types/api-error';
 import { pagination } from '@src/utils/pagination';
@@ -53,6 +54,33 @@ router.get('/all', async (req, res) => {
     res.status(200).json(response);
 });
 
+router.get('/:groupId/worker/all', async (req, res) => {
+    const groupId = req.params.groupId as string | undefined;
+    const skipSync = req.query.skipSync as string | undefined;
+
+    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+
+    if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
+
+    const { pageNumber, pageSize } = pagination(req);
+
+    const workers = await groupController().getGroupWorkers(groupId, pageSize, pageNumber, skipSync === 'true');
+
+    const response: ApiResponse<ApiGetWorker[]> = {
+        status: 'SUCCESS',
+        data: workers.data.map((worker) => ({
+            id: worker.id,
+            name: worker.name,
+            lastname: worker.lastname,
+            email: worker.email,
+            active: worker.active,
+            sync: skipSync === 'true' ? worker.sync : undefined,
+        })),
+        pagination: workers.pagination,
+    };
+    res.status(200).json(response);
+});
+
 router.get('/:groupId', async (req, res) => {
     const groupId = req.params.groupId as string | undefined;
     const skipSync = req.query.skipSync as string | undefined;
@@ -71,6 +99,21 @@ router.get('/:groupId', async (req, res) => {
 });
 
 // === Update group === [ADMIN]
+
+router.put('/:groupId/worker/:workerId', async (req, res) => {
+    const groupId = req.params.groupId as string | undefined;
+    const workerId = req.params.workerId as string | undefined;
+
+    if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+
+    await groupController().updateGroupWorker(groupId, workerId);
+
+    const response: ApiResponse<undefined> = {
+        status: 'SUCCESS',
+    };
+    res.status(200).json(response);
+});
 
 const updateGroupSchema: z.Schema<ApiUpdateGroup> = z.object({
     name: z.string().max(100),
@@ -96,6 +139,21 @@ router.put('/:groupId', async (req, res) => {
 });
 
 // === Delete group === [ADMIN]
+
+router.delete('/:groupId/worker/:workerId', async (req, res) => {
+    const groupId = req.params.groupId as string | undefined;
+    const workerId = req.params.workerId as string | undefined;
+
+    if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
+    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+
+    await groupController().deleteGroupWorker(groupId, workerId);
+
+    const response: ApiResponse<undefined> = {
+        status: 'SUCCESS',
+    };
+    res.status(200).json(response);
+});
 
 router.delete('/:groupId', async (req, res) => {
     const groupId = req.params.groupId as string | undefined;

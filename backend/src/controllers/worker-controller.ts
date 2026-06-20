@@ -1,4 +1,4 @@
-import { Prisma, Worker } from '@prisma/client';
+import { Group, Prisma, Worker } from '@prisma/client';
 import { ApiCreateWorker, ApiGetWorker, ApiUpdateWorker } from '@shared/types/api/api-worker';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
@@ -40,28 +40,12 @@ const workerController = () => {
     const getWorkers: (
         pageSize: number,
         pageNumber: number,
-        groupId?: string,
         skipSync?: boolean
-    ) => Promise<PaginationWrapper<Worker[]>> = async (pageSize, pageNumber, groupId, skipSync) => {
-        if (groupId) {
-            const group = await database.prisma.group.findUnique({
-                where: { id: groupId, sync: skipSync ? undefined : true },
-            });
-            if (!group) throw new ApiError(404, 'NOT_FOUND', 'Group not found');
-        }
-
-        const workerWhere = groupId
-            ? {
-                  AND: [{ groups: { some: { id: groupId } } }, { sync: skipSync ? undefined : true }],
-              }
-            : {
-                  sync: skipSync ? undefined : true,
-              };
-
+    ) => Promise<PaginationWrapper<Worker[]>> = async (pageSize, pageNumber, skipSync) => {
         const workers = await database.prisma.worker.findMany({
             take: pageSize,
             skip: (pageNumber - 1) * pageSize,
-            where: workerWhere,
+            where: { sync: skipSync ? undefined : true },
             orderBy: [{ lastname: 'asc' }, { name: 'asc' }],
         });
 
@@ -71,7 +55,7 @@ const workerController = () => {
                 page: pageNumber,
                 pageSize: pageSize,
                 total: await database.prisma.worker.count({
-                    where: workerWhere,
+                    where: { sync: skipSync ? undefined : true },
                 }),
             },
         };
@@ -113,6 +97,52 @@ const workerController = () => {
         };
     };
 
+    const getWorkerGroups: (
+        id: string,
+        pageSize: number,
+        pageNumber: number,
+        skipSync?: boolean
+    ) => Promise<PaginationWrapper<Group[]>> = async (
+        id: string,
+        pageSize: number,
+        pageNumber: number,
+        skipSync?: boolean
+    ) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: {
+                id: id,
+                sync: skipSync ? undefined : true,
+            },
+        });
+
+        if (!worker) throw new ApiError(404, 'NOT_FOUND');
+
+        const groups = await database.prisma.group.findMany({
+            where: {
+                workers: { some: { id: id, sync: skipSync ? undefined : true } },
+                sync: skipSync ? undefined : true,
+                orderBy: [{ name: 'asc' }],
+            },
+            take: pageSize,
+            skip: (pageNumber - 1) * pageSize,
+            orderBy: [{ name: 'asc' }],
+        });
+
+        return {
+            data: groups,
+            pagination: {
+                page: pageNumber,
+                pageSize: pageSize,
+                total: await database.prisma.group.count({
+                    where: {
+                        workers: { some: { id: id } },
+                        sync: skipSync ? undefined : true,
+                    },
+                }),
+            },
+        };
+    };
+
     const updateWorker = async (id: string, data: ApiUpdateWorker) => {
         const { count } = await database.prisma.worker.updateMany({
             where: { id: id },
@@ -128,6 +158,29 @@ const workerController = () => {
         if (count === 0) throw new ApiError(404, 'NOT_FOUND');
     };
 
+    const updateWorkerGroup = async (id: string, groupId: string) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: { id: id },
+        });
+
+        if (!worker) throw new ApiError(404, 'NOT_FOUND');
+
+        const group = await database.prisma.group.findUnique({
+            where: { id: groupId },
+        });
+
+        if (!group) throw new ApiError(404, 'NOT_FOUND', 'Group not found');
+
+        await database.prisma.worker.update({
+            where: { id: id },
+            data: {
+                groups: {
+                    connect: { id: groupId },
+                },
+            },
+        });
+    };
+
     const deleteWorker: (id: string) => Promise<void> = async (id: string) => {
         const { count } = await database.prisma.worker.deleteMany({
             where: { id: id },
@@ -136,7 +189,40 @@ const workerController = () => {
         if (count === 0) throw new ApiError(404, 'NOT_FOUND');
     };
 
-    return { createWorker, getWorker, getWorkers, findWorkers, updateWorker, deleteWorker };
+    const deleteWorkerGroup = async (id: string, groupId: string) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: { id: id },
+        });
+
+        if (!worker) throw new ApiError(404, 'NOT_FOUND');
+
+        const group = await database.prisma.group.findUnique({
+            where: { id: groupId },
+        });
+
+        if (!group) throw new ApiError(404, 'NOT_FOUND', 'Group not found');
+
+        await database.prisma.worker.update({
+            where: { id: id },
+            data: {
+                groups: {
+                    disconnect: { id: groupId },
+                },
+            },
+        });
+    };
+
+    return {
+        createWorker,
+        getWorker,
+        getWorkers,
+        findWorkers,
+        getWorkerGroups,
+        updateWorker,
+        updateWorkerGroup,
+        deleteWorker,
+        deleteWorkerGroup,
+    };
 };
 
 export { workerController };

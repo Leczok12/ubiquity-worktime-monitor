@@ -8,6 +8,6 @@ declare global {
 
 declare module 'express-session' {
     interface SessionData {
-        username: string; // whatever property you like
+        redirectTo: string | undefined;
     }
 }

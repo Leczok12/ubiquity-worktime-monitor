@@ -36,7 +36,6 @@ const startServer = async () => {
         app.use(express.urlencoded({ extended: true }));
 
         app.use(session);
-
         app.use(passport.initialize());
         app.use(passport.session());
 

@@ -8,7 +8,7 @@ if (process.env.MICROSOFT_ENABLED === 'true') {
     router.use('/microsoft', microsoftRouter);
 }
 
-router.post('/logout', (req: Request, res: Response) => {
+router.get('/logout', (req: Request, res: Response) => {
     req.session.destroy(() => {
         res.clearCookie('connect.sid');
         res.json({ message: 'Successfully logged out' });

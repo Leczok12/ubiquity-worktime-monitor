@@ -9,6 +9,7 @@ import { apiRouter } from './routers/api/api-router';
 import loggerMiddleware from './middlewares/logger-middleware';
 import { authRouter } from './routers/auth/auth-router';
 import { session } from './config/session';
+import { ApiError } from './types/api-error';
 
 // import { config } from './services/config/config-service';
 // import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
@@ -40,8 +41,9 @@ const startServer = async () => {
         app.use(passport.session());
 
         app.use(loggerMiddleware);
-        app.use('/api/auth', authRouter);
+        app.use('/auth', authRouter);
         app.use('/api', apiRouter);
+
         // app.use('/api/auth', authRouter);
         // app.use('/api/group', groupRouter);
         // app.use('/api/worker', workerRouter);
@@ -52,9 +54,9 @@ const startServer = async () => {
         // });
 
         // app.use('/', frontendRouter);
-        // app.use('/', (_req, _res) => {
-        //     throw new ApiError(404, 'NOT_FOUND');
-        // });
+        app.use('/', (_req, _res) => {
+            throw new ApiError(404, 'NOT_FOUND');
+        });
 
         app.use(errorHandler);
 

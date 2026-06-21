@@ -13,4 +13,4 @@ router.use('/', (req, res) => {
     res.send('Welcome to the Ubiquity Worktime Monitor v1API!');
 });
 
-export { router as v1Router };
+export { router as apiRouter };

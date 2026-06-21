@@ -8,10 +8,10 @@
         "install": "npm install --prefix frontend && npm install --prefix backend",
         "build": "node scripts/build.js",
         "start": "npm run start --prefix backend",
-        "dev:backend": "npx dotenv -e .env -- npm run dev --prefix backend",
-        "prisma:generate": "npx dotenv -e .env -- npm run prisma:generate --prefix backend",
-        "prisma:migrate:dev": "npx dotenv -e .env -- npm run prisma:migrate:dev --prefix backend",
-        "prisma:migrate:deploy": "npx dotenv -e .env -- npm run prisma:migrate:deploy --prefix backend"
+        "dev:backend": "npx dotenv-cli -e .env -- npm run dev --prefix backend",
+        "prisma:generate": "npx dotenv-cli -e .env -- npm run prisma:generate --prefix backend",
+        "prisma:migrate:dev": "npx dotenv-cli -e .env -- npm run prisma:migrate:dev --prefix backend",
+        "prisma:migrate:deploy": "npx dotenv-cli -e .env -- npm run prisma:migrate:deploy --prefix backend"
     },
     "author": "Leczok12",
     "license": "ISC",

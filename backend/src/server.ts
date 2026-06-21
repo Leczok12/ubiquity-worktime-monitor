@@ -1,12 +1,14 @@
 import express, { Request, Response, RequestHandler } from 'express';
 import errorHandler from './middlewares/error-handler';
-
-// import { passport } from './config/passport/passport';
+import { passport } from './config/passport/passport';
 //import { session } from './config/session';
 //import { createAdmin } from './config/create-admin';
 
 import { logger } from '@shared/utils/logger';
-import { apiRouter } from './api/api-router';
+import { apiRouter } from './routers/api/api-router';
+import loggerMiddleware from './middlewares/logger-middleware';
+import { authRouter } from './routers/auth/auth-router';
+import { session } from './config/session';
 
 // import { config } from './services/config/config-service';
 // import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
@@ -33,12 +35,13 @@ const startServer = async () => {
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
 
-        // app.use(session);
+        app.use(session);
 
-        // app.use(passport.initialize());
-        // app.use(passport.session());
+        app.use(passport.initialize());
+        app.use(passport.session());
 
-        app.use(logger.middleware.bind(logger));
+        app.use(loggerMiddleware);
+        app.use('/api/auth', authRouter);
         app.use('/api', apiRouter);
         // app.use('/api/auth', authRouter);
         // app.use('/api/group', groupRouter);

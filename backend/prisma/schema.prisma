@@ -21,14 +21,16 @@ model Log {
 model User {
   id                 String     @id @default(uuid())
   email              String     @unique
-  password           String
+  password           String?     
   name               String
   lastname           String
+  createdAt          DateTime   @default(now())
   lastLogin          DateTime?  
   lastPasswordChange DateTime   @default(now())
   isPasswordChange   Boolean    @default(false)
   isLocked           Boolean    @default(false)
   role               UserRole   @default(WORKER)
+  isLocal            Boolean    @default(true)  
 
   modifiedWorkEvents WorkEvent[]
 }

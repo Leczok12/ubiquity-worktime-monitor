@@ -1,9 +1,13 @@
+import 'express-session';
 import { User as PrismaUser } from '@prisma/client';
-
 declare global {
     namespace Express {
         interface User extends Omit<PrismaUser, 'password'> {}
     }
 }
 
-export {};
+declare module 'express-session' {
+    interface SessionData {
+        username: string; // whatever property you like
+    }
+}

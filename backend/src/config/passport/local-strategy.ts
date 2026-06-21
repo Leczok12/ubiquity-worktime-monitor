@@ -1,11 +1,13 @@
-import { Strategy } from 'passport-local';
-import { database } from 'src/config/database';
+import { Strategy as LocalStartegy } from 'passport-local';
+import { database } from '@src/config/database';
 import argon2 from 'argon2';
 
-export const localStrategy = new Strategy(async (username, password, done) => {
-    const user = await database.prisma.user.findFirst({ where: { email: username } });
+export const localStrategy = new LocalStartegy(async (username, password, done) => {
+    const user = await database.prisma.user.findFirst({
+        where: { AND: [{ email: username }, { isLocal: true }] },
+    });
 
-    if (!user) return done(null, false, { message: 'Invalid credentials' });
+    if (!user || !user.password) return done(null, false, { message: 'Invalid credentials' });
 
     try {
         const isValid = await argon2.verify(user.password, password);

@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction } from 'express';
 import { LogType } from './logger-types';
 
 class LoggerService {
@@ -60,9 +59,8 @@ class LoggerService {
         console.log(log);
     }
 
-    public middleware(req: Request, res: Response, next: NextFunction): void {
-        this.info(`${req.ip} ${req.user?.email || 'Anonymous'} ${req.method} ${req.url}`);
-        next();
+    public middleware(method: string, url: string, ip?: string, user?: string): void {
+        this.info(`${ip || 'Unknown'} ${user || 'Anonymous'} ${method} ${url}`);
     }
 
     public danger(message: string): void {

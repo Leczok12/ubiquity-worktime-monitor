@@ -158,29 +158,6 @@ const workerController = () => {
         if (count === 0) throw new ApiError(404, 'NOT_FOUND');
     };
 
-    const updateWorkerGroup = async (id: string, groupId: string) => {
-        const worker = await database.prisma.worker.findUnique({
-            where: { id: id },
-        });
-
-        if (!worker) throw new ApiError(404, 'NOT_FOUND');
-
-        const group = await database.prisma.group.findUnique({
-            where: { id: groupId },
-        });
-
-        if (!group) throw new ApiError(404, 'NOT_FOUND', 'Group not found');
-
-        await database.prisma.worker.update({
-            where: { id: id },
-            data: {
-                groups: {
-                    connect: { id: groupId },
-                },
-            },
-        });
-    };
-
     const deleteWorker: (id: string) => Promise<void> = async (id: string) => {
         const { count } = await database.prisma.worker.deleteMany({
             where: { id: id },
@@ -189,40 +166,7 @@ const workerController = () => {
         if (count === 0) throw new ApiError(404, 'NOT_FOUND');
     };
 
-    const deleteWorkerGroup = async (id: string, groupId: string) => {
-        const worker = await database.prisma.worker.findUnique({
-            where: { id: id },
-        });
-
-        if (!worker) throw new ApiError(404, 'NOT_FOUND');
-
-        const group = await database.prisma.group.findUnique({
-            where: { id: groupId },
-        });
-
-        if (!group) throw new ApiError(404, 'NOT_FOUND', 'Group not found');
-
-        await database.prisma.worker.update({
-            where: { id: id },
-            data: {
-                groups: {
-                    disconnect: { id: groupId },
-                },
-            },
-        });
-    };
-
-    return {
-        createWorker,
-        getWorker,
-        getWorkers,
-        findWorkers,
-        getWorkerGroups,
-        updateWorker,
-        updateWorkerGroup,
-        deleteWorker,
-        deleteWorkerGroup,
-    };
+    return { createWorker, getWorker, getWorkers, findWorkers, getWorkerGroups, updateWorker, deleteWorker };
 };
 
 export { workerController };

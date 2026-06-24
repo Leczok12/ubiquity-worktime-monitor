@@ -12,12 +12,6 @@ model Configuration {
   type  String
 }
 
-model Log {
-  id        String   @id @default(uuid())
-  date      DateTime
-  level     String
-  message   String
-}
 model User {
   id                 String     @id @default(uuid())
   email              String     @unique
@@ -33,6 +27,14 @@ model User {
   isLocal            Boolean    @default(true)  
 
   modifiedWorkEvents WorkEvent[]
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  role      UserRole @default(VIEWER)
 }
 
 enum UserRole {
@@ -82,7 +84,7 @@ model Event {
   id          String          @id @default(uuid())
   deviceId    String
   workerId    String
-  date        DateTime
+  date        DateTime       
 
   worker    Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
   device      Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)

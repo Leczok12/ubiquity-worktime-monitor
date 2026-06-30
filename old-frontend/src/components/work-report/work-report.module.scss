@@ -1,0 +1,86 @@
+.workReport {
+    > .workReportHeader {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        > * {
+            margin: 0;
+            padding: 0;
+        }
+        > p {
+            color: var(--bs-primary);
+        }
+    }
+}
+
+.workReportItem {
+    > div.workReportItemHeader {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-bottom: 10px;
+        :first-child {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            > * {
+                margin: 0;
+                padding: 0;
+            }
+            > p {
+                color: var(--bs-primary);
+            }
+        }
+    }
+
+    > .workReportItemListWrapper {
+        display: grid;
+        gap: 10px;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.2s ease;
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            > button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+        > * {
+            min-height: 0 !important;
+            overflow: hidden;
+        }
+    }
+}
+.workReportItem:hover {
+    > .workReportItemListWrapper {
+        grid-template-rows: 1fr;
+    }
+}
+
+.workReportItemListHeader,
+.workReportItemListItem {
+    display: grid;
+    cursor: pointer;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    > p {
+        margin: 0;
+        padding: 0;
+    }
+    > div {
+        display: flex;
+        gap: 10px;
+        > button {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}

@@ -1,0 +1,29 @@
+.timeline {
+    height: 10px;
+    width: 100%;
+    background-color: var(--bs-secondary-bg);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.timelineBar {
+    position: relative;
+    height: 10px;
+}
+
+.timelineBarActive {
+    animation: active 0.3s infinite;
+    z-index: 101 !important;
+    z-index: 101 !important;
+    z-index: 101 !important;
+
+    @keyframes active {
+        0% {
+        }
+        50% {
+            background-color: var(--bs-highlight-color);
+        }
+        100% {
+        }
+    }
+}

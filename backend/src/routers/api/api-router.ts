@@ -2,7 +2,7 @@ import express from 'express';
 import { workerRouter } from './worker-router';
 import { groupRouter } from './group-router';
 import { deviceRouter } from './device-router';
-import { eventRouter } from './api-event';
+import { eventRouter } from './event-router';
 
 const router = express.Router();
 

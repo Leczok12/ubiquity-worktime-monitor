@@ -1,5 +1,6 @@
-export type DeviceType = 'WORK_START_STOP' | 'BREAK_START' | 'BREAK_STOP' | 'UNUSED';
+export const deviceTypes = ['WORK_START_STOP', 'BREAK_START', 'BREAK_STOP', 'UNUSED'] as const;
 
+export type DeviceType = (typeof deviceTypes)[number];
 export interface ApiGetDevice {
     id: string;
     name: string;

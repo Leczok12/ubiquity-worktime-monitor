@@ -1,9 +1,10 @@
 import { createBrowserRouter } from 'react-router';
 import HomePage from '../pages/home-page';
 import RootLayout from '../layouts/root-layout';
-import AdminLayout from '../layouts/admin-layout/admin-layout';
+import AdminLayout from '../layouts/admin-layout';
 
-import AdminHomePage from '../pages/admin-home-page';
+import AdminGroupPage from '@src/pages/admin-group-page';
+import AdminDevicePage from '@src/pages/admin-device-page';
 
 const router = createBrowserRouter([
     // {
@@ -20,8 +21,9 @@ const router = createBrowserRouter([
         path: '/admin',
         element: <AdminLayout />,
         children: [
-            { index: true, element: <AdminHomePage /> },
-            { path: 'device', element: <AdminHomePage /> },
+            // { index: true, element: <AdminHomePage /> },
+            { path: 'devices', element: <AdminDevicePage /> },
+            { path: 'groups', element: <AdminGroupPage /> },
         ],
     },
     {

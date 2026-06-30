@@ -1,4 +1,4 @@
-import { Device } from '@prisma/client';
+import { Event, Device, Worker } from '@prisma/client';
 import { ApiCreateEvent, ApiGetEvent, ApiGetEventExtended, ApiUpdateEvent } from '@shared/types/api/api-event';
 import { logger } from '@shared/utils/logger';
 import { database } from '@src/config/database';
@@ -25,6 +25,31 @@ const eventController = () => {
         logger.success(`Event created: ${data.id}`);
     };
 
+    const getEvent: (id: string) => Promise<Event> = async (id: string) => {
+        const event = await database.prisma.event.findUnique({
+            where: { id: id },
+        });
+
+        if (!event) throw new ApiError(404, 'NOT_FOUND', 'Event not found');
+
+        return event;
+    };
+
+    const getEventExtended: (id: string) => Promise<Event & { device?: Device; worker?: Worker }> = async (
+        id: string
+    ) => {
+        const event = await database.prisma.event.findUnique({
+            where: { id: id },
+            include: {
+                device: true,
+                worker: true,
+            },
+        });
+
+        if (!event) throw new ApiError(404, 'NOT_FOUND', 'Event not found');
+
+        return event;
+    };
     // const getDevice: (id: string) => Promise<Device> = async (id: string) => {
     //     const device = await database.prisma.device.findUnique({
     //         where: { id: id },
@@ -90,7 +115,7 @@ const eventController = () => {
         logger.danger(`Event deleted: ${existingEvent.id}`);
     };
 
-    return { createEvent, updateEvent, deleteEvent };
+    return { createEvent, getEvent, getEventExtended, updateEvent, deleteEvent };
 };
 
 export { eventController };

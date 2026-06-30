@@ -21,7 +21,11 @@ router.post('/', async (req, res) => {
     const data = createGroupSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await groupController().createGroup(data.data);
 
@@ -34,20 +38,20 @@ router.post('/', async (req, res) => {
 // === Get group ===
 
 router.get('/all', async (req, res) => {
-    const skipSync = req.query.skipSync as string | undefined;
+    const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
 
     const { pageNumber, pageSize } = pagination(req);
 
-    const groups = await groupController().getGroups(pageSize, pageNumber, skipSync === 'true');
+    const groups = await groupController().getGroups(pageSize, pageNumber, skipShow === 'true');
 
     const response: ApiResponse<ApiGetGroup[]> = {
         status: 'SUCCESS',
         data: groups.data.map((group) => ({
             id: group.id,
             name: group.name,
-            sync: skipSync === 'true' ? group.sync : undefined,
+            show: skipShow === 'true' ? group.show : undefined,
         })),
         pagination: groups.pagination,
     };
@@ -56,15 +60,20 @@ router.get('/all', async (req, res) => {
 
 router.get('/:groupId/worker/all', async (req, res) => {
     const groupId = req.params.groupId as string | undefined;
-    const skipSync = req.query.skipSync as string | undefined;
+    const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
 
     if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
 
     const { pageNumber, pageSize } = pagination(req);
 
-    const workers = await groupController().getGroupWorkers(groupId, pageSize, pageNumber, skipSync === 'true');
+    const workers = await groupController().getGroupWorkers(
+        groupId,
+        pageSize,
+        pageNumber,
+        skipShow === 'true'
+    );
 
     const response: ApiResponse<ApiGetWorker[]> = {
         status: 'SUCCESS',
@@ -74,7 +83,7 @@ router.get('/:groupId/worker/all', async (req, res) => {
             lastname: worker.lastname,
             email: worker.email,
             active: worker.active,
-            sync: skipSync === 'true' ? worker.sync : undefined,
+            show: skipShow === 'true' ? worker.show : undefined,
         })),
         pagination: workers.pagination,
     };
@@ -83,13 +92,13 @@ router.get('/:groupId/worker/all', async (req, res) => {
 
 router.get('/:groupId', async (req, res) => {
     const groupId = req.params.groupId as string | undefined;
-    const skipSync = req.query.skipSync as string | undefined;
+    const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
 
     if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
 
-    const group = await groupController().getGroup(groupId, skipSync === 'true');
+    const group = await groupController().getGroup(groupId, skipShow === 'true');
 
     const response: ApiResponse<ApiGetGroup> = {
         status: 'SUCCESS',
@@ -116,8 +125,8 @@ router.put('/:groupId/worker/:workerId', async (req, res) => {
 });
 
 const updateGroupSchema: z.Schema<ApiUpdateGroup> = z.object({
-    name: z.string().max(100),
-    sync: z.boolean().optional(),
+    name: z.string().max(100).optional(),
+    show: z.boolean().optional(),
 });
 
 router.put('/:groupId', async (req, res) => {
@@ -128,7 +137,11 @@ router.put('/:groupId', async (req, res) => {
     const data = updateGroupSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await groupController().updateGroup(groupId, data.data);
 

@@ -10,7 +10,7 @@ import loggerMiddleware from './middlewares/logger-middleware';
 import { authRouter } from './routers/auth/auth-router';
 import { session } from './config/session';
 import { ApiError } from './types/api-error';
-
+import { ENV } from '@src/config/enviroment';
 // import { config } from './services/config/config-service';
 // import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 
@@ -31,7 +31,6 @@ const startServer = async () => {
 
         // const port = await config.getValue('SERVER_PORT');
         console.log('Starting server...', process.env.DEV);
-        const port = 3000;
         const app = express();
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
@@ -60,8 +59,8 @@ const startServer = async () => {
 
         app.use(errorHandler);
 
-        app.listen(port, () => {
-            logger.success(`Server is running on port ${port}`);
+        app.listen(ENV.APP_PORT, () => {
+            logger.success(`Server is running on port ${ENV.APP_PORT}`);
         });
     } catch (error) {
         logger.error(`Failed to start server: ${error instanceof Error ? error.message : error}`);

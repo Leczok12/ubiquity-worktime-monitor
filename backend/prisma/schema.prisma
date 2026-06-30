@@ -50,7 +50,7 @@ model Worker {
   lastname  String
   email     String?
   active    Boolean 
-  sync      Boolean @default(true)
+  show      Boolean @default(true)
 
   events    Event[]
   groups    Group[] @relation("WorkerGroups")
@@ -60,7 +60,7 @@ model Worker {
 model Group {
   id        String  @id @default(uuid())
   name      String
-  sync      Boolean @default(true)
+  show      Boolean @default(true)
 
   workers Worker[] @relation("WorkerGroups")
 }

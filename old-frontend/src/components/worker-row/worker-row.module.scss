@@ -1,0 +1,26 @@
+.workerRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 0px;
+
+    > div {
+        padding: 8px 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+    }
+
+    > button {
+        height: 50px;
+        width: 50px;
+    }
+
+    p {
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+    }
+}

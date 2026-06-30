@@ -10,16 +10,18 @@ export default defineConfig({
     resolve: {
         alias: {
             '@src': path.resolve(__dirname, './src'),
-            '@shared': path.resolve(__dirname, '../types'),
-            '@bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+            '@shared': path.resolve(__dirname, '../shared'),
         },
     },
     server: {
         host: '127.0.0.1',
-        port: 4173,
+        port: process.env.DEV_FRONTEND_PORT ? parseInt(process.env.DEV_FRONTEND_PORT) : 5173,
         proxy: {
             '/api': {
-                target: 'http://localhost:9999',
+                target:
+                    process.env.DEV === 'true'
+                        ? process.env.DEV_BACKEND_URL
+                        : (process.env.APP_URL ?? 'http://localhost:3000'),
                 changeOrigin: true,
                 secure: false,
             },

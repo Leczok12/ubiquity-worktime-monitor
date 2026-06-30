@@ -50,29 +50,6 @@ router.get('/all', async (req, res) => {
     res.status(200).json(response);
 });
 
-// router.get('/:workerId/group/all', async (req, res) => {
-//     const workerId = req.params.workerId as string | undefined;
-//     const skipSync = req.query.skipSync as string | undefined;
-
-//     if (skipSync === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
-
-//     if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
-
-//     const { pageNumber, pageSize } = pagination(req);
-
-//     const groups = await workerController().getWorkerGroups(workerId, pageSize, pageNumber, skipSync === 'true');
-
-//     const response: ApiResponse<ApiGetGroup[]> = {
-//         status: 'SUCCESS',
-//         data: groups.data.map((group) => ({
-//             id: group.id,
-//             name: group.name,
-//         })),
-//         pagination: groups.pagination,
-//     };
-//     res.status(200).json(response);
-// });
-
 router.get('/:deviceId', async (req, res) => {
     const deviceId = req.params.deviceId as string | undefined;
 

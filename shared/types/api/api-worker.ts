@@ -4,7 +4,7 @@ export interface ApiGetWorker {
     lastname: string;
     email: string | null;
     active: boolean;
-    sync?: boolean;
+    show?: boolean;
 }
 
 export interface ApiCreateWorker {
@@ -13,7 +13,7 @@ export interface ApiCreateWorker {
     lastname: string;
     email: string | null;
     active: boolean;
-    sync?: boolean;
+    show?: boolean;
 }
 
 export interface ApiUpdateWorker {
@@ -21,5 +21,5 @@ export interface ApiUpdateWorker {
     lastname?: string;
     email?: string | null;
     active?: boolean;
-    sync?: boolean;
+    show?: boolean;
 }

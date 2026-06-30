@@ -1,5 +1,4 @@
-const DEV = process.env.NODE_ENV === 'true';
-
+const DEV = process.env.DEV === 'true';
 export const ENV = {
     DEV: DEV,
 

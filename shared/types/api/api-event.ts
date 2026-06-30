@@ -10,8 +10,8 @@ export interface ApiGetEvent {
 
 export interface ApiGetEventExtended {
     id: string;
-    device: ApiGetDevice;
-    worker: ApiGetWorker;
+    device?: ApiGetDevice;
+    worker?: ApiGetWorker;
     date: string; // ISO 8601 date string
 }
 

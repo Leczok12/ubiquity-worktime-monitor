@@ -1,0 +1,27 @@
+.workerHero {
+    > .content {
+        display: grid;
+        grid-template-areas:
+            'name status'
+            'email status';
+        grid-template-columns: 1fr 50px;
+        gap: 10px;
+        h1 {
+            grid-area: name;
+            margin: 0;
+            padding: 0;
+        }
+        p {
+            grid-area: email;
+            margin: 0;
+            padding: 0;
+            color: var(--text-secondary);
+        }
+        .status {
+            grid-area: status;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}

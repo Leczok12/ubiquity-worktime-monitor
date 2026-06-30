@@ -1,16 +1,16 @@
 export interface ApiGetGroup {
     id: string;
     name: string;
-    sync?: boolean;
+    show?: boolean;
 }
 
 export interface ApiCreateGroup {
     id?: string;
     name: string;
-    sync?: boolean;
+    show?: boolean;
 }
 
 export interface ApiUpdateGroup {
-    name: string;
-    sync?: boolean;
+    name?: string;
+    show?: boolean;
 }

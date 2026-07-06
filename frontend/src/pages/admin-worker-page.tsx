@@ -1,17 +1,19 @@
 import { Container, Heading } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { getApiGroups } from '@src/api/api-group';
-import { AdminGroupTable, AdminGroupTableRow } from '@src/components/admin-group-table';
 import Pagination from '@src/components/pagination';
 import { useState } from 'react';
+import { AdminWorkerTable, AdminWorkerTableRow } from '@src/components/admin-worker-table';
+import { getApiWorkers } from '@src/api/api-worker';
 
-const AdminGroupPage = () => {
-    const pageSize = 25;
+const AdminWorkerPage = () => {
+    const pageSize = 15;
     const [pageNumber, setPageNumber] = useState(1);
+    const [groupId, setGroupId] = useState<string | undefined>(undefined);
+    const [keyword, setKeyword] = useState<string | undefined>(undefined);
     const { data, isLoading, error } = useQuery({
-        queryKey: ['admin', 'group', pageNumber, pageSize],
+        queryKey: ['admin', 'worker', pageNumber, pageSize],
         queryFn: async () => {
-            return getApiGroups(pageNumber, pageSize, true);
+            return getApiWorkers(pageNumber, pageSize, keyword, groupId, true);
         },
         retry: false,
         staleTime: 0,
@@ -21,17 +23,17 @@ const AdminGroupPage = () => {
     return (
         <Container pb={20}>
             <Heading size="4xl" mb={6}>
-                Groups
+                Workers
             </Heading>
-            <AdminGroupTable
+            <AdminWorkerTable
                 loading={isLoading}
                 error={error?.message}
                 empty={data?.data?.length === 0}
             >
-                {data?.data?.map((group) => (
-                    <AdminGroupTableRow key={group.id} data={group} />
+                {data?.data?.map((worker) => (
+                    <AdminWorkerTableRow key={worker.id} data={worker} />
                 ))}
-            </AdminGroupTable>
+            </AdminWorkerTable>
             <Pagination
                 show={data !== undefined}
                 pageNumber={pageNumber}
@@ -45,4 +47,4 @@ const AdminGroupPage = () => {
     );
 };
 
-export default AdminGroupPage;
+export default AdminWorkerPage;

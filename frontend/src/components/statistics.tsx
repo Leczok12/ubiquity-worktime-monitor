@@ -22,6 +22,7 @@ const Statistics: FC<{ data?: ApiGetStatistics; loading?: boolean; error?: strin
                 <Card.Body h={'fit-content'}>
                     <Skeleton loading={!value}>
                         <Heading size="5xl" justifyContent={'center'} textAlign={'center'}>
+                            {!value && ' '}
                             {value}
                             {total !== undefined ? (
                                 <Text as="span" opacity={0.5} fontSize="3xl">

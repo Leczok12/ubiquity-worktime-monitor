@@ -6,6 +6,7 @@ import AdminLayout from '../layouts/admin-layout';
 import AdminGroupPage from '@src/pages/admin-group-page';
 import AdminDevicePage from '@src/pages/admin-device-page';
 import AdminHomePage from '@src/pages/admin-home-page';
+import AdminWorkerPage from '@src/pages/admin-worker-page';
 
 const router = createBrowserRouter([
     // {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
             { path: '', element: <AdminHomePage /> },
+            { path: 'workers', element: <AdminWorkerPage /> },
             { path: 'devices', element: <AdminDevicePage /> },
             { path: 'groups', element: <AdminGroupPage /> },
         ],

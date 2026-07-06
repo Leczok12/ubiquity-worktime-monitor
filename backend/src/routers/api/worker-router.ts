@@ -173,7 +173,7 @@ const updateWorkerSchema: z.Schema<ApiUpdateWorker> = z.object({
     lastname: z.string().optional(),
     email: z.string().optional(),
     active: z.boolean().optional(),
-    sync: z.boolean().optional(),
+    show: z.boolean().optional(),
 });
 
 router.put('/:workerId', async (req, res) => {

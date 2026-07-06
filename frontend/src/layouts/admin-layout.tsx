@@ -3,7 +3,7 @@ import { Tooltip } from '../components/ui/tooltip';
 import type { IconType } from 'react-icons';
 import { VscDeviceMobile } from 'react-icons/vsc';
 import { Outlet, useLocation, useNavigate } from 'react-router';
-import { GrGroup, GrUser, GrUserWorker, GrHomeRounded } from 'react-icons/gr';
+import { GrGroup, GrUser, GrUserWorker, GrHomeRounded, GrDashboard } from 'react-icons/gr';
 import { FaGear } from 'react-icons/fa6';
 
 const AdminLayout = () => {
@@ -11,11 +11,37 @@ const AdminLayout = () => {
     const location = useLocation();
 
     const links = [
-        { label: 'Workers', icon: GrUserWorker, onClick: () => navigator('/admin/workers') },
-        { label: 'Groups', icon: GrGroup, onClick: () => navigator('/admin/groups') },
-        { label: 'Devices', icon: VscDeviceMobile, onClick: () => navigator('/admin/devices') },
-        { label: 'Users', icon: GrUser, onClick: () => navigator('/admin/users') },
-        { label: 'Config', icon: FaGear, onClick: () => navigator('/admin/config') },
+        { label: 'Home', icon: GrDashboard, path: '/admin', onClick: () => navigator('/admin') },
+        {
+            label: 'Workers',
+            icon: GrUserWorker,
+            path: '/admin/workers',
+            onClick: () => navigator('/admin/workers'),
+        },
+        {
+            label: 'Groups',
+            icon: GrGroup,
+            path: '/admin/groups',
+            onClick: () => navigator('/admin/groups'),
+        },
+        {
+            label: 'Devices',
+            icon: VscDeviceMobile,
+            path: '/admin/devices',
+            onClick: () => navigator('/admin/devices'),
+        },
+        {
+            label: 'Users',
+            icon: GrUser,
+            path: '/admin/users',
+            onClick: () => navigator('/admin/users'),
+        },
+        {
+            label: 'Config',
+            icon: FaGear,
+            path: '/admin/config',
+            onClick: () => navigator('/admin/config'),
+        },
     ];
 
     console.log('AdminLayout rendered');
@@ -64,9 +90,7 @@ const AdminLayout = () => {
                             label={link.label}
                             icon={link.icon}
                             onClick={link.onClick}
-                            highlighted={location.pathname.startsWith(
-                                `/admin/${link.label.toLowerCase()}`
-                            )}
+                            highlighted={location.pathname === link.path}
                         />
                     ))}
                 </Flex>

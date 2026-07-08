@@ -14,8 +14,6 @@ const AdminHomePage = () => {
         gcTime: 0,
     });
 
-    console.log('AdminHomePage data:', data);
-
     return (
         <Container pb={20}>
             <Heading size="4xl" mb={6}>

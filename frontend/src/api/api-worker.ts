@@ -25,7 +25,7 @@ export const getApiWorkers = async (
     const path = (() => {
         if (keyword !== undefined && keyword.trim() !== '') {
             searchParams.set('keyword', keyword.trim());
-            return '/api/worker/search?';
+            return '/api/worker/find?';
         }
 
         if (groupId !== undefined && groupId.trim() !== '') {

@@ -40,7 +40,7 @@ const startServer = async () => {
         app.use(passport.session());
 
         app.use(loggerMiddleware);
-        app.use('/auth', authRouter);
+        app.use('/api/auth', authRouter);
         app.use('/api', apiRouter);
 
         // app.use('/api/auth', authRouter);

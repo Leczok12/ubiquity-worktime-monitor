@@ -2,11 +2,13 @@ import { createBrowserRouter } from 'react-router';
 import HomePage from '../pages/home-page';
 import RootLayout from '../layouts/root-layout';
 import AdminLayout from '../layouts/admin-layout';
+import AuthLayout from '@src/layouts/auth-layout';
 
 import AdminGroupPage from '@src/pages/admin-group-page';
 import AdminDevicePage from '@src/pages/admin-device-page';
 import AdminHomePage from '@src/pages/admin-home-page';
 import AdminWorkerPage from '@src/pages/admin-worker-page';
+import AuthLoginPage from '@src/pages/auth-login-page';
 
 const router = createBrowserRouter([
     // {
@@ -28,6 +30,11 @@ const router = createBrowserRouter([
             { path: 'devices', element: <AdminDevicePage /> },
             { path: 'groups', element: <AdminGroupPage /> },
         ],
+    },
+    {
+        path: '/auth',
+        element: <AuthLayout />,
+        children: [{ path: 'login', element: <AuthLoginPage /> }],
     },
     {
         path: '/',

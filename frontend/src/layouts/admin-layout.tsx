@@ -98,7 +98,7 @@ const AdminLayout = () => {
     return (
         <>
             <Flex
-                zIndex={100}
+                zIndex={9999}
                 position="fixed"
                 bg="gray.800"
                 top={0}

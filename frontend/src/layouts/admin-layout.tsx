@@ -5,10 +5,35 @@ import { VscDeviceMobile } from 'react-icons/vsc';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { GrGroup, GrUser, GrUserWorker, GrHomeRounded, GrDashboard } from 'react-icons/gr';
 import { FaGear } from 'react-icons/fa6';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { getApiAuthUser } from '@src/api/api-auth';
 
 const AdminLayout = () => {
     const navigator = useNavigate();
     const location = useLocation();
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['auth', 'user'],
+        queryFn: getApiAuthUser,
+        retry: false,
+        staleTime: 0, // 5 minutes
+        gcTime: 0, // 10 minutes
+    });
+
+    console.log('AdminLayout data:', data, error);
+
+    useEffect(() => {
+        if (data?.status === 'UNAUTHORIZED') {
+            navigator('/auth/login');
+        } else if (data?.status === 'SUCCESS' && data.data?.role !== 'SYSTEM_ADMIN') {
+            navigator('/');
+        }
+    }, [data, navigator]);
+
+    if (isLoading || !data) {
+        return null;
+    }
 
     const links = [
         { label: 'Home', icon: GrDashboard, path: '/admin', onClick: () => navigator('/admin') },

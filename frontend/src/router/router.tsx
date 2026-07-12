@@ -9,6 +9,7 @@ import AdminDevicePage from '@src/pages/admin-device-page';
 import AdminHomePage from '@src/pages/admin-home-page';
 import AdminWorkerPage from '@src/pages/admin-worker-page';
 import AuthLoginPage from '@src/pages/auth-login-page';
+import AuthLogoutPage from '@src/pages/auth-logout-page';
 
 const router = createBrowserRouter([
     // {
@@ -34,7 +35,10 @@ const router = createBrowserRouter([
     {
         path: '/auth',
         element: <AuthLayout />,
-        children: [{ path: 'login', element: <AuthLoginPage /> }],
+        children: [
+            { path: 'login', element: <AuthLoginPage /> },
+            { path: 'logout', element: <AuthLogoutPage /> },
+        ],
     },
     {
         path: '/',

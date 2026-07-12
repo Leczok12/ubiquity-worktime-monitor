@@ -2,7 +2,7 @@ import { Alert, Button, Card, Heading, IconButton, Input } from '@chakra-ui/reac
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FaGoogle, FaMicrosoft } from 'react-icons/fa6';
-import { getAuthConfig } from '@src/api/api-auth';
+import { getApiAuthConfig } from '@src/api/api-auth';
 import { useNavigate } from 'react-router';
 
 const AuthLoginPage = () => {
@@ -10,7 +10,7 @@ const AuthLoginPage = () => {
     const [loginError, setLoginError] = useState<string | undefined>(undefined);
     const { data, isLoading, error } = useQuery({
         queryKey: ['auth', 'config'],
-        queryFn: getAuthConfig,
+        queryFn: getApiAuthConfig,
         retry: false,
         staleTime: 0,
         gcTime: 0,

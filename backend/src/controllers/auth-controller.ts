@@ -1,7 +1,8 @@
 import { ApiAuthConfig, ApiAuthUser } from '@shared/types/api/api-auth';
+import { ApiResponse } from '@sharedtypes/api-response';
 import { ENV } from '@src/config/enviroment';
 import { ApiError } from '@src/types/api-error';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 const authController = () => {
     const getConfig: () => Promise<ApiAuthConfig> = async () => {
@@ -31,7 +32,24 @@ const authController = () => {
         };
     };
 
-    return { getConfig, getUser };
+    const logout: (req: Request, res: Response) => Promise<void> = async (
+        req: Request,
+        res: Response
+    ) => {
+        if (!req.isAuthenticated())
+            throw new ApiError(401, 'UNAUTHORIZED', 'User is not authenticated');
+
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid');
+
+            const response: ApiResponse<undefined> = {
+                status: 'SUCCESS',
+            };
+            res.status(200).json(response);
+        });
+    };
+
+    return { getConfig, getUser, logout };
 };
 
 export { authController };

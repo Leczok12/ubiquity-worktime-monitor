@@ -19,20 +19,34 @@ const Statistics: FC<{ data?: ApiGetStatistics; loading?: boolean; error?: strin
                         {label}
                     </Heading>
                 </Card.Header>
-                <Card.Body h={'fit-content'}>
-                    <Skeleton loading={!value}>
-                        <Heading size="5xl" justifyContent={'center'} textAlign={'center'}>
-                            {!value && ' '}
-                            {value}
-                            {total !== undefined ? (
-                                <Text as="span" opacity={0.5} fontSize="3xl">
-                                    {' '}
-                                    / {total}
-                                </Text>
-                            ) : (
-                                ''
-                            )}
-                        </Heading>
+                <Card.Body>
+                    <Skeleton
+                        loading={value === undefined}
+                        display={'flex'}
+                        justifyContent={'center'}
+                        gap={2}
+                        alignItems={'flex-end'}
+                        textAlign={'center'}
+                    >
+                        {value === undefined ? (
+                            <Heading size="5xl">--</Heading>
+                        ) : (
+                            <>
+                                <Heading
+                                    size="5xl"
+                                    justifyContent={'center'}
+                                    display={'flex'}
+                                    textAlign={'center'}
+                                >
+                                    {value}
+                                </Heading>
+                                {total !== undefined && (
+                                    <Text as="span" p={0} m={0} opacity={0.5} fontSize="3xl">
+                                        / {total}
+                                    </Text>
+                                )}
+                            </>
+                        )}
                     </Skeleton>
                 </Card.Body>
             </Card.Root>
@@ -56,7 +70,7 @@ const Statistics: FC<{ data?: ApiGetStatistics; loading?: boolean; error?: strin
             flexDirection={'row'}
             p={0}
             gap={4}
-            gridTemplateColumns={'repeat(auto-fit, minmax(350px, 1fr))'}
+            gridTemplateColumns={'repeat(auto-fit, minmax(200px, 1fr))'}
             justifyContent={'space-between'}
         >
             <Tile

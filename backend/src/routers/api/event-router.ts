@@ -1,10 +1,15 @@
 import { $Enums } from '@prisma/client';
-import { ApiUpdateEvent, ApiCreateEvent, ApiGetEventExtended, ApiGetEvent } from '@shared/types/api/api-event';
+import {
+    ApiUpdateEvent,
+    ApiCreateEvent,
+    ApiGetEventExtended,
+    ApiGetEvent,
+} from '@shared/types/api/api-event';
 import { ApiResponse } from '@shared/types/api/api-response';
 import { deviceController } from '@src/controllers/device-controller';
 import { eventController } from '@src/controllers/event-controller';
+import { authorizerMiddleware } from '@src/middlewares/authorizer-middleware';
 import { ApiError } from '@src/types/api-error';
-import { pagination } from '@src/utils/pagination';
 import express from 'express';
 import z from 'zod';
 
@@ -19,11 +24,15 @@ const createEventSchema: z.Schema<ApiCreateEvent> = z.object({
     date: z.string(),
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const data = createEventSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await eventController().createEvent(data.data);
 
@@ -35,7 +44,7 @@ router.post('/', async (req, res) => {
 
 // === Get event === [VIEWER]
 
-router.get('/:eventId', async (req, res) => {
+router.get('/:eventId', authorizerMiddleware($Enums.UserRole.VIEWER), async (req, res) => {
     const eventId = req.params.eventId as string | undefined;
 
     if (!eventId) throw new ApiError(400, 'INVALID_ARGS', 'Event ID is required');
@@ -64,7 +73,7 @@ router.get('/:eventId', async (req, res) => {
                           lastname: event.worker.lastname,
                           email: event.worker.email,
                           active: event.worker.active,
-                          sync: undefined,
+                          show: undefined,
                       }
                     : undefined,
             },
@@ -86,13 +95,15 @@ router.get('/:eventId', async (req, res) => {
     }
 });
 
+// === Update event === [ADMIN]
+
 const updateEventSchema: z.Schema<ApiUpdateEvent> = z.object({
     deviceId: z.string().optional(),
     workerId: z.string().optional(),
     date: z.string().optional(),
 });
 
-router.put('/:eventId', async (req, res) => {
+router.put('/:eventId', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const eventId = req.params.eventId as string | undefined;
 
     if (!eventId) throw new ApiError(400, 'INVALID_ARGS', 'Event ID is required');
@@ -100,7 +111,11 @@ router.put('/:eventId', async (req, res) => {
     const data = updateEventSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await eventController().updateEvent(eventId, data.data);
 
@@ -112,7 +127,7 @@ router.put('/:eventId', async (req, res) => {
 
 // === Delete event === [ADMIN]
 
-router.delete('/:eventId', async (req, res) => {
+router.delete('/:eventId', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const eventId = req.params.eventId as string | undefined;
 
     if (!eventId) throw new ApiError(400, 'INVALID_ARGS', 'Event ID is required');

@@ -2,6 +2,7 @@ import { $Enums } from '@prisma/client';
 import { ApiCreateDevice, ApiGetDevice, ApiUpdateDevice } from '@shared/types/api/api-device';
 import { ApiResponse } from '@shared/types/api/api-response';
 import { deviceController } from '@src/controllers/device-controller';
+import { authorizerMiddleware } from '@src/middlewares/authorizer-middleware';
 import { ApiError } from '@src/types/api-error';
 import { pagination } from '@src/utils/pagination';
 import express from 'express';
@@ -17,11 +18,15 @@ const createDeviceSchema: z.Schema<ApiCreateDevice> = z.object({
     type: z.enum($Enums.DeviceType),
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const data = createDeviceSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await deviceController().createDevice(data.data);
 
@@ -33,7 +38,7 @@ router.post('/', async (req, res) => {
 
 // === Get device === [ADMIN]
 
-router.get('/all', async (req, res) => {
+router.get('/all', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const { pageNumber, pageSize } = pagination(req);
 
     const devices = await deviceController().getDevices(pageSize, pageNumber);
@@ -50,7 +55,7 @@ router.get('/all', async (req, res) => {
     res.status(200).json(response);
 });
 
-router.get('/:deviceId', async (req, res) => {
+router.get('/:deviceId', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const deviceId = req.params.deviceId as string | undefined;
 
     if (!deviceId) throw new ApiError(400, 'INVALID_ARGS', 'Device ID is required');
@@ -75,7 +80,7 @@ const updateDeviceSchema: z.Schema<ApiUpdateDevice> = z.object({
     type: z.enum($Enums.DeviceType).optional(),
 });
 
-router.put('/:deviceId', async (req, res) => {
+router.put('/:deviceId', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const deviceId = req.params.deviceId as string | undefined;
 
     if (!deviceId) throw new ApiError(400, 'INVALID_ARGS', 'Device ID is required');
@@ -83,7 +88,11 @@ router.put('/:deviceId', async (req, res) => {
     const data = updateDeviceSchema.safeParse(req.body);
 
     if (!data.success)
-        throw new ApiError(400, 'INVALID_ARGS', data.error.issues.map((issue) => issue.message).join(', '));
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
 
     await deviceController().updateDevice(deviceId, data.data);
 
@@ -95,17 +104,21 @@ router.put('/:deviceId', async (req, res) => {
 
 // === Delete device === [ADMIN]
 
-router.delete('/:deviceId', async (req, res) => {
-    const deviceId = req.params.deviceId as string | undefined;
+router.delete(
+    '/:deviceId',
+    authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN),
+    async (req, res) => {
+        const deviceId = req.params.deviceId as string | undefined;
 
-    if (!deviceId) throw new ApiError(400, 'INVALID_ARGS', 'Device ID is required');
+        if (!deviceId) throw new ApiError(400, 'INVALID_ARGS', 'Device ID is required');
 
-    await deviceController().deleteDevice(deviceId);
+        await deviceController().deleteDevice(deviceId);
 
-    const response: ApiResponse<undefined> = {
-        status: 'SUCCESS',
-    };
-    res.status(200).json(response);
-});
+        const response: ApiResponse<undefined> = {
+            status: 'SUCCESS',
+        };
+        res.status(200).json(response);
+    }
+);
 
 export { router as deviceRouter };

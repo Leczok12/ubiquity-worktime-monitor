@@ -1,9 +1,12 @@
+import { $Enums } from '@prisma/client';
 import { ApiGetGroup } from '@shared/types/api/api-group';
 import { ApiResponse } from '@shared/types/api/api-response';
 import { ApiCreateWorker, ApiGetWorker, ApiUpdateWorker } from '@shared/types/api/api-worker';
 import { groupController } from '@src/controllers/group-controller';
 import { workerController } from '@src/controllers/worker-controller';
+import { authorizerMiddleware } from '@src/middlewares/authorizer-middleware';
 import { ApiError } from '@src/types/api-error';
+import { authorizer } from '@src/utils/authorizer';
 import { pagination } from '@src/utils/pagination';
 import express from 'express';
 import { skip } from 'node:test';
@@ -22,7 +25,7 @@ const createWorkerSchema: z.Schema<ApiCreateWorker> = z.object({
     sync: z.boolean().optional(),
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const data = createWorkerSchema.safeParse(req.body);
 
     if (!data.success)
@@ -40,12 +43,12 @@ router.post('/', async (req, res) => {
     res.status(200).json(response);
 });
 
-// === Get worker ===
+// === Get worker === [VIEWER]
 
-router.get('/all', async (req, res) => {
+router.get('/all', authorizerMiddleware($Enums.UserRole.VIEWER), async (req, res) => {
     const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true') authorizer(req, $Enums.UserRole.SYSTEM_ADMIN);
 
     const { pageNumber, pageSize } = pagination(req);
 
@@ -66,14 +69,14 @@ router.get('/all', async (req, res) => {
     res.status(200).json(response);
 });
 
-router.get('/find', async (req, res) => {
+router.get('/find', authorizerMiddleware($Enums.UserRole.VIEWER), async (req, res) => {
     const keyword = req.query.keyword as string | undefined;
 
     if (!keyword) throw new ApiError(400, 'INVALID_ARGS', 'Keyword is required');
 
     const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true') authorizer(req, $Enums.UserRole.SYSTEM_ADMIN);
 
     const { pageNumber, pageSize } = pagination(req);
 
@@ -99,39 +102,43 @@ router.get('/find', async (req, res) => {
     res.status(200).json(response);
 });
 
-router.get('/:workerId/group/all', async (req, res) => {
+router.get(
+    '/:workerId/group/all',
+    authorizerMiddleware($Enums.UserRole.VIEWER),
+    async (req, res) => {
+        const workerId = req.params.workerId as string | undefined;
+        const skipShow = req.query.skipShow as string | undefined;
+
+        if (skipShow === 'true') authorizer(req, $Enums.UserRole.SYSTEM_ADMIN);
+
+        if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+
+        const { pageNumber, pageSize } = pagination(req);
+
+        const groups = await workerController().getWorkerGroups(
+            workerId,
+            pageSize,
+            pageNumber,
+            skipShow === 'true'
+        );
+
+        const response: ApiResponse<ApiGetGroup[]> = {
+            status: 'SUCCESS',
+            data: groups.data.map((group) => ({
+                id: group.id,
+                name: group.name,
+            })),
+            pagination: groups.pagination,
+        };
+        res.status(200).json(response);
+    }
+);
+
+router.get('/:workerId', authorizerMiddleware($Enums.UserRole.VIEWER), async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
     const skipShow = req.query.skipShow as string | undefined;
 
-    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
-
-    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
-
-    const { pageNumber, pageSize } = pagination(req);
-
-    const groups = await workerController().getWorkerGroups(
-        workerId,
-        pageSize,
-        pageNumber,
-        skipShow === 'true'
-    );
-
-    const response: ApiResponse<ApiGetGroup[]> = {
-        status: 'SUCCESS',
-        data: groups.data.map((group) => ({
-            id: group.id,
-            name: group.name,
-        })),
-        pagination: groups.pagination,
-    };
-    res.status(200).json(response);
-});
-
-router.get('/:workerId', async (req, res) => {
-    const workerId = req.params.workerId as string | undefined;
-    const skipShow = req.query.skipShow as string | undefined;
-
-    if (skipShow === 'true' && false) throw new ApiError(403, 'FORBIDDEN'); // TODO: Only if role of user is admin
+    if (skipShow === 'true') authorizer(req, $Enums.UserRole.SYSTEM_ADMIN);
 
     if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
 
@@ -153,20 +160,24 @@ router.get('/:workerId', async (req, res) => {
 
 // === Update worker === [ADMIN]
 
-router.put('/:workerId/group/:groupId', async (req, res) => {
-    const workerId = req.params.workerId as string | undefined;
-    const groupId = req.params.groupId as string | undefined;
+router.put(
+    '/:workerId/group/:groupId',
+    authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN),
+    async (req, res) => {
+        const workerId = req.params.workerId as string | undefined;
+        const groupId = req.params.groupId as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
-    if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
+        if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+        if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
 
-    await groupController().updateGroupWorker(groupId, workerId);
+        await groupController().updateGroupWorker(groupId, workerId);
 
-    const response: ApiResponse<undefined> = {
-        status: 'SUCCESS',
-    };
-    res.status(200).json(response);
-});
+        const response: ApiResponse<undefined> = {
+            status: 'SUCCESS',
+        };
+        res.status(200).json(response);
+    }
+);
 
 const updateWorkerSchema: z.Schema<ApiUpdateWorker> = z.object({
     name: z.string().optional(),
@@ -176,7 +187,7 @@ const updateWorkerSchema: z.Schema<ApiUpdateWorker> = z.object({
     show: z.boolean().optional(),
 });
 
-router.put('/:workerId', async (req, res) => {
+router.put('/:workerId', authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN), async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
 
     if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
@@ -200,32 +211,40 @@ router.put('/:workerId', async (req, res) => {
 
 // === Delete worker === [ADMIN]
 
-router.delete('/:workerId/group/:groupId', async (req, res) => {
-    const workerId = req.params.workerId as string | undefined;
-    const groupId = req.params.groupId as string | undefined;
+router.delete(
+    '/:workerId/group/:groupId',
+    authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN),
+    async (req, res) => {
+        const workerId = req.params.workerId as string | undefined;
+        const groupId = req.params.groupId as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
-    if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
+        if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+        if (!groupId) throw new ApiError(400, 'INVALID_ARGS', 'Group ID is required');
 
-    await groupController().deleteGroupWorker(groupId, workerId);
+        await groupController().deleteGroupWorker(groupId, workerId);
 
-    const response: ApiResponse<undefined> = {
-        status: 'SUCCESS',
-    };
-    res.status(200).json(response);
-});
+        const response: ApiResponse<undefined> = {
+            status: 'SUCCESS',
+        };
+        res.status(200).json(response);
+    }
+);
 
-router.delete('/:workerId', async (req, res) => {
-    const workerId = req.params.workerId as string | undefined;
+router.delete(
+    '/:workerId',
+    authorizerMiddleware($Enums.UserRole.SYSTEM_ADMIN),
+    async (req, res) => {
+        const workerId = req.params.workerId as string | undefined;
 
-    if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
+        if (!workerId) throw new ApiError(400, 'INVALID_ARGS', 'Worker ID is required');
 
-    await workerController().deleteWorker(workerId);
+        await workerController().deleteWorker(workerId);
 
-    const response: ApiResponse<undefined> = {
-        status: 'SUCCESS',
-    };
-    res.status(200).json(response);
-});
+        const response: ApiResponse<undefined> = {
+            status: 'SUCCESS',
+        };
+        res.status(200).json(response);
+    }
+);
 
 export { router as workerRouter };

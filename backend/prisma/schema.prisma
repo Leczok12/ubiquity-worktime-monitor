@@ -25,6 +25,7 @@ model User {
   isLocked           Boolean    @default(false)
   role               UserRole   @default(WORKER)
   isLocal            Boolean    @default(true)  
+  workerId           String?
 
   modifiedWorkEvents WorkEvent[]
 }

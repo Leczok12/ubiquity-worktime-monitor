@@ -1,16 +1,52 @@
 import { Card, IconButton, Input, Portal, Select, createListCollection } from '@chakra-ui/react';
 import { getApiGroups } from '@src/api/api-group';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GrSearch } from 'react-icons/gr';
+import { useSearchParams } from 'react-router';
 
 const WorkerSearchBar: React.FC<{
     onSearch: (keyword: string | undefined, groupId: string | undefined) => void;
 }> = ({ onSearch }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [keyword, setKeyword] = useState<string | undefined>(undefined);
     const [groupId, setGroupId] = useState<string | undefined>(undefined);
+    const lastSyncedSearchParams = useRef('');
+
+    useEffect(() => {
+        const nextKeyword = searchParams.get('keyword') ?? undefined;
+        const nextGroupId = searchParams.get('groupId') ?? undefined;
+        const nextSearchParamsString = searchParams.toString();
+
+        setKeyword(nextKeyword);
+        setGroupId(nextGroupId);
+
+        if (
+            nextSearchParamsString !== lastSyncedSearchParams.current &&
+            (nextKeyword || nextGroupId)
+        ) {
+            onSearch(nextKeyword, nextGroupId);
+        }
+
+        lastSyncedSearchParams.current = nextSearchParamsString;
+    }, [searchParams]);
 
     const handleSearch = () => {
+        const nextSearchParams = new URLSearchParams(searchParams);
+
+        if (keyword) {
+            nextSearchParams.set('keyword', keyword);
+        } else {
+            nextSearchParams.delete('keyword');
+        }
+
+        if (groupId) {
+            nextSearchParams.set('groupId', groupId);
+        } else {
+            nextSearchParams.delete('groupId');
+        }
+
+        setSearchParams(nextSearchParams);
         onSearch(keyword, groupId);
     };
 

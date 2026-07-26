@@ -6,12 +6,15 @@ import { ApiError } from '@src/types/api-error';
 import { PaginationWrapper } from '@src/types/pagination-warpper';
 
 const deviceController = () => {
-    const createDevice: (data: ApiCreateDevice) => Promise<void> = async (data: ApiCreateDevice) => {
+    const createDevice: (data: ApiCreateDevice) => Promise<void> = async (
+        data: ApiCreateDevice
+    ) => {
         if (data.id) {
             const existingDevice = await database.prisma.device.findUnique({
                 where: { id: data.id },
             });
-            if (existingDevice) throw new ApiError(400, 'INVALID_ARGS', 'Device with the same ID already exists');
+            if (existingDevice)
+                throw new ApiError(400, 'INVALID_ARGS', 'Device with the same ID already exists');
         }
 
         await database.prisma.device.create({
@@ -34,10 +37,10 @@ const deviceController = () => {
         return device;
     };
 
-    const getDevices: (pageSize: number, pageNumber: number) => Promise<PaginationWrapper<Device[]>> = async (
+    const getDevices: (
         pageSize: number,
         pageNumber: number
-    ) => {
+    ) => Promise<PaginationWrapper<Device[]>> = async (pageSize: number, pageNumber: number) => {
         const devices = await database.prisma.device.findMany({
             take: pageSize,
             skip: (pageNumber - 1) * pageSize,

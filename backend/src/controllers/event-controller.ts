@@ -1,5 +1,10 @@
 import { Event, Device, Worker } from '@prisma/client';
-import { ApiCreateEvent, ApiGetEvent, ApiGetEventExtended, ApiUpdateEvent } from '@shared/types/api/api-event';
+import {
+    ApiCreateEvent,
+    ApiGetEvent,
+    ApiGetEventExtended,
+    ApiUpdateEvent,
+} from '@shared/types/api/api-event';
 import { logger } from '@shared/utils/logger';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
@@ -11,7 +16,8 @@ const eventController = () => {
             const existingEvent = await database.prisma.event.findUnique({
                 where: { id: data.id },
             });
-            if (existingEvent) throw new ApiError(400, 'INVALID_ARGS', 'Event with the same ID already exists');
+            if (existingEvent)
+                throw new ApiError(400, 'INVALID_ARGS', 'Event with the same ID already exists');
         }
 
         await database.prisma.event.create({
@@ -35,9 +41,9 @@ const eventController = () => {
         return event;
     };
 
-    const getEventExtended: (id: string) => Promise<Event & { device?: Device; worker?: Worker }> = async (
+    const getEventExtended: (
         id: string
-    ) => {
+    ) => Promise<Event & { device?: Device; worker?: Worker }> = async (id: string) => {
         const event = await database.prisma.event.findUnique({
             where: { id: id },
             include: {
@@ -50,35 +56,6 @@ const eventController = () => {
 
         return event;
     };
-    // const getDevice: (id: string) => Promise<Device> = async (id: string) => {
-    //     const device = await database.prisma.device.findUnique({
-    //         where: { id: id },
-    //     });
-
-    //     if (!device) throw new ApiError(404, 'NOT_FOUND', 'Device not found');
-
-    //     return device;
-    // };
-
-    // const getDevices: (pageSize: number, pageNumber: number) => Promise<PaginationWrapper<Device[]>> = async (
-    //     pageSize: number,
-    //     pageNumber: number
-    // ) => {
-    //     const devices = await database.prisma.device.findMany({
-    //         take: pageSize,
-    //         skip: (pageNumber - 1) * pageSize,
-    //         orderBy: [{ name: 'asc' }],
-    //     });
-
-    //     return {
-    //         data: devices,
-    //         pagination: {
-    //             page: pageNumber,
-    //             pageSize: pageSize,
-    //             total: await database.prisma.device.count(),
-    //         },
-    //     };
-    // };
 
     const updateEvent: (id: string, data: ApiUpdateEvent) => Promise<void> = async (
         id: string,

@@ -14,8 +14,6 @@ const RootLayout = () => {
         gcTime: 0, // 10 minutes
     });
 
-    console.log('AdminLayout data:', data, error);
-
     useEffect(() => {
         if (data?.status === 'UNAUTHORIZED') {
             navigator('/auth/login');

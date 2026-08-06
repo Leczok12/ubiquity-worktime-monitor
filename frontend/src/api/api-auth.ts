@@ -23,8 +23,6 @@ export const getApiAuthUser = async (): Promise<ApiResponse<ApiAuthUser>> => {
     });
     const payload = (await response.json()) as ApiResponse<ApiAuthUser>;
 
-    console.log('getApiAuthUser payload:', payload);
-
     if (payload.status !== 'SUCCESS' && payload.status !== 'UNAUTHORIZED') {
         throw new Error(
             payload.errorMessage ?? payload.status ?? 'Failed to fetch authenticated user'
@@ -40,7 +38,7 @@ export const logoutApiAuthUser = async (): Promise<void> => {
     });
 
     const payload = (await response.json()) as ApiResponse<undefined>;
-    console.log('logoutApiAuthUser payload:', payload);
+
     if (payload.status !== 'SUCCESS') {
         throw new Error(
             payload.errorMessage ?? payload.status ?? 'Failed to logout authenticated user'

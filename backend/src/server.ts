@@ -30,7 +30,6 @@ const startServer = async () => {
         //await createAdmin();
 
         // const port = await config.getValue('SERVER_PORT');
-        console.log('Starting server...', process.env.DEV);
         const app = express();
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));

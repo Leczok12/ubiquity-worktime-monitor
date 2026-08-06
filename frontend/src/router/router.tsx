@@ -10,6 +10,7 @@ import AdminHomePage from '@src/pages/admin-home-page';
 import AdminWorkerPage from '@src/pages/admin-worker-page';
 import AuthLoginPage from '@src/pages/auth-login-page';
 import AuthLogoutPage from '@src/pages/auth-logout-page';
+import WorkerPage from '@src/pages/worker-page';
 
 const router = createBrowserRouter([
     // {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
         path: '/admin',
         element: <AdminLayout />,
         children: [
-            { path: '', element: <AdminHomePage /> },
+            { index: true, element: <AdminHomePage /> },
             { path: 'workers', element: <AdminWorkerPage /> },
             { path: 'devices', element: <AdminDevicePage /> },
             { path: 'groups', element: <AdminGroupPage /> },
@@ -44,8 +45,9 @@ const router = createBrowserRouter([
         path: '/',
         element: <RootLayout />,
         children: [
-            { path: '', element: <HomePage /> },
-            // { path: 'worker/:workerId', element: <WorkerPage /> },
+            { index: true, element: <HomePage /> },
+            { path: 'worker', element: <WorkerPage /> },
+            { path: 'worker/:workerId', element: <WorkerPage /> },
         ],
     },
 

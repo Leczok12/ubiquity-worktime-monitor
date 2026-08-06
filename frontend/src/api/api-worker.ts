@@ -1,6 +1,18 @@
 import type { ApiResponse } from '@shared/types/api/api-response';
 import type { ApiGetWorker, ApiUpdateWorker } from '@shared/types/api/api-worker';
 
+export const getApiWorker = async (id: string): Promise<ApiResponse<ApiGetWorker>> => {
+    const response = await fetch(`/api/worker/${id}`, {
+        method: 'GET',
+    });
+    const payload = (await response.json()) as ApiResponse<ApiGetWorker>;
+
+    if (payload.status !== 'SUCCESS' || payload.data === undefined) {
+        throw new Error(payload.errorMessage ?? payload.status ?? 'Failed to fetch worker');
+    }
+    return payload;
+};
+
 export const getApiWorkers = async (
     pageNumber?: number,
     pageSize?: number,

@@ -1,8 +1,6 @@
-import { Alert, Button, Card, Heading, IconButton, Input } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import { Alert, Button, Card, Heading } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaGoogle, FaMicrosoft } from 'react-icons/fa6';
-import { getApiAuthConfig, logoutApiAuthUser } from '@src/api/api-auth';
+import { logoutApiAuthUser } from '@src/api/api-auth';
 import { useNavigate } from 'react-router';
 
 const AuthLogoutPage = () => {

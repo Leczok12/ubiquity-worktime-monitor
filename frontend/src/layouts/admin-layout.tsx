@@ -21,8 +21,6 @@ const AdminLayout = () => {
         gcTime: 0, // 10 minutes
     });
 
-    console.log('AdminLayout data:', data, error);
-
     useEffect(() => {
         if (data?.status === 'UNAUTHORIZED') {
             navigator('/auth/login');
@@ -68,8 +66,6 @@ const AdminLayout = () => {
             onClick: () => navigator('/admin/config'),
         },
     ];
-
-    console.log('AdminLayout rendered');
 
     const NavButton: React.FC<{
         label: string;

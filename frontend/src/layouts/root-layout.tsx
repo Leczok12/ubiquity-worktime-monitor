@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Menu, Portal } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Menu, Portal, Span } from '@chakra-ui/react';
 import { getApiAuthUser } from '@src/api/api-auth';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -32,12 +32,13 @@ const RootLayout = () => {
     return (
         <>
             <Flex
-                zIndex={9999}
+                zIndex={1000}
                 position="fixed"
                 bg="gray.800"
                 top={0}
                 left={0}
-                h="60px"
+                sm={{ h: '60px' }}
+                h="80px"
                 w="full"
                 pl="20px"
                 pr="20px"
@@ -51,11 +52,19 @@ const RootLayout = () => {
 
                 <Menu.Root>
                     <Menu.Trigger>
-                        <Button variant="ghost">{data.data?.email}</Button>
+                        <Heading color="white" size="md">
+                            {data.data?.email}
+                        </Heading>
                     </Menu.Trigger>
                     <Portal>
                         <Menu.Positioner>
-                            <Menu.Content bg="gray.600">
+                            <Menu.Content
+                                bg="gray.600"
+                                zIndex={9000}
+                                borderRadius="md"
+                                p={2}
+                                minW="200px"
+                            >
                                 {data.data?.role === 'SYSTEM_ADMIN' && (
                                     <>
                                         <Menu.Item
@@ -90,21 +99,8 @@ const RootLayout = () => {
                         </Menu.Positioner>
                     </Portal>
                 </Menu.Root>
-                {/* <Flex direction="column" h="full">
-                    {links.map((link) => (
-                        <NavButton
-                            key={link.label}
-                            label={link.label}
-                            icon={link.icon}
-                            onClick={link.onClick}
-                            highlighted={location.pathname === link.path}
-                        />
-                    ))}
-                </Flex> */}
-
-                {/* <NavButton label="Home page" icon={GrHomeRounded} onClick={() => navigator('/')} /> */}
             </Flex>
-            <Box pt="80px" pb="20px">
+            <Box sm={{ pt: '80px' }} pt="100px" pb="20px">
                 <Outlet />
             </Box>
         </>

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getApiWorker } from '@src/api/api-worker';
 import { useParams } from 'react-router';
 import WorkerHero from '@src/components/worker-hero';
+import WorkEventsTable from '@src/components/work-events-table';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
@@ -33,7 +34,7 @@ const WorkerPage = () => {
     return (
         <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
             <WorkerHero data={data?.data} isLoading={isLoading} />
-            {!isLoading && <p>{workerId}</p>}
+            {workerId && !isLoading && <WorkEventsTable workerId={workerId} />}
         </Container>
     );
 };

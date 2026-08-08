@@ -11,8 +11,8 @@ const router = express.Router();
 
 // === Get work events === [worker]
 
-router.get('/', authorizerMiddleware($Enums.UserRole.WORKER), async (req, res) => {
-    const workerId = req.query.workerId as string | undefined;
+router.get('/:workerId', authorizerMiddleware($Enums.UserRole.WORKER), async (req, res) => {
+    const workerId = req.params.workerId as string;
     const rawStartDate = req.query.startDate as string | undefined;
     const rawEndDate = req.query.endDate as string | undefined;
 

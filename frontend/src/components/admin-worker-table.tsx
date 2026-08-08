@@ -1,6 +1,5 @@
 import { useState, type FC, type PropsWithChildren } from 'react';
 import { Alert, Skeleton, Table, Switch } from '@chakra-ui/react';
-import { updateApiGroup } from '@src/api/api-group';
 import type { ApiGetWorker } from '@shared/types/api/api-worker';
 import { updateApiWorker } from '@src/api/api-worker';
 

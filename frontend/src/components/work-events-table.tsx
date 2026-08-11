@@ -1,5 +1,6 @@
 import {
     Alert,
+    Box,
     Card,
     DatePicker,
     IconButton,
@@ -11,6 +12,7 @@ import {
 import type { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState, type FC, type PropsWithChildren } from 'react';
 import { PiMicrosoftExcelLogoFill } from 'react-icons/pi';
+import { Tooltip } from './ui/tooltip';
 
 export const WorkEventsTable: FC<
     PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
@@ -77,7 +79,7 @@ export const WorkEventsTable: FC<
                 </IconButton>
             </Card.Header>
             <Card.Body pt={0}>
-                <Table.Root interactive>
+                <Table.Root interactive cursor="default">
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeader w="40%" md={{ w: '100px' }}>
@@ -149,45 +151,21 @@ export const WorkEventsTable: FC<
 };
 
 export const WorkEventsTableRow: FC<{ data: ApiGetWorkEventGrouped }> = ({ data }) => {
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    const avgDate = new Date((startDate.getTime() + endDate.getTime()) / 2);
+
     return (
-        <Table.Row>
-            <Table.Cell>22.22.2222</Table.Cell>
-            <Table.Cell>08:00</Table.Cell>
-            <Table.Cell>17:00</Table.Cell>
+        <Table.Row onClick={() => console.log('Row clicked', data)} cursor="pointer">
+            <Tooltip content={startDate.toLocaleString() + ' - ' + endDate.toLocaleString()}>
+                <Table.Cell>{avgDate.toLocaleDateString()}</Table.Cell>
+            </Tooltip>
+            <Table.Cell>{startDate.toLocaleDateString()}</Table.Cell>
+            <Table.Cell>{endDate.toLocaleDateString()}</Table.Cell>
             <Table.Cell>9h</Table.Cell>
-            <Table.Cell textAlign="end">Visualization</Table.Cell>
+            <Table.Cell display="none" md={{ display: 'table-cell' }}>
+                Visualization
+            </Table.Cell>
         </Table.Row>
     );
-    // return (
-    //     // <Card.Root w={'100%'}>
-    //     //     <Card.Header>
-    //     //         <Card.Title>
-    //     //             {data.date.toLocaleDateString(navigator.language || 'en-US', {
-    //     //                 weekday: 'long',
-    //     //                 year: 'numeric',
-    //     //                 month: 'long',
-    //     //                 day: 'numeric',
-    //     //             })}
-    //     //         </Card.Title>
-    //     //     </Card.Header>
-    //     //     <Card.Body>
-    //     //         <ul>
-    //     //             {data.events.map((event) => (
-    //     //                 <li key={event.id}>
-    //     //                     {event.startTime.toLocaleTimeString(navigator.language || 'en-US', {
-    //     //                         hour: '2-digit',
-    //     //                         minute: '2-digit',
-    //     //                     })}{' '}
-    //     //                     -{' '}
-    //     //                     {event.endTime.toLocaleTimeString(navigator.language || 'en-US', {
-    //     //                         hour: '2-digit',
-    //     //                         minute: '2-digit',
-    //     //                     })}{' '}
-    //     //                     ({event.duration} minutes)
-    //     //                 </li>
-    //     //             ))}
-    //     //         </ul>
-    //     //     </Card.Body>
-    //     // </Card.Root>
-    // );
 };

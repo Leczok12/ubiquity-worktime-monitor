@@ -50,7 +50,7 @@ const RootLayout = () => {
 
                 <Menu.Root>
                     <Menu.Trigger>
-                        <Heading color="white" size="md">
+                        <Heading color="white" size="md" cursor="pointer">
                             {data.data?.email}
                         </Heading>
                     </Menu.Trigger>

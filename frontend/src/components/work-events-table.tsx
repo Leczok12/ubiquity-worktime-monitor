@@ -13,6 +13,7 @@ import type { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState, type FC, type PropsWithChildren } from 'react';
 import { PiMicrosoftExcelLogoFill } from 'react-icons/pi';
 import { Tooltip } from './ui/tooltip';
+import { numberPadding } from '@src/utils/number-padding';
 
 export const WorkEventsTable: FC<
     PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
@@ -151,18 +152,20 @@ export const WorkEventsTable: FC<
 };
 
 export const WorkEventsTableRow: FC<{ data: ApiGetWorkEventGrouped }> = ({ data }) => {
-    const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
-    const avgDate = new Date((startDate.getTime() + endDate.getTime()) / 2);
+    const sinceDate = new Date(data.sinceDate);
+    const untilDate = new Date(data.untilDate);
+    const avgDate = new Date((sinceDate.getTime() + untilDate.getTime()) / 2);
 
     return (
         <Table.Row onClick={() => console.log('Row clicked', data)} cursor="pointer">
-            <Tooltip content={startDate.toLocaleString() + ' - ' + endDate.toLocaleString()}>
+            <Tooltip content={sinceDate.toLocaleString() + ' - ' + untilDate.toLocaleString()}>
                 <Table.Cell>{avgDate.toLocaleDateString()}</Table.Cell>
             </Tooltip>
-            <Table.Cell>{startDate.toLocaleDateString()}</Table.Cell>
-            <Table.Cell>{endDate.toLocaleDateString()}</Table.Cell>
-            <Table.Cell>9h</Table.Cell>
+            <Table.Cell>{sinceDate.toLocaleDateString()}</Table.Cell>
+            <Table.Cell>{untilDate.toLocaleDateString()}</Table.Cell>
+            <Table.Cell>
+                {numberPadding(Math.floor(data.time / 60), 2)}:{numberPadding(data.time % 60, 2)} h
+            </Table.Cell>
             <Table.Cell display="none" md={{ display: 'table-cell' }}>
                 Visualization
             </Table.Cell>

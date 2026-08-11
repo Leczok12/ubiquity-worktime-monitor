@@ -2,12 +2,13 @@ export const workEventTypes = ['WORK', 'BREAK'] as const;
 
 export type ApiGetWorkEvent = {
     type: (typeof workEventTypes)[number];
-    startDate: string;
-    endDate: string;
+    sinceDate: string;
+    untilDate: string;
 };
 
 export type ApiGetWorkEventGrouped = {
     workEvents: ApiGetWorkEvent[];
-    startDate: string;
-    endDate: string;
+    time: number;
+    sinceDate: string;
+    untilDate: string;
 };

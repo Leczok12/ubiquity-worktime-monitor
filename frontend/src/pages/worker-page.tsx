@@ -65,12 +65,7 @@ const WorkerPage = () => {
                 >
                     {workEventsData?.data &&
                         workEventsData.data.map((data) => (
-                            <>
-                                <WorkEventsTableRow key={data.startDate} data={data} />
-                                <WorkEventsTableRow key={data.startDate} data={data} />
-                                <WorkEventsTableRow key={data.startDate} data={data} />
-                                <WorkEventsTableRow key={data.startDate} data={data} />
-                            </>
+                            <WorkEventsTableRow key={data.sinceDate} data={data} />
                         ))}
                 </WorkEventsTable>
             )}

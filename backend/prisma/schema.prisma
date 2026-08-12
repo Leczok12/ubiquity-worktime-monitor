@@ -95,7 +95,7 @@ model WorkEvent {
   id          String          @id @default(uuid())
   workerId    String
   lastModifiedByUserId String?
-  lastModified DateTime       
+  lastModified DateTime       @default(now())
   type        WorkEventType
   timeStart   DateTime
   timeEnd     DateTime

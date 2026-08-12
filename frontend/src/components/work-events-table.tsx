@@ -11,18 +11,31 @@ import {
 } from '@chakra-ui/react';
 import type { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState, type FC, type PropsWithChildren } from 'react';
-import { PiMicrosoftExcelLogoFill } from 'react-icons/pi';
+import { PiMicrosoftExcelLogoFill, PiPlusBold } from 'react-icons/pi';
 import { Tooltip } from './ui/tooltip';
 import { numberPadding } from '@src/utils/number-padding';
 
 export const WorkEventsTable: FC<
-    PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
-> = ({ children, loading, error, empty }) => {
+    PropsWithChildren & {
+        onEdit: (data?: ApiGetWorkEventGrouped) => void;
+        onDateRangeChange: (sinceDate: Date, untilDate: Date) => void;
+        defaultDateRange?: [Date, Date];
+        disabled?: boolean;
+        loading?: boolean;
+        error?: string;
+        empty?: boolean;
+    }
+> = ({
+    children,
+    loading,
+    error,
+    empty,
+    onEdit,
+    onDateRangeChange,
+    disabled,
+    defaultDateRange,
+}) => {
     const userLocale = navigator.language || 'en-US';
-    const [untilDate, setUntilDate] = useState<Date>(new Date());
-    const [sinceDate, setSinceDate] = useState<Date>(
-        new Date(untilDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-    );
 
     return (
         <Card.Root w={'100%'}>
@@ -39,13 +52,23 @@ export const WorkEventsTable: FC<
                     locale={userLocale}
                     selectionMode="range"
                     openOnClick
+                    disabled={disabled}
                     onValueChange={(e) => {
-                        console.log('DatePicker onValueChange', e);
                         const [start, end] = e.value;
-                        if (start) setSinceDate(new Date(start.toString()));
-                        if (end) setUntilDate(new Date(end.toString()));
+                        if (e.value.length === 2) {
+                            onDateRangeChange(
+                                new Date(e.value[0].toString()),
+                                new Date(e.value[1].toString())
+                            );
+                        }
                     }}
-                    defaultValue={[parseDate(sinceDate), parseDate(untilDate)]}
+                    defaultValue={[
+                        parseDate(defaultDateRange?.[0] || new Date()),
+                        parseDate(
+                            defaultDateRange?.[1] ||
+                                new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+                        ),
+                    ]}
                 >
                     <DatePicker.Control>
                         <DatePicker.Input index={0} />
@@ -70,14 +93,20 @@ export const WorkEventsTable: FC<
                         </DatePicker.Positioner>
                     </Portal>
                 </DatePicker.Root>
-                <IconButton
-                    aria-label="Calendar"
-                    variant="subtle"
-                    color="fg.success"
-                    colorScheme="primary"
-                >
-                    <PiMicrosoftExcelLogoFill />
-                </IconButton>
+                <Box display={'flex'} gap={2} justifyContent={'flex-end'} alignItems={'center'}>
+                    <IconButton
+                        variant="subtle"
+                        color="fg.success"
+                        disabled={disabled}
+                        onClick={() => onEdit(undefined)}
+                    >
+                        <PiPlusBold />
+                    </IconButton>
+                    <IconButton variant="subtle" color="fg.success" disabled>
+                        {/* //TODO: Implement export to excel */}
+                        <PiMicrosoftExcelLogoFill />
+                    </IconButton>
+                </Box>
             </Card.Header>
             <Card.Body pt={0}>
                 <Table.Root interactive cursor="default">
@@ -164,7 +193,8 @@ export const WorkEventsTableRow: FC<{ data: ApiGetWorkEventGrouped }> = ({ data 
                 md={{ textAlign: 'center' }}
                 color={data.time > 0 ? 'fg.success' : undefined}
             >
-                {numberPadding(Math.floor(data.time / 60), 2)}:{numberPadding(data.time % 60, 2)} h
+                {numberPadding(Math.floor(data.time / 60), 2)}:
+                {numberPadding(Math.floor(data.time % 60), 2)} h
             </Table.Cell>
             <Table.Cell display="none" textAlign="end" md={{ display: 'table-cell' }}>
                 <Box w="100%" h="20px" bg="gray.800" borderRadius="md" overflow="hidden">

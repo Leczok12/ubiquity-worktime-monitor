@@ -1,10 +1,38 @@
-import { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
+import { ApiCreateWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { ENV } from '../config/enviroment';
 import { randomInt } from 'node:crypto';
 import { database } from '@src/config/database';
 import { calculateWorkTimeInMinutes } from '@src/utils/calculate-work-time-in-minutes';
 
-const WorkEventController = () => {
+const workEventController = () => {
+    const createWorkEvent: (
+        workerId: string,
+        data: ApiCreateWorkEvent,
+        userId?: string
+    ) => Promise<void> = async (workerId, data, userId) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: { id: workerId },
+        });
+
+        if (!worker) {
+            throw new Error(`Worker with ID ${workerId} not found`);
+        }
+
+        await database.prisma.workEvent.create({
+            data: {
+                id: data.id ?? undefined,
+                type: data.type,
+                timeStart: new Date(data.sinceDate),
+                timeEnd: new Date(data.untilDate),
+                placeStart: data.placeStart ?? undefined,
+                placeEnd: data.placeEnd ?? undefined,
+                workerId: workerId,
+                lastModifiedByUserId: userId,
+                lastModified: new Date(),
+            },
+        });
+    };
+
     const getWorkEventsGrouped: (
         workerId: string,
         sinceDate: Date,
@@ -28,6 +56,7 @@ const WorkEventController = () => {
         while (calculatedSinceDate < calculatedUntilDate) {
             const currentSince = new Date(calculatedSinceDate);
             const currentUntil = new Date(calculatedSinceDate);
+
             currentUntil.setDate(currentUntil.getDate() + 1);
 
             if (currentUntil > calculatedUntilDate) {
@@ -54,7 +83,7 @@ const WorkEventController = () => {
             });
 
             data.push({
-                sinceDate: calculatedSinceDate.toISOString(),
+                sinceDate: currentSince.toISOString(),
                 untilDate: currentUntil.toISOString(),
                 workEvents: workEvents.map((event) => ({
                     sinceDate: event.timeStart.toISOString(),
@@ -63,14 +92,14 @@ const WorkEventController = () => {
                 })),
                 time: calculateWorkTimeInMinutes(currentSince, currentUntil, workEvents),
             });
-            console.log(JSON.stringify(data[data.length - 1], null, 2));
-            calculatedSinceDate.setDate(currentUntil.getDate());
+
+            calculatedSinceDate.setTime(currentUntil.getTime());
         }
 
         return data.reverse();
     };
 
-    return { getWorkEventsGrouped };
+    return { createWorkEvent, getWorkEventsGrouped };
 };
 
-export { WorkEventController };
+export { workEventController };

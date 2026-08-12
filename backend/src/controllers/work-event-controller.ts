@@ -1,6 +1,8 @@
 import { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { ENV } from '../config/enviroment';
 import { randomInt } from 'node:crypto';
+import { database } from '@src/config/database';
+import { calculateWorkTimeInMinutes } from '@src/utils/calculate-work-time-in-minutes';
 
 const WorkEventController = () => {
     const getWorkEventsGrouped: (
@@ -24,6 +26,7 @@ const WorkEventController = () => {
 
         // Create empty groups for each day in the range
         while (calculatedSinceDate < calculatedUntilDate) {
+            const currentSince = new Date(calculatedSinceDate);
             const currentUntil = new Date(calculatedSinceDate);
             currentUntil.setDate(currentUntil.getDate() + 1);
 
@@ -31,12 +34,36 @@ const WorkEventController = () => {
                 currentUntil.setTime(calculatedUntilDate.getTime());
             }
 
+            const workEvents = await database.prisma.workEvent.findMany({
+                where: {
+                    AND: [
+                        { workerId: workerId },
+                        { isDeleted: false },
+                        {
+                            timeStart: {
+                                lte: currentUntil,
+                            },
+                        },
+                        {
+                            timeEnd: {
+                                gte: currentSince,
+                            },
+                        },
+                    ],
+                },
+            });
+
             data.push({
                 sinceDate: calculatedSinceDate.toISOString(),
                 untilDate: currentUntil.toISOString(),
-                workEvents: [],
-                time: 121,
+                workEvents: workEvents.map((event) => ({
+                    sinceDate: event.timeStart.toISOString(),
+                    untilDate: event.timeEnd.toISOString(),
+                    type: event.type,
+                })),
+                time: calculateWorkTimeInMinutes(currentSince, currentUntil, workEvents),
             });
+            console.log(JSON.stringify(data[data.length - 1], null, 2));
             calculatedSinceDate.setDate(currentUntil.getDate());
         }
 

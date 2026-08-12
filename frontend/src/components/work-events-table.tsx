@@ -83,16 +83,14 @@ export const WorkEventsTable: FC<
                 <Table.Root interactive cursor="default">
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader w="40%" md={{ w: '100px' }}>
+                            <Table.ColumnHeader w="50%" md={{ w: '130px' }}>
                                 Date
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader w="20%" md={{ w: '80px' }}>
-                                Start
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader w="20%" md={{ w: '80px' }}>
-                                End
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader w="20%" md={{ w: '80px' }}>
+                            <Table.ColumnHeader
+                                w="50%"
+                                textAlign="end"
+                                md={{ w: '130px', textAlign: 'center' }}
+                            >
                                 Time
                             </Table.ColumnHeader>
                             <Table.ColumnHeader
@@ -110,7 +108,7 @@ export const WorkEventsTable: FC<
                             if (error) {
                                 return (
                                     <Table.Row>
-                                        <Table.Cell colSpan={5}>
+                                        <Table.Cell colSpan={3}>
                                             <Alert.Root variant="subtle" status="error">
                                                 <Alert.Title>Error</Alert.Title>
                                                 <Alert.Description>{error}</Alert.Description>
@@ -122,7 +120,7 @@ export const WorkEventsTable: FC<
                             if (loading) {
                                 return (
                                     <Table.Row>
-                                        <Table.Cell colSpan={5}>
+                                        <Table.Cell colSpan={3}>
                                             <Skeleton>Loading work events...</Skeleton>
                                         </Table.Cell>
                                     </Table.Row>
@@ -131,7 +129,7 @@ export const WorkEventsTable: FC<
                             if (empty) {
                                 return (
                                     <Table.Row>
-                                        <Table.Cell colSpan={5}>
+                                        <Table.Cell colSpan={3}>
                                             <Alert.Root variant="subtle" status="info">
                                                 <Alert.Title>Info</Alert.Title>
                                                 <Alert.Description>
@@ -161,13 +159,37 @@ export const WorkEventsTableRow: FC<{ data: ApiGetWorkEventGrouped }> = ({ data 
             <Tooltip content={sinceDate.toLocaleString() + ' - ' + untilDate.toLocaleString()}>
                 <Table.Cell>{avgDate.toLocaleDateString()}</Table.Cell>
             </Tooltip>
-            <Table.Cell>{sinceDate.toLocaleDateString()}</Table.Cell>
-            <Table.Cell>{untilDate.toLocaleDateString()}</Table.Cell>
-            <Table.Cell>
+            <Table.Cell
+                textAlign="end"
+                md={{ textAlign: 'center' }}
+                color={data.time > 0 ? 'fg.success' : undefined}
+            >
                 {numberPadding(Math.floor(data.time / 60), 2)}:{numberPadding(data.time % 60, 2)} h
             </Table.Cell>
-            <Table.Cell display="none" md={{ display: 'table-cell' }}>
-                Visualization
+            <Table.Cell display="none" textAlign="end" md={{ display: 'table-cell' }}>
+                <Box w="100%" h="20px" bg="gray.800" borderRadius="md" overflow="hidden">
+                    {data.workEvents.map((event, index) => {
+                        const durationProcentage =
+                            (new Date(event.untilDate).getTime() -
+                                new Date(event.sinceDate).getTime()) /
+                            (untilDate.getTime() - sinceDate.getTime());
+                        const sinceProcentage =
+                            (new Date(event.sinceDate).getTime() - sinceDate.getTime()) /
+                            (untilDate.getTime() - sinceDate.getTime());
+                        return (
+                            <Box
+                                key={index}
+                                w={`${durationProcentage * 100}%`}
+                                h="100%"
+                                top={`${index * -20}px`}
+                                opacity={0.8}
+                                left={`${sinceProcentage * 100}%`}
+                                position="relative"
+                                bg={event.type === 'WORK' ? 'fg.success' : 'fg.warning'}
+                            />
+                        );
+                    })}
+                </Box>
             </Table.Cell>
         </Table.Row>
     );

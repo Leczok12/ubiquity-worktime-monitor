@@ -1,15 +1,18 @@
 import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 
-export const syncGroupsAssignment = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
+export const syncGroupsAssignment = async (
+    prisma: PrismaTransaction,
+    axiosInstance: AxiosInstance
+) => {
     logger.info('Starting groups assignment sync with Ubiquiti Access API');
 
     await prisma.$executeRaw`DELETE FROM "_WorkerGroups"`;
 
     const groups = await prisma.group.findMany({
-        where: { sync: true },
+        where: { show: true },
     });
 
     for (const group of groups) {

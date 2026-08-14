@@ -11,6 +11,8 @@ import { authRouter } from './routers/auth/auth-router';
 import { session } from './config/session';
 import { ApiError } from './types/api-error';
 import { ENV } from '@src/config/enviroment';
+import { taskQueue } from './services/task-queue';
+import { ubiquitiAccess } from './services/ubiquiti-access';
 // import { config } from './services/config/config-service';
 // import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 
@@ -28,7 +30,24 @@ const startServer = async () => {
         // await ubiquitiAccessSync.initialize();
 
         //await createAdmin();
-
+        if (await ubiquitiAccess.chealthCheck()) {
+            if (ENV.UBIQUITI_SYNC_ON_STARTUP) {
+                taskQueue.createImmediateTask(
+                    'Ubiquiti Access Full Sync',
+                    ubiquitiAccess.fullSync.bind(ubiquitiAccess)
+                );
+            }
+            taskQueue.createTask(
+                'Ubiquiti Access Full Sync',
+                ENV.UBIQUITI_FULL_SYNC_CRON,
+                ubiquitiAccess.fullSync.bind(ubiquitiAccess)
+            );
+            taskQueue.createTask(
+                'Ubiquiti Access Partial Sync',
+                ENV.UBIQUITI_PARTIAL_SYNC_CRON,
+                ubiquitiAccess.partialSync.bind(ubiquitiAccess)
+            );
+        }
         // const port = await config.getValue('SERVER_PORT');
         const app = express();
         app.use(express.json());

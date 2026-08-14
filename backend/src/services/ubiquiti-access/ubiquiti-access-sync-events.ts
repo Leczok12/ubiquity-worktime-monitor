@@ -1,11 +1,11 @@
 import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 
 export const syncEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting events sync with Ubiquiti Access API');
-    const workers = await prisma.worker.findMany({ where: { sync: true } });
+    const workers = await prisma.worker.findMany();
 
     const lastEvent = await prisma.event.findFirst({
         orderBy: {

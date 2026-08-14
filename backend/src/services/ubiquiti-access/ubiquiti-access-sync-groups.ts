@@ -1,13 +1,14 @@
 import { UbiquitiAccessResponse, UbiquitiAccessGroup } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 
 export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting groups sync with Ubiquiti Access API');
-    const response =
-        await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessGroup[]>>(`/api/v1/developer/user_groups`);
+    const response = await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessGroup[]>>(
+        `/api/v1/developer/user_groups`
+    );
 
     if (!response.data || !response.data.data) {
         throw new Error('Invalid response from Ubiquiti Access API');
@@ -37,7 +38,8 @@ export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: Axios
                     name: group.name ?? '',
                 },
             });
-            if (!isDeepStrictEqual(existingGroup, updatedGroup)) logger.warn(`Updated group ${group.name}`);
+            if (!isDeepStrictEqual(existingGroup, updatedGroup))
+                logger.warn(`Updated group ${group.name}`);
         }
     }
 

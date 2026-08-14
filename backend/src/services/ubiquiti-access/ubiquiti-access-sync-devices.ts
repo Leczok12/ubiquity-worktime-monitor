@@ -1,7 +1,7 @@
 import { UbiquitiAccessResponse, UbiquitiAccessDevice } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 import { exit } from 'node:process';
 
 export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
@@ -17,7 +17,6 @@ export const syncDevices = async (prisma: PrismaTransaction, axiosInstance: Axio
     const filteredDevices = response.data.data.filter(
         (d) => d[0].capabilities.includes('is_reader') || d[0].capabilities.includes('is_hub')
     );
-
     for (const rDevice of filteredDevices) {
         const device = rDevice[0];
         if (!device.id) {

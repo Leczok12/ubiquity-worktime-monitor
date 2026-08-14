@@ -1,12 +1,15 @@
 import { UbiquitiAccessResponse, UbiquitiAccessUser } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 
 export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting workers sync with Ubiquiti Access API');
-    const response = await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessUser[]>>(`/api/v1/developer/users`);
+    const response =
+        await axiosInstance.get<UbiquitiAccessResponse<UbiquitiAccessUser[]>>(
+            `/api/v1/developer/users`
+        );
 
     if (!response.data || !response.data.data) {
         throw new Error('Invalid response from Ubiquiti Access API');

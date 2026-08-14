@@ -14,6 +14,12 @@ export const ENV = {
         return parsed;
     })(),
 
+    UBIQUITI_FULL_SYNC_CRON: process.env.UBIQUITI_FULL_SYNC_CRON ?? '0 0 * * *',
+    UBIQUITI_PARTIAL_SYNC_CRON: process.env.UBIQUITI_PARTIAL_SYNC_CRON ?? '*/15 * * * *',
+    UBIQUITI_HOST: process.env.UBIQUITI_HOST ?? null,
+    UBIQUITI_API_KEY: process.env.UBIQUITI_API_KEY ?? null,
+    UBIQUITI_SYNC_ON_STARTUP: process.env.UBIQUITI_SYNC_ON_STARTUP === 'true',
+
     MICROSOFT_ENABLED: process.env.MICROSOFT_ENABLED === 'true',
     MICROSOFT_LOGIN_LABEL: process.env.MICROSOFT_LOGIN_LABEL ?? 'Login with Microsoft',
     MICROSOFT_CLIENT_ID: process.env.MICROSOFT_CLIENT_ID ?? null,

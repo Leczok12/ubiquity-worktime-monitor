@@ -1,17 +1,15 @@
 import { UbiquitiAccessSystemLog, UbiquitiAccessResponse } from './ubiquiti-access-api-types';
 import { AxiosInstance } from 'axios';
-import { PrismaTransaction } from 'src/types/prisma-transaction';
-import { logger } from '../../utils/logger';
-import { config } from '../config';
+import { PrismaTransaction } from '@src/types/prisma-transaction';
+import { logger } from '@shared/utils/logger';
 import { $Enums } from '@prisma/client';
-import { raw } from 'express';
+import { ENV } from '@src/config/enviroment';
 
 export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting work events sync with Ubiquiti Access API');
-    const workers = await prisma.worker.findMany({ where: { sync: true } });
+    const workers = await prisma.worker.findMany();
 
-    const [h, m, s] = (await config.getValue('UBIQUITI_ACCESS_END_WORK_DAY')).split(':').map(Number);
-    const offset = (h * 60 * 60 + m * 60 + s) * 1000;
+    const offset = ENV.END_OF_DAY_OFFSET * 60 * 1000;
 
     for (const worker of workers) {
         const lastEvent = await prisma.workEvent.findFirst({
@@ -58,7 +56,10 @@ export const syncWorkEvents = async (prisma: PrismaTransaction, axiosInstance: A
         });
 
         for (const group of eventsGroupedByDate) {
-            if (lastEvent && new Date(lastEvent.timeEnd.getTime() - offset).toDateString() === group.date) {
+            if (
+                lastEvent &&
+                new Date(lastEvent.timeEnd.getTime() - offset).toDateString() === group.date
+            ) {
                 await prisma.workEvent.update({
                     where: {
                         id: lastEvent.id,

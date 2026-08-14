@@ -14,6 +14,7 @@ import { useState, type FC, type PropsWithChildren } from 'react';
 import { PiMicrosoftExcelLogoFill, PiPlusBold } from 'react-icons/pi';
 import { Tooltip } from './ui/tooltip';
 import { numberPadding } from '@src/utils/number-padding';
+import WorkEventsTimeline from './work-events-timeline';
 
 export const WorkEventsTable: FC<
     PropsWithChildren & {
@@ -197,29 +198,7 @@ export const WorkEventsTableRow: FC<{ data: ApiGetWorkEventGrouped }> = ({ data 
                 {numberPadding(Math.floor(data.time % 60), 2)} h
             </Table.Cell>
             <Table.Cell display="none" textAlign="end" md={{ display: 'table-cell' }}>
-                <Box w="100%" h="20px" bg="gray.800" borderRadius="md" overflow="hidden">
-                    {data.workEvents.map((event, index) => {
-                        const durationProcentage =
-                            (new Date(event.untilDate).getTime() -
-                                new Date(event.sinceDate).getTime()) /
-                            (untilDate.getTime() - sinceDate.getTime());
-                        const sinceProcentage =
-                            (new Date(event.sinceDate).getTime() - sinceDate.getTime()) /
-                            (untilDate.getTime() - sinceDate.getTime());
-                        return (
-                            <Box
-                                key={index}
-                                w={`${durationProcentage * 100}%`}
-                                h="100%"
-                                top={`${index * -20}px`}
-                                opacity={0.8}
-                                left={`${sinceProcentage * 100}%`}
-                                position="relative"
-                                bg={event.type === 'WORK' ? 'fg.success' : 'fg.warning'}
-                            />
-                        );
-                    })}
-                </Box>
+                <WorkEventsTimeline since={sinceDate} until={untilDate} events={data.workEvents} />
             </Table.Cell>
         </Table.Row>
     );

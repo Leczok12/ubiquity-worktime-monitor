@@ -4,7 +4,7 @@ import { getApiWorker } from '@src/api/api-worker';
 import { useParams } from 'react-router';
 import WorkerHero from '@src/components/worker-hero';
 import { WorkDayTable, WorkDayTableRow } from '@src/components/work-day-table';
-import { getApiWorkEvents } from '@src/api/api-work-events';
+import { getApiWorkEventsGrouped } from '@src/api/api-work-events';
 import type { ApiGetWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState } from 'react';
 import WorkEventEditor from '@src/components/work-event-editor';
@@ -45,7 +45,7 @@ const WorkerPage = () => {
             if (!workerId) {
                 throw new Error('Worker ID is required');
             }
-            return getApiWorkEvents(
+            return getApiWorkEventsGrouped(
                 workerId,
                 dateRange[0].toISOString(),
                 dateRange[1].toISOString()

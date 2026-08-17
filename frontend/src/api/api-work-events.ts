@@ -23,7 +23,7 @@ export const createApiWorkEvent = async (
     return payload;
 };
 
-export const getApiWorkEvents = async (
+export const getApiWorkEventsGrouped = async (
     workerId: string,
     startDate: string,
     endDate: string
@@ -33,7 +33,7 @@ export const getApiWorkEvents = async (
     searchParams.set('startDate', startDate);
     searchParams.set('endDate', endDate);
 
-    const response = await fetch(`/api/work-event/worker/${workerId}?` + searchParams, {
+    const response = await fetch(`/api/work-event/worker/${workerId}/grouped?` + searchParams, {
         method: 'GET',
     });
 

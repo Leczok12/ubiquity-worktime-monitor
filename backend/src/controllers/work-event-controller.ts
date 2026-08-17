@@ -1,4 +1,8 @@
-import { ApiCreateWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
+import {
+    ApiCreateWorkEvent,
+    ApiGetWorkEvent,
+    ApiGetWorkEventGrouped,
+} from '@shared/types/api/api-work-event';
 import { ENV } from '../config/enviroment';
 import { randomInt } from 'node:crypto';
 import { database } from '@src/config/database';
@@ -31,6 +35,44 @@ const workEventController = () => {
                 lastModified: new Date(),
             },
         });
+    };
+
+    const getWorkEvents: (
+        workerId: string,
+        sinceDate: Date,
+        untilDate: Date
+    ) => Promise<ApiGetWorkEvent[]> = async (
+        workerId: string,
+        sinceDate: Date,
+        untilDate: Date
+    ) => {
+        const workEvents = await database.prisma.workEvent.findMany({
+            where: {
+                AND: [
+                    { workerId: workerId },
+                    { isDeleted: false },
+                    {
+                        timeStart: {
+                            lte: untilDate,
+                        },
+                    },
+                    {
+                        timeEnd: {
+                            gte: sinceDate,
+                        },
+                    },
+                ],
+            },
+        });
+
+        return workEvents.map((event) => ({
+            sinceDate: event.timeStart.toISOString(),
+            untilDate: event.timeEnd.toISOString(),
+            type: event.type,
+            id: event.id,
+            placeStart: event.placeStart ?? undefined,
+            placeEnd: event.placeEnd ?? undefined,
+        }));
     };
 
     const getWorkEventsGrouped: (

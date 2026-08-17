@@ -89,6 +89,9 @@ const workEventController = () => {
                     sinceDate: event.timeStart.toISOString(),
                     untilDate: event.timeEnd.toISOString(),
                     type: event.type,
+                    id: event.id,
+                    placeStart: event.placeStart ?? undefined,
+                    placeEnd: event.placeEnd ?? undefined,
                 })),
                 time: calculateWorkTimeInMinutes(currentSince, currentUntil, workEvents),
             });

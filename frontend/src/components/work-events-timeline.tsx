@@ -1,4 +1,5 @@
 import { Box, type BoxProps } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
 import { numberPadding } from '@src/utils/number-padding';
 import type { FC } from 'react';
@@ -9,19 +10,29 @@ const WorkEventsTimeline: FC<
         until: Date;
         events: ApiGetWorkEvent[];
         selectedEventId?: string;
+        showHours?: boolean;
+        size?: 'sm' | 'md' | 'lg';
     } & BoxProps
-> = ({ since, until, events, selectedEventId, h, ...props }) => {
+> = ({ since, until, events, selectedEventId, showHours, size = 'sm', ...props }) => {
+    const selectedAnimation = keyframes`
+        0% { opacity: 0.8; }
+        50% { opacity: 0; }
+        100% { opacity: 0.8; }
+    `;
+
+    const height = size === 'sm' ? '20px' : size === 'md' ? '30px' : '40px';
+
     return (
         <Box
             w="100%"
             {...props}
-            h={'20px'}
+            h={height}
             position="relative"
             bg="gray.800"
             borderRadius="md"
             overflow="hidden"
         >
-            {events.map((event, index) => {
+            {events.map((event) => {
                 const durationProcentage =
                     (new Date(event.untilDate).getTime() - new Date(event.sinceDate).getTime()) /
                     (until.getTime() - since.getTime());
@@ -31,7 +42,7 @@ const WorkEventsTimeline: FC<
                 console.log(event.type);
                 return (
                     <Box
-                        key={index}
+                        key={event.id}
                         w={`${durationProcentage * 100}%`}
                         h="100%"
                         top={0}
@@ -39,11 +50,17 @@ const WorkEventsTimeline: FC<
                         left={`${sinceProcentage * 100}%`}
                         position="absolute"
                         bg={event.type === 'WORK' ? 'fg.success' : 'fg.warning'}
+                        transition="all 0.3s"
+                        animation={
+                            selectedEventId === event.id
+                                ? `${selectedAnimation} 1s infinite ease-in-out`
+                                : undefined
+                        }
                     />
                 );
             })}
             <Box
-                opacity={0}
+                opacity={showHours ? 1 : 0}
                 position="absolute"
                 top={0}
                 left={0}
@@ -85,9 +102,9 @@ const WorkEventsTimeline: FC<
                                 _before={{
                                     content: isMajorHour ? `"${numberPadding(hour, 2)}:00"` : '""',
                                     position: 'absolute',
-                                    top: '0px',
+                                    top: '50%',
                                     left: '50%',
-                                    transform: 'translateX(-50%)',
+                                    transform: `translateX(-50%) translateY(-50%)`,
                                     fontSize: '10px',
                                 }}
                             />

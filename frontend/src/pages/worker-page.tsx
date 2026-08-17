@@ -3,15 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { getApiWorker } from '@src/api/api-worker';
 import { useParams } from 'react-router';
 import WorkerHero from '@src/components/worker-hero';
-import { WorkEventsTable, WorkEventsTableRow } from '@src/components/work-events-table';
+import { WorkDayTable, WorkDayTableRow } from '@src/components/work-day-table';
 import { getApiWorkEvents } from '@src/api/api-work-events';
-import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
+import type { ApiGetWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState } from 'react';
 import WorkEventEditor from '@src/components/work-event-editor';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
-    const [editorEventData, setEditorEventData] = useState<ApiGetWorkEvent | undefined>(undefined);
+    const [editorEventData, setEditorEventData] = useState<ApiGetWorkEventGrouped | undefined>(
+        undefined
+    );
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [dateRange, setDateRange] = useState<[Date, Date]>([
         new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -68,14 +70,10 @@ const WorkerPage = () => {
 
     return (
         <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
-            <WorkEventEditor
-                data={editorEventData!}
-                open={isEditorOpen}
-                setOpen={setIsEditorOpen}
-            />
+            <WorkEventEditor data={editorEventData} open={isEditorOpen} setOpen={setIsEditorOpen} />
             <WorkerHero data={data?.data} isLoading={isLoading} />
             {workerId && !isLoading && (
-                <WorkEventsTable
+                <WorkDayTable
                     disabled={workEventsLoading || workEventsFetching}
                     onEdit={(data) => {
                         setEditorEventData(undefined);
@@ -94,9 +92,16 @@ const WorkerPage = () => {
                 >
                     {workEventsData?.data &&
                         workEventsData.data.map((data) => (
-                            <WorkEventsTableRow key={data.sinceDate} data={data} />
+                            <WorkDayTableRow
+                                key={data.sinceDate}
+                                data={data}
+                                onClick={() => {
+                                    setEditorEventData(data);
+                                    setIsEditorOpen(true);
+                                }}
+                            />
                         ))}
-                </WorkEventsTable>
+                </WorkDayTable>
             )}
         </Container>
     );

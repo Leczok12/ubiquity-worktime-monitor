@@ -2,8 +2,11 @@ export const workEventTypes = ['WORK', 'BREAK'] as const;
 
 export type ApiGetWorkEvent = {
     type: (typeof workEventTypes)[number];
+    id: string;
     sinceDate: string;
     untilDate: string;
+    placeStart?: string;
+    placeEnd?: string;
 };
 
 export type ApiCreateWorkEvent = {

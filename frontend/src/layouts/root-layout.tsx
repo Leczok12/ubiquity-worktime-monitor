@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Heading, Menu, Portal, Span } from '@chakra-ui/react';
 import { getApiAuthUser } from '@src/api/api-auth';
+import { UserContext } from '@src/hooks/use-user-context';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router';
@@ -28,7 +29,7 @@ const RootLayout = () => {
     }
 
     return (
-        <>
+        <UserContext.Provider value={data.data}>
             <Flex
                 zIndex={1000}
                 position="fixed"
@@ -101,7 +102,7 @@ const RootLayout = () => {
             <Box sm={{ pt: '80px' }} pt="100px" pb="20px">
                 <Outlet />
             </Box>
-        </>
+        </UserContext.Provider>
     );
 };
 

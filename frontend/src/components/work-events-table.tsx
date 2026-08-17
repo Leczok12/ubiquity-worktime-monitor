@@ -1,7 +1,7 @@
-import { Alert, Button, IconButton, Skeleton, Table } from '@chakra-ui/react';
+import { Alert, Box, Button, IconButton, Skeleton, Table } from '@chakra-ui/react';
 import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
 import type { FC, PropsWithChildren } from 'react';
-import { TbPlus, TbTrash } from 'react-icons/tb';
+import { TbCopy, TbPlus, TbTrash } from 'react-icons/tb';
 
 export const WorkEventsTable: FC<
     PropsWithChildren<{
@@ -9,8 +9,9 @@ export const WorkEventsTable: FC<
         loading?: boolean;
         error?: string;
         onCreate?: () => void;
+        showActions?: boolean;
     }>
-> = ({ empty = false, loading = false, error, children }) => {
+> = ({ empty = false, loading = false, error, children, showActions = true }) => {
     return (
         <Table.Root interactive>
             <Table.Header>
@@ -18,23 +19,33 @@ export const WorkEventsTable: FC<
                     <Table.Cell w={'1/3'} md={{ w: 'auto' }}>
                         Type
                     </Table.Cell>
-                    <Table.Cell w={'1/3'} md={{ w: '22%' }}>
+                    <Table.Cell w={'1/3'} textAlign={'center'} md={{ w: '22%' }}>
                         Start
                     </Table.Cell>
-                    <Table.Cell w={'1/3'} md={{ w: '22%' }}>
+                    <Table.Cell w={'1/3'} textAlign={'center'} md={{ w: '22%' }}>
                         End
                     </Table.Cell>
-                    <Table.Cell w="20%" display={'none'} md={{ display: 'table-cell' }}>
+                    <Table.Cell
+                        w="17%"
+                        display={'none'}
+                        textAlign={'center'}
+                        md={{ display: 'table-cell' }}
+                    >
                         Place Start
                     </Table.Cell>
-                    <Table.Cell w="20%" display={'none'} md={{ display: 'table-cell' }}>
+                    <Table.Cell
+                        w="17%"
+                        display={'none'}
+                        textAlign={'center'}
+                        md={{ display: 'table-cell' }}
+                    >
                         Place End
                     </Table.Cell>
                     <Table.Cell
-                        w="10%"
+                        w="auto"
                         textAlign="right"
                         display={'none'}
-                        md={{ display: 'table-cell' }}
+                        md={{ display: showActions ? 'table-cell' : 'none' }}
                     >
                         Actions
                     </Table.Cell>
@@ -82,10 +93,13 @@ export const WorkEventsTable: FC<
     );
 };
 
-export const WorkEventsTableRow: FC<{ data: ApiGetWorkEvent; onHover: (id?: string) => void }> = ({
-    data,
-    onHover,
-}) => {
+export const WorkEventsTableRow: FC<{
+    data: ApiGetWorkEvent;
+    onHover: (id?: string) => void;
+    onDelete: (id: string) => void;
+    disabled?: boolean;
+    showActions?: boolean;
+}> = ({ data, onHover, onDelete, disabled, showActions = true }) => {
     return (
         <Table.Row
             cursor="pointer"
@@ -93,22 +107,41 @@ export const WorkEventsTableRow: FC<{ data: ApiGetWorkEvent; onHover: (id?: stri
             onMouseLeave={() => onHover(undefined)}
         >
             <Table.Cell>{data.type}</Table.Cell>
-            <Table.Cell>{new Date(data.sinceDate).toLocaleString()}</Table.Cell>
-            <Table.Cell>{new Date(data.untilDate).toLocaleString()}</Table.Cell>
-            <Table.Cell display={'none'} md={{ display: 'table-cell' }}>
+            <Table.Cell textAlign={'center'}>
+                {new Date(data.sinceDate).toLocaleString()}
+            </Table.Cell>
+            <Table.Cell textAlign={'center'}>
+                {new Date(data.untilDate).toLocaleString()}
+            </Table.Cell>
+            <Table.Cell textAlign={'center'} display={'none'} md={{ display: 'table-cell' }}>
                 {data.placeStart ?? '---'}
             </Table.Cell>
-            <Table.Cell display={'none'} md={{ display: 'table-cell' }}>
+            <Table.Cell textAlign={'center'} display={'none'} md={{ display: 'table-cell' }}>
                 {data.placeEnd ?? '---'}
             </Table.Cell>
-            <Table.Cell textAlign="right" display={'none'} md={{ display: 'table-cell' }}>
-                <IconButton
-                    variant="outline"
-                    onClick={() => console.log('Delete event', data.id)}
-                    aria-label="Delete event"
-                >
-                    <TbTrash />
-                </IconButton>
+            <Table.Cell
+                textAlign="right"
+                display={'none'}
+                md={{ display: showActions ? 'table-cell' : 'none' }}
+            >
+                <Box display={'flex'} w={'full'} h={'full'} gap={2} justifyContent={'flex-end'}>
+                    <IconButton
+                        disabled={disabled}
+                        variant="outline"
+                        onClick={() => navigator.clipboard.writeText(JSON.stringify(data))}
+                        _hover={{ bg: 'fg.info' }}
+                    >
+                        <TbCopy />
+                    </IconButton>
+                    <IconButton
+                        disabled={disabled}
+                        variant="outline"
+                        onClick={() => onDelete(data.id)}
+                        _hover={{ bg: 'fg.error' }}
+                    >
+                        <TbTrash />
+                    </IconButton>
+                </Box>
             </Table.Cell>
         </Table.Row>
     );

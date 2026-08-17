@@ -77,6 +77,9 @@ const WorkerPage = () => {
                 workerId={workerId}
                 open={isEditorOpen}
                 onOpenChange={setIsEditorOpen}
+                onUpdate={() => {
+                    refetchWorkEvents();
+                }}
             />
             {/* <WorkEventEditor data={editorEventData} open={isEditorOpen} setOpen={setIsEditorOpen} /> */}
             <WorkerHero data={data?.data} isLoading={isLoading} />

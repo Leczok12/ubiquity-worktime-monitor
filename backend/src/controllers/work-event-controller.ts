@@ -2,6 +2,7 @@ import {
     ApiCreateWorkEvent,
     ApiGetWorkEvent,
     ApiGetWorkEventGrouped,
+    ApiUpdateWorkEvent,
 } from '@shared/types/api/api-work-event';
 import { ENV } from '../config/enviroment';
 import { randomInt } from 'node:crypto';
@@ -144,7 +145,30 @@ const workEventController = () => {
         return data.reverse();
     };
 
-    return { createWorkEvent, getWorkEvents, getWorkEventsGrouped };
+    const updateWorkEvent: (
+        workEventId: string,
+        userId: string | undefined,
+        data: ApiUpdateWorkEvent
+    ) => Promise<void> = async (workEventId, userId, data) => {
+        const workEvent = await database.prisma.workEvent.findUnique({
+            where: { id: workEventId },
+        });
+
+        if (!workEvent) {
+            throw new Error(`Work event with ID ${workEventId} not found`);
+        }
+        console.log('Updating work event', workEventId, data);
+        await database.prisma.workEvent.update({
+            where: { id: workEventId },
+            data: {
+                isDeleted: data.isDeleted,
+                lastModifiedByUserId: userId,
+                lastModified: new Date(),
+            },
+        });
+    };
+
+    return { createWorkEvent, getWorkEvents, getWorkEventsGrouped, updateWorkEvent };
 };
 
 export { workEventController };

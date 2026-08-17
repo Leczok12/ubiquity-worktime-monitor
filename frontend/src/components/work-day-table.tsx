@@ -10,11 +10,12 @@ import {
     parseDate,
 } from '@chakra-ui/react';
 import type { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
-import { useState, type FC, type PropsWithChildren } from 'react';
+import { useContext, useState, type FC, type PropsWithChildren } from 'react';
 import { PiMicrosoftExcelLogoFill, PiPlusBold } from 'react-icons/pi';
 import { Tooltip } from './ui/tooltip';
 import { numberPadding } from '@src/utils/number-padding';
 import WorkEventsTimeline from './work-events-timeline';
+import { UserContext } from '@src/hooks/use-user-context';
 
 export const WorkDayTable: FC<
     PropsWithChildren & {
@@ -37,6 +38,11 @@ export const WorkDayTable: FC<
     defaultDateRange,
 }) => {
     const userLocale = navigator.language || 'en-US';
+    const user = useContext(UserContext);
+
+    if (!user) {
+        return null;
+    }
 
     return (
         <Card.Root w={'100%'}>
@@ -95,14 +101,16 @@ export const WorkDayTable: FC<
                     </Portal>
                 </DatePicker.Root>
                 <Box display={'flex'} gap={2} justifyContent={'flex-end'} alignItems={'center'}>
-                    <IconButton
-                        variant="subtle"
-                        color="fg.success"
-                        disabled={disabled}
-                        onClick={() => onEdit(undefined)}
-                    >
-                        <PiPlusBold />
-                    </IconButton>
+                    {user.role === 'SYSTEM_ADMIN' || user.role === 'MANAGER' ? (
+                        <IconButton
+                            variant="subtle"
+                            color="fg.success"
+                            disabled={disabled}
+                            onClick={() => onEdit(undefined)}
+                        >
+                            <PiPlusBold />
+                        </IconButton>
+                    ) : null}
                     <IconButton variant="subtle" color="fg.success" disabled>
                         {/* //TODO: Implement export to excel */}
                         <PiMicrosoftExcelLogoFill />

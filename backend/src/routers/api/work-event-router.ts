@@ -4,6 +4,7 @@ import {
     ApiCreateWorkEvent,
     ApiGetWorkEvent,
     ApiGetWorkEventGrouped,
+    ApiUpdateWorkEvent,
 } from '@shared/types/api/api-work-event';
 import { workEventController } from '@src/controllers/work-event-controller';
 import { authorizerMiddleware } from '@src/middlewares/authorizer-middleware';
@@ -118,5 +119,34 @@ router.get(
         res.status(200).json(response);
     }
 );
+
+// === Update work event === [MANAGER]
+
+const updateWorkEventSchema: z.Schema<ApiUpdateWorkEvent> = z.object({
+    isDeleted: z.boolean().optional(),
+});
+
+router.put('/:workEventId', authorizerMiddleware($Enums.UserRole.MANAGER), async (req, res) => {
+    const workEventId = req.params.workEventId as string;
+
+    if (!workEventId) {
+        throw new ApiError(400, 'INVALID_ARGS', 'workEventId is required');
+    }
+
+    const data = updateWorkEventSchema.safeParse(req.body);
+
+    if (!data.success)
+        throw new ApiError(
+            400,
+            'INVALID_ARGS',
+            data.error.issues.map((issue) => issue.message).join(', ')
+        );
+
+    const userId = req.user?.id;
+
+    await workEventController().updateWorkEvent(workEventId, userId, data.data);
+
+    res.status(200).json({ status: 'SUCCESS' });
+});
 
 export { router as workEventRouter };

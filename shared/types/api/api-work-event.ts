@@ -18,6 +18,10 @@ export type ApiCreateWorkEvent = {
     placeEnd?: string;
 };
 
+export type ApiUpdateWorkEvent = {
+    isDeleted?: boolean;
+};
+
 export type ApiGetWorkEventGrouped = {
     workEvents: ApiGetWorkEvent[];
     time: number;

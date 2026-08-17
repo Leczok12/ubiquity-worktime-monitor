@@ -8,6 +8,7 @@ import { getApiWorkEventsGrouped } from '@src/api/api-work-events';
 import type { ApiGetWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
 import { useState } from 'react';
 import WorkEventEditor from '@src/components/work-event-editor';
+import WorkDayEditor from '@src/organisms/work-day-editor';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
@@ -15,6 +16,7 @@ const WorkerPage = () => {
         undefined
     );
     const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const [editorDateRange, setEditorDateRange] = useState<[Date, Date] | undefined>(undefined);
     const [dateRange, setDateRange] = useState<[Date, Date]>([
         new Date(new Date().setDate(new Date().getDate() - 7)),
         new Date(),
@@ -40,7 +42,7 @@ const WorkerPage = () => {
         isFetching: workEventsFetching,
         refetch: refetchWorkEvents,
     } = useQuery({
-        queryKey: ['work-events', workerId, dateRange],
+        queryKey: ['work-events-grouped', workerId, dateRange],
         queryFn: async () => {
             if (!workerId) {
                 throw new Error('Worker ID is required');
@@ -70,7 +72,13 @@ const WorkerPage = () => {
 
     return (
         <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
-            <WorkEventEditor data={editorEventData} open={isEditorOpen} setOpen={setIsEditorOpen} />
+            <WorkDayEditor
+                dateRange={editorDateRange}
+                workerId={workerId}
+                open={isEditorOpen}
+                onOpenChange={setIsEditorOpen}
+            />
+            {/* <WorkEventEditor data={editorEventData} open={isEditorOpen} setOpen={setIsEditorOpen} /> */}
             <WorkerHero data={data?.data} isLoading={isLoading} />
             {workerId && !isLoading && (
                 <WorkDayTable
@@ -97,6 +105,10 @@ const WorkerPage = () => {
                                 data={data}
                                 onClick={() => {
                                     setEditorEventData(data);
+                                    setEditorDateRange([
+                                        new Date(data.sinceDate),
+                                        new Date(data.untilDate),
+                                    ]);
                                     setIsEditorOpen(true);
                                 }}
                             />

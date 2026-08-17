@@ -144,7 +144,7 @@ const workEventController = () => {
         return data.reverse();
     };
 
-    return { createWorkEvent, getWorkEventsGrouped };
+    return { createWorkEvent, getWorkEvents, getWorkEventsGrouped };
 };
 
 export { workEventController };

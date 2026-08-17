@@ -1,11 +1,16 @@
-import { Alert, Button, IconButton, Table } from '@chakra-ui/react';
+import { Alert, Button, IconButton, Skeleton, Table } from '@chakra-ui/react';
 import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
 import type { FC, PropsWithChildren } from 'react';
-import { TbTrash } from 'react-icons/tb';
+import { TbPlus, TbTrash } from 'react-icons/tb';
 
 export const WorkEventsTable: FC<
-    PropsWithChildren<{ isEmpty?: boolean; onCreate?: () => void }>
-> = ({ isEmpty = false, children }) => {
+    PropsWithChildren<{
+        empty?: boolean;
+        loading?: boolean;
+        error?: string;
+        onCreate?: () => void;
+    }>
+> = ({ empty = false, loading = false, error, children }) => {
     return (
         <Table.Root interactive>
             <Table.Header>
@@ -37,10 +42,31 @@ export const WorkEventsTable: FC<
             </Table.Header>
             <Table.Body>
                 {(() => {
-                    if (isEmpty) {
+                    if (error) {
                         return (
                             <Table.Row>
-                                <Table.Cell colSpan={5}>
+                                <Table.Cell colSpan={6}>
+                                    <Alert.Root variant="subtle" status="error">
+                                        <Alert.Title>Error</Alert.Title>
+                                        <Alert.Description>{error}</Alert.Description>
+                                    </Alert.Root>
+                                </Table.Cell>
+                            </Table.Row>
+                        );
+                    }
+                    if (loading) {
+                        return (
+                            <Table.Row>
+                                <Table.Cell colSpan={6}>
+                                    <Skeleton>Loading...</Skeleton>
+                                </Table.Cell>
+                            </Table.Row>
+                        );
+                    }
+                    if (empty) {
+                        return (
+                            <Table.Row>
+                                <Table.Cell colSpan={6}>
                                     <Alert.Root variant="subtle" status="info">
                                         <Alert.Title>Info</Alert.Title>
                                         <Alert.Description>No events found</Alert.Description>
@@ -49,7 +75,7 @@ export const WorkEventsTable: FC<
                             </Table.Row>
                         );
                     }
-                    return children;
+                    return <>{children}</>;
                 })()}
             </Table.Body>
         </Table.Root>

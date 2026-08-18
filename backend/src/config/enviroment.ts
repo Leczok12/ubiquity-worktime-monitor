@@ -13,6 +13,13 @@ export const ENV = {
         if (parsed < -720 || parsed > 720) return 0;
         return parsed;
     })(),
+    DISPLAY_DATE_OFFSET: (() => {
+        if (process.env.DISPLAY_DATE_OFFSET === undefined) return 0;
+        const parsed = parseInt(process.env.DISPLAY_DATE_OFFSET, 10);
+
+        if (parsed < -720 || parsed > 720) return 0;
+        return parsed;
+    })(),
 
     UBIQUITI_FULL_SYNC_CRON: process.env.UBIQUITI_FULL_SYNC_CRON ?? '0 0 * * *',
     UBIQUITI_PARTIAL_SYNC_CRON: process.env.UBIQUITI_PARTIAL_SYNC_CRON ?? '*/15 * * * *',

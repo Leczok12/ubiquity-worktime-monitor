@@ -27,4 +27,5 @@ export type ApiGetWorkEventGrouped = {
     time: number;
     sinceDate: string;
     untilDate: string;
+    displayDate: string;
 };

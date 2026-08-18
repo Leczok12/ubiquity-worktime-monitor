@@ -6,9 +6,10 @@ import WorkerHero from '@src/components/worker-hero';
 import { WorkDayTable, WorkDayTableRow } from '@src/components/work-day-table';
 import { getApiWorkEventsGrouped } from '@src/api/api-work-events';
 import type { ApiGetWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import WorkEventEditor from '@src/components/work-event-editor';
 import WorkDayEditor from '@src/organisms/work-day-editor';
+import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
@@ -21,6 +22,8 @@ const WorkerPage = () => {
         new Date(new Date().setDate(new Date().getDate() - 7)),
         new Date(),
     ]);
+
+    const workEventsContext = createContext(WorkEventsContext);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['worker', workerId],

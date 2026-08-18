@@ -131,12 +131,18 @@ const workEventController = () => {
                 workEvents: workEvents.map((event) => ({
                     sinceDate: event.timeStart.toISOString(),
                     untilDate: event.timeEnd.toISOString(),
+                    displayDate: new Date(
+                        event.timeStart.getTime() / 2 +
+                            event.timeEnd.getTime() / 2 +
+                            ENV.DISPLAY_DATE_OFFSET * 60 * 1000
+                    ).toISOString(),
                     type: event.type,
                     id: event.id,
                     placeStart: event.placeStart ?? undefined,
                     placeEnd: event.placeEnd ?? undefined,
                 })),
                 time: calculateWorkTimeInMinutes(currentSince, currentUntil, workEvents),
+                displayDate: '',
             });
 
             calculatedSinceDate.setTime(currentUntil.getTime());

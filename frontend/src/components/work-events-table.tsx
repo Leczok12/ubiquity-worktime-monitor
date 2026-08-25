@@ -1,17 +1,16 @@
 import { Alert, Box, Button, IconButton, Skeleton, Table } from '@chakra-ui/react';
 import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
-import type { FC, PropsWithChildren } from 'react';
+import { UserContext } from '@src/hooks/use-user-context';
+import { useContext, type FC, type PropsWithChildren } from 'react';
 import { TbCopy, TbPlus, TbTrash } from 'react-icons/tb';
 
 export const WorkEventsTable: FC<
     PropsWithChildren<{
         empty?: boolean;
-        loading?: boolean;
-        error?: string;
-        onCreate?: () => void;
-        showActions?: boolean;
     }>
-> = ({ empty = false, loading = false, error, children, showActions = true }) => {
+> = ({ empty = false, children }) => {
+    const userContext = useContext(UserContext);
+
     return (
         <Table.Root interactive>
             <Table.Header>
@@ -45,7 +44,13 @@ export const WorkEventsTable: FC<
                         w="auto"
                         textAlign="right"
                         display={'none'}
-                        md={{ display: showActions ? 'table-cell' : 'none' }}
+                        md={{
+                            display:
+                                userContext?.role === 'SYSTEM_ADMIN' ||
+                                userContext?.role === 'MANAGER'
+                                    ? 'table-cell'
+                                    : 'none',
+                        }}
                     >
                         Actions
                     </Table.Cell>
@@ -53,27 +58,6 @@ export const WorkEventsTable: FC<
             </Table.Header>
             <Table.Body>
                 {(() => {
-                    if (error) {
-                        return (
-                            <Table.Row>
-                                <Table.Cell colSpan={6}>
-                                    <Alert.Root variant="subtle" status="error">
-                                        <Alert.Title>Error</Alert.Title>
-                                        <Alert.Description>{error}</Alert.Description>
-                                    </Alert.Root>
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    }
-                    if (loading) {
-                        return (
-                            <Table.Row>
-                                <Table.Cell colSpan={6}>
-                                    <Skeleton>Loading...</Skeleton>
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    }
                     if (empty) {
                         return (
                             <Table.Row>
@@ -98,8 +82,9 @@ export const WorkEventsTableRow: FC<{
     onHover: (id?: string) => void;
     onDelete: (id: string) => void;
     disabled?: boolean;
-    showActions?: boolean;
-}> = ({ data, onHover, onDelete, disabled, showActions = true }) => {
+}> = ({ data, onHover, onDelete, disabled }) => {
+    const userContext = useContext(UserContext);
+
     return (
         <Table.Row
             cursor="pointer"
@@ -122,7 +107,12 @@ export const WorkEventsTableRow: FC<{
             <Table.Cell
                 textAlign="right"
                 display={'none'}
-                md={{ display: showActions ? 'table-cell' : 'none' }}
+                md={{
+                    display:
+                        userContext?.role === 'SYSTEM_ADMIN' || userContext?.role === 'MANAGER'
+                            ? 'table-cell'
+                            : 'none',
+                }}
             >
                 <Box display={'flex'} w={'full'} h={'full'} gap={2} justifyContent={'flex-end'}>
                     <IconButton

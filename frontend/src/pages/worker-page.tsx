@@ -4,39 +4,43 @@ import { getApiWorker } from '@src/api/api-worker';
 import { useParams } from 'react-router';
 import WorkerHero from '@src/components/worker-hero';
 import { WorkDayTable, WorkDayTableRow } from '@src/components/work-day-table';
-import { getApiWorkEventsGrouped } from '@src/api/api-work-events';
-import type { ApiGetWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
+import { getApiWorkEventsGrouped, updateApiWorkEvent } from '@src/api/api-work-events';
+import type {
+    ApiCreateWorkEvent,
+    ApiGetWorkEvent,
+    ApiGetWorkEventGrouped,
+} from '@shared/types/api/api-work-event';
 import { createContext, useState } from 'react';
 import WorkEventEditor from '@src/components/work-event-editor';
 import WorkDayEditor from '@src/organisms/work-day-editor';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
+import { useLocalStorage } from '@src/hooks/use-local-storage';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
+    const [lastDateRange, setLastDateRange] = useLocalStorage<{
+        updated: string;
+        since: string;
+        until: string;
+    }>('lastDateRange', {
+        updated: new Date().toISOString(),
+        since: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+        until: new Date().toISOString(),
+    });
+
     const [editorEventData, setEditorEventData] = useState<ApiGetWorkEventGrouped | undefined>(
         undefined
     );
+    const [isProcessing, setIsProcessing] = useState(false);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
-    const [editorDateRange, setEditorDateRange] = useState<[Date, Date] | undefined>(undefined);
-    const [dateRange, setDateRange] = useState<[Date, Date]>([
-        new Date(new Date().setDate(new Date().getDate() - 7)),
-        new Date(),
-    ]);
-
-    const workEventsContext = createContext(WorkEventsContext);
-
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['worker', workerId],
-        queryFn: async () => {
-            if (!workerId) {
-                throw new Error('Worker ID is required');
-            }
-            return getApiWorker(workerId);
-        },
-        retry: false,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        gcTime: 1000 * 60 * 10, // 10 minutes
-    });
+    console.log('lastDateRange', lastDateRange);
+    const [dateRange, setDateRange] = useState<[Date, Date]>(
+        // if last update was more than 2 hours ago, reset to last 7 days
+        new Date(lastDateRange.updated).getTime() + 1000 * 60 * 60 * 2 < new Date().getTime()
+            ? [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()]
+            : [new Date(lastDateRange.since), new Date(lastDateRange.until)]
+    );
+    const [editorDateRange, setEditorDateRange] = useState<[Date, Date]>(dateRange);
 
     const {
         data: workEventsData,
@@ -56,72 +60,88 @@ const WorkerPage = () => {
                 dateRange[1].toISOString()
             );
         },
-        enabled: isLoading === false,
         retry: false,
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 10, // 10 minutes
     });
 
-    if (error) {
-        return (
-            <Container>
-                <Alert.Root variant="subtle" status="error">
-                    <Alert.Title>Error</Alert.Title>
-                    <Alert.Description>{error.message}</Alert.Description>
-                </Alert.Root>
-            </Container>
+    const changeDateRange = (newDateRange: [Date, Date]) => {
+        setDateRange(newDateRange);
+        setLastDateRange({
+            updated: new Date().toISOString(),
+            since: newDateRange[0].toISOString(),
+            until: newDateRange[1].toISOString(),
+        });
+        refetchWorkEvents();
+    };
+
+    const createEvent = async (data: ApiCreateWorkEvent) => {
+        if (!workerId) {
+            throw new Error('Worker ID is required');
+        }
+    };
+
+    const removeEvent = async (id: string) => {
+        await updateApiWorkEvent(id, { isDeleted: true });
+        setEditorEventData(
+            editorEventData
+                ? {
+                      ...editorEventData,
+                      workEvents: editorEventData.workEvents.filter((e) => e.id !== id),
+                  }
+                : undefined
         );
+
+        refetchWorkEvents();
+    };
+
+    if (!workerId) {
+        throw new Error('Worker ID is required');
     }
 
     return (
-        <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
-            <WorkDayEditor
-                dateRange={editorDateRange}
-                workerId={workerId}
-                open={isEditorOpen}
-                onOpenChange={setIsEditorOpen}
-                onUpdate={() => {
-                    refetchWorkEvents();
-                }}
-            />
-            {/* <WorkEventEditor data={editorEventData} open={isEditorOpen} setOpen={setIsEditorOpen} /> */}
-            <WorkerHero data={data?.data} isLoading={isLoading} />
-            {workerId && !isLoading && (
-                <WorkDayTable
-                    disabled={workEventsLoading || workEventsFetching}
-                    onEdit={(data) => {
-                        setEditorEventData(undefined);
-                        setIsEditorOpen(true);
-                    }}
-                    onDateRangeChange={(sinceDate, untilDate) => {
-                        console.log('Date range changed:', sinceDate, untilDate);
-                        setDateRange([sinceDate, untilDate]);
-                        refetchWorkEvents(); // Refetch work events when date range changes
-                        // Refetch work events when date range changes
-                        // This is a placeholder; you might want to implement a more sophisticated state management or query invalidation
-                    }}
-                    loading={workEventsLoading}
-                    empty={!workEventsData?.data?.length}
-                    error={workEventsError?.message}
-                >
-                    {workEventsData?.data &&
-                        workEventsData.data.map((data) => (
-                            <WorkDayTableRow
-                                key={data.sinceDate}
-                                data={data}
-                                onClick={() => {
-                                    setEditorEventData(data);
-                                    setEditorDateRange([
-                                        new Date(data.sinceDate),
-                                        new Date(data.untilDate),
-                                    ]);
-                                    setIsEditorOpen(true);
-                                }}
-                            />
-                        ))}
-                </WorkDayTable>
-            )}
-        </Container>
+        <WorkEventsContext.Provider
+            value={{
+                isProcessing: workEventsLoading || workEventsFetching || isProcessing,
+                eventsGrouped: workEventsData?.data,
+                dateRange,
+                editorEvents: editorEventData,
+                changeDateRange,
+                removeEvent: removeEvent,
+                createEvent: createEvent,
+            }}
+        >
+            <WorkDayEditor open={isEditorOpen} onOpenChange={setIsEditorOpen} />
+            <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
+                <WorkerHero workerId={workerId} />
+                {workerId && (
+                    <WorkDayTable
+                        disabled={workEventsLoading || workEventsFetching}
+                        onEdit={(data) => {
+                            setEditorEventData(undefined);
+                            setIsEditorOpen(true);
+                        }}
+                        empty={!workEventsData?.data?.length}
+                    >
+                        {workEventsData?.data &&
+                            workEventsData.data.map((data) => (
+                                <WorkDayTableRow
+                                    key={data.sinceDate}
+                                    data={data}
+                                    onClick={() => {
+                                        setEditorEventData(data);
+                                        setEditorDateRange([
+                                            new Date(data.sinceDate),
+                                            new Date(data.untilDate),
+                                        ]);
+                                        setIsEditorOpen(true);
+                                    }}
+                                />
+                            ))}
+                    </WorkDayTable>
+                )}
+            </Container>
+        </WorkEventsContext.Provider>
     );
 };
 

@@ -2,13 +2,19 @@ import type { ApiCreateWorkEvent, ApiGetWorkEventGrouped } from '@shared/types/a
 import { createContext } from 'react';
 
 export const WorkEventsContext = createContext<{
-    eventsGrouped: ApiGetWorkEventGrouped | undefined;
+    isProcessing: boolean;
+    eventsGrouped: ApiGetWorkEventGrouped[] | undefined;
+    editorEvents: ApiGetWorkEventGrouped | undefined;
+    dateRange: [Date, Date];
     changeDateRange: (dateRange: [Date, Date]) => void;
     removeEvent: (id: string) => void;
     createEvent: (data: ApiCreateWorkEvent) => void;
 }>({
+    isProcessing: false,
     eventsGrouped: undefined,
+    editorEvents: undefined,
+    dateRange: [new Date(), new Date()],
     changeDateRange: () => {},
-    removeEvent: () => {},
-    createEvent: () => {},
+    removeEvent: async () => {},
+    createEvent: async () => {},
 });

@@ -11,6 +11,7 @@ import AdminWorkerPage from '@src/pages/admin-worker-page';
 import AuthLoginPage from '@src/pages/auth-login-page';
 import AuthLogoutPage from '@src/pages/auth-logout-page';
 import WorkerPage from '@src/pages/worker-page';
+import ErrorPage from '@src/pages/error-page';
 
 const router = createBrowserRouter([
     // {
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <RootLayout />,
+        errorElement: <ErrorPage />,
         children: [
             { index: true, element: <HomePage /> },
             { path: 'worker', element: <WorkerPage /> },

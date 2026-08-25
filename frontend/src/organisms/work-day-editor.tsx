@@ -1,42 +1,35 @@
-import { Center, CloseButton, Dialog, Heading, Portal, Spinner } from '@chakra-ui/react';
-import { getApiWorkEvents, updateApiWorkEvent } from '@src/api/api-work-events';
+import { CloseButton, Dialog, Heading, Portal } from '@chakra-ui/react';
+import { updateApiWorkEvent } from '@src/api/api-work-events';
 import { WorkEventsTable, WorkEventsTableRow } from '@src/components/work-events-table';
 import WorkEventsTimeline from '@src/components/work-events-timeline';
-import { UserContext } from '@src/hooks/use-user-context';
-import { useQuery } from '@tanstack/react-query';
+import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useContext, useEffect, useState, type FC } from 'react';
 
 const WorkDayEditor: FC<{
-    dateRange?: [Date, Date];
-    workerId?: string;
     open?: boolean;
     onOpenChange: (open: boolean) => void;
-    onUpdate?: () => void;
-}> = ({ dateRange, workerId, open, onOpenChange, onUpdate }) => {
-    const [since, until] = dateRange || [new Date(), new Date()];
+}> = ({ open, onOpenChange }) => {
     const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined);
-    const [disable, setDisable] = useState<boolean>(false);
-    const user = useContext(UserContext);
-
-    const { data, isLoading, error, isFetching, refetch } = useQuery({
-        queryKey: ['work-events', workerId, dateRange],
-        queryFn: async () => {
-            if (!workerId) {
-                throw new Error('Worker ID is required');
-            }
-            return getApiWorkEvents(workerId, since.toISOString(), until.toISOString());
-        },
-    });
+    const workEventsContext = useContext(WorkEventsContext);
 
     useEffect(() => {
+        if (!workEventsContext.editorEvents) {
+            onOpenChange(false);
+            return;
+        }
         if (!open) {
             setSelectedEventId(undefined);
         }
     }, [open]);
 
-    if (!user) {
+    if (!workEventsContext.editorEvents) {
         return null;
     }
+
+    const since = new Date(workEventsContext.editorEvents.sinceDate);
+    const until = new Date(workEventsContext.editorEvents.untilDate);
+    const isProcessing = workEventsContext.isProcessing;
+    const data = workEventsContext.editorEvents;
 
     return (
         <Dialog.Root
@@ -64,41 +57,22 @@ const WorkDayEditor: FC<{
                                 showHours
                                 size="lg"
                                 selectedEventId={selectedEventId}
-                                events={isLoading || isFetching ? [] : (data?.data ?? [])}
+                                events={isProcessing ? [] : data.workEvents}
                                 since={since}
                                 until={until}
                             />
-                            <WorkEventsTable
-                                loading={isLoading || isFetching}
-                                error={error?.message}
-                                empty={data?.data ? data?.data.length === 0 : false}
-                                showActions={
-                                    user.role === 'SYSTEM_ADMIN' || user.role === 'MANAGER'
-                                }
-                            >
-                                {data?.data &&
-                                    data.data.map((event) => (
-                                        <WorkEventsTableRow
-                                            onDelete={() => {
-                                                setDisable(true);
-                                                updateApiWorkEvent(event.id, {
-                                                    isDeleted: true,
-                                                }).then(() => {
-                                                    setDisable(false);
-                                                    onUpdate?.();
-                                                    refetch();
-                                                });
-                                            }}
-                                            key={event.id}
-                                            data={event}
-                                            disabled={disable}
-                                            showActions={
-                                                user.role === 'SYSTEM_ADMIN' ||
-                                                user.role === 'MANAGER'
-                                            }
-                                            onHover={setSelectedEventId}
-                                        />
-                                    ))}
+                            <WorkEventsTable empty={data.workEvents.length === 0}>
+                                {data.workEvents.map((event) => (
+                                    <WorkEventsTableRow
+                                        onDelete={() => {
+                                            workEventsContext.removeEvent(event.id);
+                                        }}
+                                        key={event.id}
+                                        data={event}
+                                        disabled={isProcessing}
+                                        onHover={setSelectedEventId}
+                                    />
+                                ))}
                             </WorkEventsTable>
                         </Dialog.Body>
                     </Dialog.Content>

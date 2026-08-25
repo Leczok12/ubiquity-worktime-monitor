@@ -1,8 +1,25 @@
 import { Box, Card, Heading, Skeleton } from '@chakra-ui/react';
-import type { ApiGetWorker } from '@shared/types/api/api-worker';
+import { getApiWorker } from '@src/api/api-worker';
+import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 
-const WorkerHero: FC<{ data?: ApiGetWorker; isLoading?: boolean }> = ({ data, isLoading }) => {
+const WorkerHero: FC<{ workerId: string }> = ({ workerId }) => {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['worker', workerId],
+        queryFn: async () => {
+            return getApiWorker(workerId);
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 10, // 10 minutes
+    });
+
+    if (error) {
+        if (error.message === 'NOT_FOUND') {
+            throw new Error('Worker not found');
+        }
+        throw new Error(error.message || 'An error occurred while fetching worker data.');
+    }
+
     return (
         <Card.Root w={'100%'}>
             <Card.Header
@@ -19,12 +36,18 @@ const WorkerHero: FC<{ data?: ApiGetWorker; isLoading?: boolean }> = ({ data, is
                 <Box display={'flex'} flexDirection={'column'} gap={2}>
                     <Skeleton loading={isLoading}>
                         <Heading size="4xl" textAlign={'left'} m={0} p={0}>
-                            {isLoading ? 'Loading...' : data?.name + ' ' + data?.lastname}
+                            {isLoading
+                                ? 'Loading...'
+                                : data?.data?.name + ' ' + data?.data?.lastname}
                         </Heading>
                     </Skeleton>
                     <Skeleton loading={isLoading}>
                         <Heading size="lg" textAlign={'left'} m={0} p={0} opacity={0.5}>
-                            {isLoading ? 'Loading...' : data?.email ? data.email : '---@---.--'}
+                            {isLoading
+                                ? 'Loading...'
+                                : data?.data?.email
+                                  ? data.data.email
+                                  : '---@---.--'}
                         </Heading>
                     </Skeleton>
                 </Box>
@@ -32,9 +55,9 @@ const WorkerHero: FC<{ data?: ApiGetWorker; isLoading?: boolean }> = ({ data, is
                     <Heading
                         size="xl"
                         textAlign={'left'}
-                        color={data?.active ? 'fg.success' : 'fg.error'}
+                        color={data?.data?.active ? 'fg.success' : 'fg.error'}
                     >
-                        {isLoading ? 'Loading...' : data?.active ? 'Active' : 'Inactive'}
+                        {isLoading ? 'Loading...' : data?.data?.active ? 'Active' : 'Inactive'}
                     </Heading>
                 </Skeleton>
             </Card.Header>

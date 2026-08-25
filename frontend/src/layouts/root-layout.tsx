@@ -24,7 +24,7 @@ const RootLayout = () => {
         }
     }, [data, navigator]);
 
-    if (isLoading || !data) {
+    if (isLoading || !data || !data.data) {
         return null;
     }
 

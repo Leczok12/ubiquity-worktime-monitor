@@ -16,33 +16,22 @@ import { Tooltip } from './ui/tooltip';
 import { numberPadding } from '@src/utils/number-padding';
 import WorkEventsTimeline from './work-events-timeline';
 import { UserContext } from '@src/hooks/use-user-context';
+import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 
 export const WorkDayTable: FC<
     PropsWithChildren & {
         onEdit: (data?: ApiGetWorkEventGrouped) => void;
-        onDateRangeChange: (sinceDate: Date, untilDate: Date) => void;
-        defaultDateRange?: [Date, Date];
         disabled?: boolean;
         loading?: boolean;
-        error?: string;
         empty?: boolean;
     }
-> = ({
-    children,
-    loading,
-    error,
-    empty,
-    onEdit,
-    onDateRangeChange,
-    disabled,
-    defaultDateRange,
-}) => {
+> = ({ children, empty, onEdit, disabled, loading }) => {
     const userLocale = navigator.language || 'en-US';
-    const user = useContext(UserContext);
+    const userContext = useContext(UserContext);
+    const workEventsContext = useContext(WorkEventsContext);
 
-    if (!user) {
-        return null;
-    }
+    const since = new Date(workEventsContext.dateRange[0]);
+    const until = new Date(workEventsContext.dateRange[1]);
 
     return (
         <Card.Root w={'100%'}>
@@ -61,21 +50,14 @@ export const WorkDayTable: FC<
                     openOnClick
                     disabled={disabled}
                     onValueChange={(e) => {
-                        const [start, end] = e.value;
                         if (e.value.length === 2) {
-                            onDateRangeChange(
+                            workEventsContext.changeDateRange([
                                 new Date(e.value[0].toString()),
-                                new Date(e.value[1].toString())
-                            );
+                                new Date(e.value[1].toString()),
+                            ]);
                         }
                     }}
-                    defaultValue={[
-                        parseDate(defaultDateRange?.[0] || new Date()),
-                        parseDate(
-                            defaultDateRange?.[1] ||
-                                new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
-                        ),
-                    ]}
+                    defaultValue={[parseDate(since), parseDate(until)]}
                 >
                     <DatePicker.Control>
                         <DatePicker.Input index={0} />
@@ -101,7 +83,8 @@ export const WorkDayTable: FC<
                     </Portal>
                 </DatePicker.Root>
                 <Box display={'flex'} gap={2} justifyContent={'flex-end'} alignItems={'center'}>
-                    {user.role === 'SYSTEM_ADMIN' || user.role === 'MANAGER' ? (
+                    {userContext &&
+                    (userContext.role === 'SYSTEM_ADMIN' || userContext.role === 'MANAGER') ? (
                         <IconButton
                             variant="subtle"
                             color="fg.success"
@@ -143,27 +126,27 @@ export const WorkDayTable: FC<
                     </Table.Header>
                     <Table.Body>
                         {(() => {
-                            if (error) {
-                                return (
-                                    <Table.Row>
-                                        <Table.Cell colSpan={3}>
-                                            <Alert.Root variant="subtle" status="error">
-                                                <Alert.Title>Error</Alert.Title>
-                                                <Alert.Description>{error}</Alert.Description>
-                                            </Alert.Root>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                );
-                            }
-                            if (loading) {
-                                return (
-                                    <Table.Row>
-                                        <Table.Cell colSpan={3}>
-                                            <Skeleton>Loading work events...</Skeleton>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                );
-                            }
+                            // if (error) {
+                            //     return (
+                            //         <Table.Row>
+                            //             <Table.Cell colSpan={3}>
+                            //                 <Alert.Root variant="subtle" status="error">
+                            //                     <Alert.Title>Error</Alert.Title>
+                            //                     <Alert.Description>{error}</Alert.Description>
+                            //                 </Alert.Root>
+                            //             </Table.Cell>
+                            //         </Table.Row>
+                            //     );
+                            // }
+                            // if (loading) {
+                            //     return (
+                            //         <Table.Row>
+                            //             <Table.Cell colSpan={3}>
+                            //                 <Skeleton>Loading work events...</Skeleton>
+                            //             </Table.Cell>
+                            //         </Table.Row>
+                            //     );
+                            // }
                             if (empty) {
                                 return (
                                     <Table.Row>

@@ -3,16 +3,16 @@ import { createContext } from 'react';
 
 export const WorkEventsContext = createContext<{
     isProcessing: boolean;
+    isLodaing: boolean;
     eventsGrouped: ApiGetWorkEventGrouped[] | undefined;
-    editorEvents: ApiGetWorkEventGrouped | undefined;
     dateRange: [Date, Date];
     changeDateRange: (dateRange: [Date, Date]) => void;
-    removeEvent: (id: string) => void;
-    createEvent: (data: ApiCreateWorkEvent) => void;
+    removeEvent: (id: string) => Promise<void>;
+    createEvent: (data: ApiCreateWorkEvent) => Promise<void>;
 }>({
     isProcessing: false,
+    isLodaing: false,
     eventsGrouped: undefined,
-    editorEvents: undefined,
     dateRange: [new Date(), new Date()],
     changeDateRange: () => {},
     removeEvent: async () => {},

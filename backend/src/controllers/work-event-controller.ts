@@ -163,7 +163,6 @@ const workEventController = () => {
         if (!workEvent) {
             throw new Error(`Work event with ID ${workEventId} not found`);
         }
-        console.log('Updating work event', workEventId, data);
         await database.prisma.workEvent.update({
             where: { id: workEventId },
             data: {

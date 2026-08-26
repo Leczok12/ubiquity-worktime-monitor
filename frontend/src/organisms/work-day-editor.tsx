@@ -1,35 +1,25 @@
 import { CloseButton, Dialog, Heading, Portal } from '@chakra-ui/react';
 import { updateApiWorkEvent } from '@src/api/api-work-events';
+import Alert from '@src/components/alert';
 import { WorkEventsTable, WorkEventsTableRow } from '@src/components/work-events-table';
 import WorkEventsTimeline from '@src/components/work-events-timeline';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useContext, useEffect, useState, type FC } from 'react';
 
 const WorkDayEditor: FC<{
+    index?: number;
     open?: boolean;
     onOpenChange: (open: boolean) => void;
-}> = ({ open, onOpenChange }) => {
-    const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined);
+}> = ({ index, open, onOpenChange }) => {
     const workEventsContext = useContext(WorkEventsContext);
 
+    const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | undefined>(undefined);
+
     useEffect(() => {
-        if (!workEventsContext.editorEvents) {
-            onOpenChange(false);
-            return;
-        }
-        if (!open) {
-            setSelectedEventId(undefined);
-        }
+        if (!open) setSelectedEventId(undefined);
+        if (open) setError(undefined);
     }, [open]);
-
-    if (!workEventsContext.editorEvents) {
-        return null;
-    }
-
-    const since = new Date(workEventsContext.editorEvents.sinceDate);
-    const until = new Date(workEventsContext.editorEvents.untilDate);
-    const isProcessing = workEventsContext.isProcessing;
-    const data = workEventsContext.editorEvents;
 
     return (
         <Dialog.Root
@@ -46,35 +36,113 @@ const WorkDayEditor: FC<{
                         <Dialog.CloseTrigger asChild>
                             <CloseButton />
                         </Dialog.CloseTrigger>
-                        <Dialog.Header display={'flex'} flexDirection={'column'} gap={2}>
-                            <Dialog.Title>Work day editor</Dialog.Title>
-                            <Heading size="sm" m={0} p={0} opacity={0.5}>
-                                {since.toLocaleString()} to {until.toLocaleString()}
-                            </Heading>
-                        </Dialog.Header>
-                        <Dialog.Body display={'flex'} flexDirection={'column'} gap={4}>
-                            <WorkEventsTimeline
-                                showHours
-                                size="lg"
-                                selectedEventId={selectedEventId}
-                                events={isProcessing ? [] : data.workEvents}
-                                since={since}
-                                until={until}
-                            />
-                            <WorkEventsTable empty={data.workEvents.length === 0}>
-                                {data.workEvents.map((event) => (
-                                    <WorkEventsTableRow
-                                        onDelete={() => {
-                                            workEventsContext.removeEvent(event.id);
-                                        }}
-                                        key={event.id}
-                                        data={event}
-                                        disabled={isProcessing}
-                                        onHover={setSelectedEventId}
-                                    />
-                                ))}
-                            </WorkEventsTable>
-                        </Dialog.Body>
+
+                        {(() => {
+                            if (
+                                workEventsContext.eventsGrouped === undefined ||
+                                index === undefined ||
+                                index < 0 ||
+                                index >= workEventsContext.eventsGrouped.length ||
+                                error !== undefined
+                            ) {
+                                return (
+                                    <>
+                                        <Dialog.Header
+                                            display={'flex'}
+                                            flexDirection={'column'}
+                                            gap={2}
+                                        >
+                                            <Dialog.Title>Work day editor</Dialog.Title>
+                                            <Heading size="sm" m={0} p={0} opacity={0.5}>
+                                                --- to ---
+                                            </Heading>
+                                        </Dialog.Header>
+                                        <Dialog.Body
+                                            display={'flex'}
+                                            flexDirection={'column'}
+                                            gap={4}
+                                        >
+                                            <Alert
+                                                status="error"
+                                                title="Error"
+                                                description={(() => {
+                                                    if (error !== undefined) return error;
+                                                    if (index === undefined)
+                                                        return 'No index provided';
+                                                    if (index < 0) return 'Index is less than 0';
+                                                    if (
+                                                        workEventsContext.eventsGrouped ===
+                                                        undefined
+                                                    )
+                                                        return 'Events are not loaded yet';
+                                                    if (
+                                                        index >=
+                                                        workEventsContext.eventsGrouped.length
+                                                    )
+                                                        return 'Index is out of bounds';
+                                                    return 'Unknown error';
+                                                })()}
+                                            />
+                                        </Dialog.Body>
+                                    </>
+                                );
+                            }
+
+                            const since = new Date(
+                                workEventsContext.eventsGrouped[index].sinceDate
+                            );
+                            const until = new Date(
+                                workEventsContext.eventsGrouped[index].untilDate
+                            );
+                            const isProcessing = workEventsContext.isProcessing;
+                            const data = workEventsContext.eventsGrouped[index];
+
+                            return (
+                                <>
+                                    <Dialog.Header
+                                        display={'flex'}
+                                        flexDirection={'column'}
+                                        gap={2}
+                                    >
+                                        <Dialog.Title>Work day editor</Dialog.Title>
+                                        <Heading size="sm" m={0} p={0} opacity={0.5}>
+                                            {since.toLocaleString()} to {until.toLocaleString()}
+                                        </Heading>
+                                    </Dialog.Header>
+                                    <Dialog.Body display={'flex'} flexDirection={'column'} gap={4}>
+                                        <WorkEventsTimeline
+                                            showHours
+                                            size="lg"
+                                            selectedEventId={selectedEventId}
+                                            events={data.workEvents}
+                                            since={since}
+                                            until={until}
+                                        />
+                                        <WorkEventsTable
+                                            empty={data ? data.workEvents.length === 0 : false}
+                                        >
+                                            {data?.workEvents.map((event) => (
+                                                <WorkEventsTableRow
+                                                    onDelete={() => {
+                                                        workEventsContext
+                                                            .removeEvent(event.id + 'as')
+                                                            .catch((e) => {
+                                                                setError(
+                                                                    `Failed to delete work event: ${e.message}`
+                                                                );
+                                                            });
+                                                    }}
+                                                    key={event.id}
+                                                    data={event}
+                                                    disabled={isProcessing}
+                                                    onHover={setSelectedEventId}
+                                                />
+                                            ))}
+                                        </WorkEventsTable>
+                                    </Dialog.Body>
+                                </>
+                            );
+                        })()}
                     </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>

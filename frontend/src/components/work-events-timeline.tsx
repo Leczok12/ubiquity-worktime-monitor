@@ -39,7 +39,6 @@ const WorkEventsTimeline: FC<
                 const sinceProcentage =
                     (new Date(event.sinceDate).getTime() - since.getTime()) /
                     (until.getTime() - since.getTime());
-                console.log(event.type);
                 return (
                     <Box
                         key={event.id}

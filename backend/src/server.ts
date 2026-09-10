@@ -13,6 +13,7 @@ import { ApiError } from './types/api-error';
 import { ENV } from '@src/config/enviroment';
 import { taskQueue } from './services/task-queue';
 import { ubiquitiAccess } from './services/ubiquiti-access';
+import { initAdmin } from './utils/init-admin';
 // import { config } from './services/config/config-service';
 // import { ubiquitiAccessSync } from './services/ubiquiti-access-sync';
 
@@ -26,10 +27,7 @@ import { ubiquitiAccess } from './services/ubiquiti-access';
 
 const startServer = async () => {
     try {
-        // await config.initialize();
-        // await ubiquitiAccessSync.initialize();
-
-        //await createAdmin();
+        await initAdmin();
         if (await ubiquitiAccess.chealthCheck()) {
             if (ENV.UBIQUITI_SYNC_ON_STARTUP) {
                 taskQueue.createImmediateTask(

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "WorkEvent" ALTER COLUMN "lastModified" SET DEFAULT CURRENT_TIMESTAMP;

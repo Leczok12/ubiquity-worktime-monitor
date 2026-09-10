@@ -4,11 +4,12 @@ import { ENV } from '@src/config/enviroment';
 import { ApiAuthConfig } from '@shared/types/api/api-auth';
 import { ApiResponse } from '@sharedtypes/api-response';
 import { authController } from '@src/controllers/auth-controller';
-import { ApiError } from '@src/types/api-error';
+import { localRouter } from './local-router';
 
 const router = express.Router();
 
-// router.use('/local', groupRouter);
+router.use('/local', localRouter);
+
 if (ENV.MICROSOFT_ENABLED) {
     router.use('/microsoft', microsoftRouter);
 }

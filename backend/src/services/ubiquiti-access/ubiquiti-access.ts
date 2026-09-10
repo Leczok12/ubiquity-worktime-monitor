@@ -103,14 +103,14 @@ class UbiquitiAccess {
                 async (prisma) => {
                     await syncEvents(prisma, axiosInstance);
                 },
-                { timeout: 60000 }
+                { timeout: 120000 }
             );
 
             await database.prisma.$transaction(
                 async (prisma) => {
                     await syncWorkEvents(prisma, axiosInstance);
                 },
-                { timeout: 60000 }
+                { timeout: 120000 }
             );
 
             logger.success('Finished full sync with Ubiquiti Access API');

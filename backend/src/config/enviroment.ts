@@ -20,6 +20,8 @@ export const ENV = {
         if (parsed < -720 || parsed > 720) return 0;
         return parsed;
     })(),
+    ADMIN_DEFAULT_LOGIN: process.env.ADMIN_DEFAULT_LOGIN ?? 'admin',
+    ADMIN_DEFAULT_PASSWORD: process.env.ADMIN_DEFAULT_PASSWORD ?? 'admin',
 
     UBIQUITI_FULL_SYNC_CRON: process.env.UBIQUITI_FULL_SYNC_CRON ?? '0 0 * * *',
     UBIQUITI_PARTIAL_SYNC_CRON: process.env.UBIQUITI_PARTIAL_SYNC_CRON ?? '*/15 * * * *',

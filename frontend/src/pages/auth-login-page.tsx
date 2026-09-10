@@ -42,6 +42,7 @@ const AuthLoginPage = () => {
                 gap={4}
                 as="form"
                 onSubmit={(e) => {
+                    console.log(e.currentTarget.);
                     setLoginError('sadasd');
                     e.preventDefault();
                 }}

@@ -6,7 +6,7 @@ import WorkEventsTimeline from '@src/components/work-events-timeline';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useContext, useEffect, useState, type FC } from 'react';
 
-const WorkDayEditor: FC<{
+const WorkDayCreator: FC<{
     index?: number;
     open?: boolean;
     onOpenChange: (open: boolean) => void;
@@ -150,4 +150,4 @@ const WorkDayEditor: FC<{
     );
 };
 
-export default WorkDayEditor;
+export default WorkDayCreator;

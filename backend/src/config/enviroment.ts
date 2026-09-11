@@ -28,6 +28,14 @@ export const ENV = {
     UBIQUITI_HOST: process.env.UBIQUITI_HOST ?? null,
     UBIQUITI_API_KEY: process.env.UBIQUITI_API_KEY ?? null,
     UBIQUITI_SYNC_ON_STARTUP: process.env.UBIQUITI_SYNC_ON_STARTUP === 'true',
+    UBIQUITI_NEW_WORKER_DEFAULT_SHOW:
+        process.env.UBIQUITI_NEW_WORKER_DEFAULT_SHOW === undefined
+            ? true
+            : process.env.UBIQUITI_NEW_WORKER_DEFAULT_SHOW === 'true',
+    UBIQUITI_NEW_GROUP_DEFAULT_SHOW:
+        process.env.UBIQUITI_NEW_GROUP_DEFAULT_SHOW === undefined
+            ? true
+            : process.env.UBIQUITI_NEW_GROUP_DEFAULT_SHOW === 'true',
 
     MICROSOFT_ENABLED: process.env.MICROSOFT_ENABLED === 'true',
     MICROSOFT_LOGIN_LABEL: process.env.MICROSOFT_LOGIN_LABEL ?? 'Login with Microsoft',

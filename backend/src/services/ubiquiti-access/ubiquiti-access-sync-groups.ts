@@ -3,6 +3,7 @@ import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from '@src/types/prisma-transaction';
 import { logger } from '@shared/utils/logger';
+import { ENV } from '@src/config/enviroment';
 
 export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting groups sync with Ubiquiti Access API');
@@ -28,6 +29,7 @@ export const syncGroups = async (prisma: PrismaTransaction, axiosInstance: Axios
                 data: {
                     id: group.id,
                     name: group.name ?? '',
+                    show: ENV.UBIQUITI_NEW_GROUP_DEFAULT_SHOW,
                 },
             });
             logger.success(`Created group ${group.name}`);

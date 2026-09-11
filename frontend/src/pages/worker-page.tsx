@@ -38,6 +38,7 @@ const WorkerPage = () => {
             : [new Date(lastDateRange.since), new Date(lastDateRange.until)]
     );
 
+    const [isCretorOpen, setIsCreatorOpen] = useState(false);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editorIndex, setEditorIndex] = useState<number | undefined>(undefined);
 
@@ -111,10 +112,8 @@ const WorkerPage = () => {
                 {workerId && (
                     <WorkDayTable
                         disabled={workEventsLoading || workEventsFetching}
-                        onEdit={(data) => {
-                            setIsEditorOpen(true);
-                        }}
-                        empty={!workEventsData?.data?.length}
+                        onEdit={() => setIsEditorOpen(true)}
+                        loading={workEventsLoading}
                     >
                         {workEventsData?.data &&
                             workEventsData.data.map((data, index) => (

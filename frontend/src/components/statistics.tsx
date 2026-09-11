@@ -88,6 +88,11 @@ const Statistics: FC<{ data?: ApiGetStatistics; loading?: boolean; error?: strin
                 value={loading ? undefined : data?.deviceCount?.used}
                 total={data?.deviceCount?.all}
             />
+            <Tile label="Today's Events" value={loading ? undefined : data?.todayEventsCount} />
+            <Tile
+                label="Today's Work Events"
+                value={loading ? undefined : data?.todayWorkEventsCount}
+            />
         </Container>
     );
 };

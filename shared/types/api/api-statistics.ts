@@ -11,4 +11,6 @@ export interface ApiGetStatistics {
         used: number;
         all?: number;
     };
+    todayEventsCount: number;
+    todayWorkEventsCount: number;
 }

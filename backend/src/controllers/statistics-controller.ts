@@ -35,6 +35,20 @@ const statisticsController = () => {
                     },
                 }),
             },
+            todayEventsCount: await database.prisma.event.count({
+                where: {
+                    date: {
+                        gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                    },
+                },
+            }),
+            todayWorkEventsCount: await database.prisma.workEvent.count({
+                where: {
+                    timeStart: {
+                        gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                    },
+                },
+            }),
         };
     };
 

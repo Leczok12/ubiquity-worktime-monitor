@@ -9,6 +9,10 @@ export interface ApiAuthConfig {
     };
 }
 
+export interface ApiAuthUserLoginLocal {
+    username: string;
+    password: string;
+}
 export interface ApiAuthUser {
     id: string;
     email: string;

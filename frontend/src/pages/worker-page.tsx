@@ -11,8 +11,8 @@ import type {
     ApiGetWorkEventGrouped,
 } from '@shared/types/api/api-work-event';
 import { createContext, useState } from 'react';
-import WorkEventEditor from '@src/components/work-event-editor';
 import WorkDayEditor from '@src/organisms/work-day-editor';
+import WorkEventCreator from '@src/organisms/work-event-creator';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useLocalStorage } from '@src/hooks/use-local-storage';
 import Alert from '@src/components/alert';
@@ -106,13 +106,14 @@ const WorkerPage = () => {
                 createEvent: createEvent,
             }}
         >
+            <WorkEventCreator open={isCretorOpen} onOpenChange={setIsCreatorOpen} />
             <WorkDayEditor index={editorIndex} open={isEditorOpen} onOpenChange={setIsEditorOpen} />
             <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
                 <WorkerHero workerId={workerId} />
                 {workerId && (
                     <WorkDayTable
                         disabled={workEventsLoading || workEventsFetching}
-                        onEdit={() => setIsEditorOpen(true)}
+                        onEdit={() => setIsCreatorOpen(true)}
                         loading={workEventsLoading}
                     >
                         {workEventsData?.data &&

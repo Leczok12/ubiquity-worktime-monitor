@@ -25,10 +25,9 @@ const WorkEventCreator: FC<{
     onOpenChange: (open: boolean) => void;
 }> = ({ open, onOpenChange }) => {
     const userLocale = navigator.language || 'en-US';
-    const workEventsContext = useContext(WorkEventsContext);
+    const context = useContext(WorkEventsContext);
 
-    const [, setError] = useState<string | undefined>(undefined);
-    const [disabled, setDisabled] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined);
 
     const types = createListCollection({
         items: [
@@ -56,6 +55,12 @@ const WorkEventCreator: FC<{
         }
     }, [open]);
 
+    useEffect(() => {
+        if (open && !context.isProcessing && !error) {
+            onOpenChange(false);
+        }
+    }, [context.isProcessing]);
+
     const onSubmit = async (data: CreateWorkEventInput) => {
         const since = new Date(data.since[0].toString());
         const until = new Date(data.until[0].toString());
@@ -72,23 +77,15 @@ const WorkEventCreator: FC<{
             return;
         }
 
-        setDisabled(true);
-
-        workEventsContext
+        context
             .createEvent({
                 sinceDate: since.toISOString(),
                 untilDate: until.toISOString(),
                 type: data.type,
             })
-            .then(() => {
-                onOpenChange(false);
-            })
             .catch((error) =>
                 setError(error.message || 'An error occurred while creating the work event')
-            )
-            .finally(() => {
-                setDisabled(false);
-            });
+            );
     };
 
     return (
@@ -98,7 +95,7 @@ const WorkEventCreator: FC<{
             open={open}
             size="sm"
             onOpenChange={(e) => {
-                if (!disabled) onOpenChange(e.open);
+                if (!context.isProcessing) onOpenChange(e.open);
             }}
         >
             <Portal>
@@ -126,7 +123,7 @@ const WorkEventCreator: FC<{
                                     name="since"
                                     render={({ field }) => (
                                         <DateInput.Root
-                                            disabled={disabled}
+                                            disabled={context.isProcessing}
                                             value={field.value}
                                             locale={userLocale}
                                             granularity="minute"
@@ -156,7 +153,7 @@ const WorkEventCreator: FC<{
                                     name="until"
                                     render={({ field }) => (
                                         <DateInput.Root
-                                            disabled={disabled}
+                                            disabled={context.isProcessing}
                                             value={field.value}
                                             locale={userLocale}
                                             granularity="minute"
@@ -184,7 +181,7 @@ const WorkEventCreator: FC<{
                                     name="type"
                                     render={({ field }) => (
                                         <Select.Root
-                                            disabled={disabled}
+                                            disabled={context.isProcessing}
                                             collection={types}
                                             onValueChange={(value) =>
                                                 field.onChange(value.value[0])
@@ -221,7 +218,7 @@ const WorkEventCreator: FC<{
                             </Field.Root>
 
                             <Button type="submit" variant="subtle" mt={4}>
-                                {disabled ? <Spinner /> : 'Create work event'}
+                                {context.isProcessing ? <Spinner /> : 'Create work event'}
                             </Button>
                         </Dialog.Body>
                     </Dialog.Content>

@@ -16,5 +16,24 @@ export const localStrategy = new LocalStartegy(async (username, password, done) 
     } catch (err) {
         return done(null, false, { message: 'Invalid credentials' });
     }
-    return done(null, user);
+
+    const worker = await database.prisma.worker.findFirst({
+        where: { email: user.email },
+    });
+
+    if (worker) {
+        await database.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                workerId: worker.id,
+            },
+        });
+    }
+    const updatedUser = await database.prisma.user.update({
+        where: { id: user.id },
+        data: {
+            lastLogin: new Date(),
+        },
+    });
+    return done(null, updatedUser);
 });

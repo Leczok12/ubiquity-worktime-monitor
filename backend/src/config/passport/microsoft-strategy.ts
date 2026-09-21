@@ -12,15 +12,21 @@ export const microsoftStrategy = ENV.MICROSOFT_ENABLED
               scope: ['user.read'],
           },
           async function (accessToken: string, refreshToken: string, profile: any, done: Function) {
+              const worker = await database.prisma.worker.findMany({
+                  where: { email: profile.userPrincipalName },
+              });
+
               const user = await database.prisma.user.upsert({
                   where: { id: profile.id },
                   update: {
+                      workerId: worker.length > 0 ? worker[0].id : null,
                       email: profile.userPrincipalName,
                       name: profile.name.givenName,
                       lastname: profile.name.familyName,
                       lastLogin: new Date(),
                   },
                   create: {
+                      workerId: worker.length > 0 ? worker[0].id : null,
                       id: profile.id,
                       email: profile.userPrincipalName,
                       name: profile.name.givenName,

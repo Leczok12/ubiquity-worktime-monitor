@@ -12,11 +12,7 @@ import {
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useContext, useEffect, useState, type FC } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-    parseAbsoluteToLocal,
-    toCalendarDateTime,
-    CalendarDateTime,
-} from '@internationalized/date';
+import { CalendarDateTime } from '@internationalized/date';
 
 type CreateWorkEventInput = {
     since: CalendarDateTime[];
@@ -31,7 +27,7 @@ const WorkEventCreator: FC<{
     const userLocale = navigator.language || 'en-US';
     const workEventsContext = useContext(WorkEventsContext);
 
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [, setError] = useState<string | undefined>(undefined);
     const [disabled, setDisabled] = useState<boolean>(false);
 
     const types = createListCollection({
@@ -205,21 +201,19 @@ const WorkEventCreator: FC<{
                                                     <Select.Indicator />
                                                 </Select.IndicatorGroup>
                                             </Select.Control>
-                                            <Portal>
-                                                <Select.Positioner>
-                                                    <Select.Content>
-                                                        {types.items.map((framework) => (
-                                                            <Select.Item
-                                                                item={framework}
-                                                                key={framework.value}
-                                                            >
-                                                                {framework.label}
-                                                                <Select.ItemIndicator />
-                                                            </Select.Item>
-                                                        ))}
-                                                    </Select.Content>
-                                                </Select.Positioner>
-                                            </Portal>
+                                            <Select.Positioner>
+                                                <Select.Content>
+                                                    {types.items.map((framework) => (
+                                                        <Select.Item
+                                                            item={framework}
+                                                            key={framework.value}
+                                                        >
+                                                            {framework.label}
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
                                         </Select.Root>
                                     )}
                                 />

@@ -36,7 +36,6 @@ const WorkerPage = () => {
 
     const [isProcessing, setIsProcessing] = useState(false);
     const [dateRange, setDateRange] = useState<[Date, Date]>(
-        // if last update was more than 2 hours ago, reset to last 7 days
         new Date(lastDateRange.updated).getTime() + 1000 * 60 * 60 * 2 < new Date().getTime()
             ? [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()]
             : [new Date(lastDateRange.since), new Date(lastDateRange.until)]
@@ -82,17 +81,17 @@ const WorkerPage = () => {
     const createEvent = async (data: ApiCreateWorkEvent) => {
         setIsProcessing(true);
         await createApiWorkEvent(workerId!, data).finally(() => {
-            refetchWorkEvents();
             setIsProcessing(false);
         });
+        await refetchWorkEvents();
     };
 
     const removeEvent = async (id: string) => {
         setIsProcessing(true);
         await updateApiWorkEvent(id, { isDeleted: true }).finally(() => {
-            refetchWorkEvents();
             setIsProcessing(false);
         });
+        await refetchWorkEvents();
     };
 
     if (!workerId) {

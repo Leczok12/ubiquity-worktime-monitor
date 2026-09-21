@@ -60,7 +60,7 @@ export const WorkEventsTable: FC<
                 {(() => {
                     if (empty) {
                         return (
-                            <Table.Row>
+                            <Table.Row backgroundColor={'bg.subtle'}>
                                 <Table.Cell colSpan={6}>
                                     <Alert.Root variant="subtle" status="info">
                                         <Alert.Title>Info</Alert.Title>

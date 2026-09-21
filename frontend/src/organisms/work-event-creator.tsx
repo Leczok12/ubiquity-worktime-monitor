@@ -1,16 +1,27 @@
-import { CloseButton, Dialog, Heading, DateInput, Portal, parseDate } from '@chakra-ui/react';
-import { updateApiWorkEvent } from '@src/api/api-work-events';
-import Alert from '@src/components/alert';
-import { WorkEventsTable, WorkEventsTableRow } from '@src/components/work-events-table';
-import WorkEventsTimeline from '@src/components/work-events-timeline';
+import {
+    CloseButton,
+    Dialog,
+    DateInput,
+    Portal,
+    Field,
+    Button,
+    Select,
+    createListCollection,
+    Spinner,
+} from '@chakra-ui/react';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useContext, useEffect, useState, type FC } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import {
+    parseAbsoluteToLocal,
+    toCalendarDateTime,
+    CalendarDateTime,
+} from '@internationalized/date';
 
 type CreateWorkEventInput = {
-    start: Date;
-    end: Date;
-    description?: string;
+    since: CalendarDateTime[];
+    until: CalendarDateTime[];
+    type: 'WORK' | 'BREAK';
 };
 
 const WorkEventCreator: FC<{
@@ -21,24 +32,78 @@ const WorkEventCreator: FC<{
     const workEventsContext = useContext(WorkEventsContext);
 
     const [error, setError] = useState<string | undefined>(undefined);
+    const [disabled, setDisabled] = useState<boolean>(false);
+
+    const types = createListCollection({
+        items: [
+            { value: 'WORK', label: 'Work' },
+            { value: 'BREAK', label: 'Break' },
+        ],
+    });
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors },
-    } = useForm<CreateWorkEventInput>({});
+        setError: setFormError,
+        reset,
+    } = useForm<CreateWorkEventInput>();
 
     useEffect(() => {
-        if (open) setError(undefined);
+        if (open) {
+            setError(undefined);
+            reset({
+                // since: [toCalendarDateTime(parseAbsoluteToLocal(new Date().toISOString()))],
+                // until: [toCalendarDateTime(parseAbsoluteToLocal(new Date().toISOString()))],
+                type: 'WORK',
+            });
+        }
     }, [open]);
+
+    const onSubmit = async (data: CreateWorkEventInput) => {
+        const since = new Date(data.since[0].toString());
+        const until = new Date(data.until[0].toString());
+
+        if (since >= until) {
+            setFormError('until', {
+                type: 'manual',
+                message: 'Until date must be after since date',
+            });
+            setFormError('since', {
+                type: 'manual',
+                message: 'Since date must be before until date',
+            });
+            return;
+        }
+
+        setDisabled(true);
+
+        workEventsContext
+            .createEvent({
+                sinceDate: since.toISOString(),
+                untilDate: until.toISOString(),
+                type: data.type,
+            })
+            .then(() => {
+                onOpenChange(false);
+            })
+            .catch((error) =>
+                setError(error.message || 'An error occurred while creating the work event')
+            )
+            .finally(() => {
+                setDisabled(false);
+            });
+    };
 
     return (
         <Dialog.Root
             scrollBehavior={'inside'}
             placement={'center'}
             open={open}
-            size="cover"
-            onOpenChange={(e) => onOpenChange(e.open)}
+            size="sm"
+            onOpenChange={(e) => {
+                if (!disabled) onOpenChange(e.open);
+            }}
         >
             <Portal>
                 <Dialog.Backdrop />
@@ -51,31 +116,119 @@ const WorkEventCreator: FC<{
                         <Dialog.Header>
                             <Dialog.Title>Work event creator</Dialog.Title>
                         </Dialog.Header>
-                        <Dialog.Body as="form" onSubmit={handleSubmit((data) => console.log(data))}>
-                            <DateInput.Root
-                                locale={userLocale}
-                                defaultValue={[parseDate(new Date())]}
-                                invalid
-                                granularity="minute"
-                            >
-                                <DateInput.Label>Since</DateInput.Label>
-                                <DateInput.Control>
-                                    <DateInput.Segments />
-                                </DateInput.Control>
-                                <DateInput.HiddenInput />
-                            </DateInput.Root>
-                            <DateInput.Root
-                                locale={userLocale}
-                                defaultValue={[parseDate(new Date())]}
-                                invalid
-                                granularity="minute"
-                            >
-                                <DateInput.Label>Until</DateInput.Label>
-                                <DateInput.Control>
-                                    <DateInput.Segments />
-                                </DateInput.Control>
-                                <DateInput.HiddenInput />
-                            </DateInput.Root>
+                        <Dialog.Body
+                            display={'flex'}
+                            flexDirection={'column'}
+                            gap={4}
+                            as="form"
+                            onSubmit={handleSubmit(onSubmit)}
+                        >
+                            <Field.Root invalid={!!errors.since}>
+                                <Controller
+                                    control={control}
+                                    rules={{ required: 'This field is required' }}
+                                    name="since"
+                                    render={({ field }) => (
+                                        <DateInput.Root
+                                            disabled={disabled}
+                                            value={field.value}
+                                            locale={userLocale}
+                                            granularity="minute"
+                                            invalid={!!errors.since}
+                                            onValueChange={(e) => field.onChange(e.value)}
+                                            onFocusChange={(e) => {
+                                                if (e.focused) field.onChange([]);
+                                            }}
+                                            shouldForceLeadingZeros
+                                        >
+                                            <DateInput.Label>Since</DateInput.Label>
+                                            <DateInput.Control>
+                                                <DateInput.Segments />
+                                            </DateInput.Control>
+                                            <DateInput.HiddenInput />
+                                        </DateInput.Root>
+                                    )}
+                                />
+                                <Field.ErrorText>{errors.since?.message}</Field.ErrorText>
+                            </Field.Root>
+                            <Field.Root invalid={!!errors.until}>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: 'This field is required',
+                                    }}
+                                    name="until"
+                                    render={({ field }) => (
+                                        <DateInput.Root
+                                            disabled={disabled}
+                                            value={field.value}
+                                            locale={userLocale}
+                                            granularity="minute"
+                                            invalid={!!errors.until}
+                                            onValueChange={(e) => field.onChange(e.value)}
+                                            onFocusChange={(e) => {
+                                                if (e.focused) field.onChange([]);
+                                            }}
+                                            shouldForceLeadingZeros
+                                        >
+                                            <DateInput.Label>Until</DateInput.Label>
+                                            <DateInput.Control>
+                                                <DateInput.Segments />
+                                            </DateInput.Control>
+                                            <DateInput.HiddenInput />
+                                        </DateInput.Root>
+                                    )}
+                                />
+                                <Field.ErrorText>{errors.until?.message}</Field.ErrorText>
+                            </Field.Root>
+                            <Field.Root invalid={!!errors.type}>
+                                <Controller
+                                    control={control}
+                                    rules={{ required: 'This field is required' }}
+                                    name="type"
+                                    render={({ field }) => (
+                                        <Select.Root
+                                            disabled={disabled}
+                                            collection={types}
+                                            onValueChange={(value) =>
+                                                field.onChange(value.value[0])
+                                            }
+                                            value={[field.value]}
+                                        >
+                                            <Select.HiddenSelect />
+                                            <Select.Label>Select type</Select.Label>
+                                            <Select.Control>
+                                                <Select.Trigger>
+                                                    <Select.ValueText placeholder="Select type" />
+                                                </Select.Trigger>
+                                                <Select.IndicatorGroup>
+                                                    <Select.Indicator />
+                                                </Select.IndicatorGroup>
+                                            </Select.Control>
+                                            <Portal>
+                                                <Select.Positioner>
+                                                    <Select.Content>
+                                                        {types.items.map((framework) => (
+                                                            <Select.Item
+                                                                item={framework}
+                                                                key={framework.value}
+                                                            >
+                                                                {framework.label}
+                                                                <Select.ItemIndicator />
+                                                            </Select.Item>
+                                                        ))}
+                                                    </Select.Content>
+                                                </Select.Positioner>
+                                            </Portal>
+                                        </Select.Root>
+                                    )}
+                                />
+                                <Field.ErrorText>{errors.type?.message}</Field.ErrorText>
+                            </Field.Root>
+
+                            <Button type="submit" variant="subtle" mt={4}>
+                                {disabled ? <Spinner /> : 'Create work event'}
+                            </Button>
                         </Dialog.Body>
                     </Dialog.Content>
                 </Dialog.Positioner>
@@ -85,36 +238,3 @@ const WorkEventCreator: FC<{
 };
 
 export default WorkEventCreator;
-
-/*
-<form onSubmit={onSubmit}>
-      <Stack gap="4" align="flex-start" maxW="sm">
-        <Field.Root invalid={!!formState.errors.name}>
-          <Field.Label>Name</Field.Label>
-          <Input placeholder="Enter your name" />
-          <Field.ErrorText>{formState.errors.name?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={!!formState.errors.dob}>
-          <Controller
-            control={control}
-            name="dob"
-            render={({ field }) => (
-              <DateInput.Root
-                value={field.value}
-                onValueChange={(e) => field.onChange(e.value)}
-                invalid={!!formState.errors.dob}
-              >
-                <DateInput.Label>Date of birth</DateInput.Label>
-                <DateInput.Control>
-                  <DateInput.Segments />
-                </DateInput.Control>
-                <DateInput.HiddenInput />
-              </DateInput.Root>
-            )}
-          />
-          <Field.ErrorText>{formState.errors.dob?.message}</Field.ErrorText>
-        </Field.Root>
-        <Button type="submit">Submit</Button>
-      </Stack>
-    </form>
- */

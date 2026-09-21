@@ -4,7 +4,11 @@ import { getApiWorker } from '@src/api/api-worker';
 import { useParams } from 'react-router';
 import WorkerHero from '@src/components/worker-hero';
 import { WorkDayTable, WorkDayTableRow } from '@src/components/work-day-table';
-import { getApiWorkEventsGrouped, updateApiWorkEvent } from '@src/api/api-work-events';
+import {
+    createApiWorkEvent,
+    getApiWorkEventsGrouped,
+    updateApiWorkEvent,
+} from '@src/api/api-work-events';
 import type {
     ApiCreateWorkEvent,
     ApiGetWorkEvent,
@@ -77,9 +81,10 @@ const WorkerPage = () => {
 
     const createEvent = async (data: ApiCreateWorkEvent) => {
         setIsProcessing(true);
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-        refetchWorkEvents();
-        setIsProcessing(false);
+        await createApiWorkEvent(workerId!, data).finally(() => {
+            refetchWorkEvents();
+            setIsProcessing(false);
+        });
     };
 
     const removeEvent = async (id: string) => {

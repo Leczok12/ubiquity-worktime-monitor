@@ -14,7 +14,7 @@ export const WorkEventsTable: FC<
     return (
         <Table.Root interactive>
             <Table.Header>
-                <Table.Row>
+                <Table.Row backgroundColor={'bg.subtle'}>
                     <Table.Cell w={'1/3'} md={{ w: 'auto' }}>
                         Type
                     </Table.Cell>
@@ -87,6 +87,7 @@ export const WorkEventsTableRow: FC<{
 
     return (
         <Table.Row
+            backgroundColor={'bg.subtle'}
             cursor="pointer"
             onMouseEnter={() => onHover(data.id)}
             onMouseLeave={() => onHover(undefined)}

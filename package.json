@@ -11,7 +11,9 @@
         "dev:backend": "npx dotenv-cli -e .env -- npm run dev --prefix backend",
         "prisma:generate": "npx dotenv-cli -e .env -- npm run prisma:generate --prefix backend",
         "prisma:migrate:dev": "npx dotenv-cli -e .env -- npm run prisma:migrate:dev --prefix backend",
-        "prisma:migrate:deploy": "npx dotenv-cli -e .env -- npm run prisma:migrate:deploy --prefix backend"
+        "prisma:migrate:deploy": "npx dotenv-cli -e .env -- npm run prisma:migrate:deploy --prefix backend",
+        "docker:dev:up": " npx dotenv-cli -e .env -- docker compose -f docker/dev/compose.yaml up -d",
+        "docker:dev:down": "npx dotenv-cli -e .env -- docker compose -f docker/dev/compose.yaml down"
     },
     "author": "Leczok12",
     "license": "ISC",

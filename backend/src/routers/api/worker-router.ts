@@ -134,9 +134,13 @@ router.get(
     }
 );
 
-router.get('/:workerId', authorizerMiddleware($Enums.UserRole.VIEWER), async (req, res) => {
+router.get('/:workerId', authorizerMiddleware($Enums.UserRole.WORKER), async (req, res) => {
     const workerId = req.params.workerId as string | undefined;
     const skipShow = req.query.skipShow as string | undefined;
+
+    if (req.user?.workerId && req.user.workerId !== workerId) {
+        authorizer(req, $Enums.UserRole.VIEWER);
+    }
 
     if (skipShow === 'true') authorizer(req, $Enums.UserRole.SYSTEM_ADMIN);
 

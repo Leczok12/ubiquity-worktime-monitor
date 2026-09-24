@@ -45,7 +45,12 @@ const RootLayout = () => {
                 justifyContent="space-between"
                 alignItems="center"
             >
-                <Heading color="white" size="xl" onClick={() => navigator('/')} cursor="pointer">
+                <Heading
+                    color="white"
+                    size="xl"
+                    onClick={data.data.role === 'WORKER' ? undefined : () => navigator('/')}
+                    cursor={data.data.role === 'WORKER' ? 'default' : 'pointer'}
+                >
                     Worktime monitor
                 </Heading>
 

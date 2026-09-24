@@ -1,18 +1,18 @@
-name: postgres
+name: dev_ubiquiti_worktime_monitor
 services:
     postgres:
-        container_name: postgres
+        container_name: postgres_ubiquiti_worktime_monitor
         image: postgres:latest
         environment:
-            POSTGRES_USER: admin
-            POSTGRES_PASSWORD: 12345678admin
+            POSTGRES_USER: ${POSTGRES_USER:?error - Set POSTGRES_USER in .env}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?error - Set POSTGRES_PASSWORD in .env}
         ports:
-            - '1234:5432'
+            - '${POSTGRES_PORT:?error - Set POSTGRES_PORT in .env}:5432'
         volumes:
             - ./postgres:/var/lib/postgresql
 
     pgadmin:
-        container_name: pgadmin
+        container_name: pgadmin_ubiquiti_worktime_monitor
         image: dpage/pgadmin4
         environment:
             PGADMIN_DEFAULT_EMAIL: admin@example.com

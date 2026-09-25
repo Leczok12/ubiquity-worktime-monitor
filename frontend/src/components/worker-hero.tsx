@@ -2,6 +2,7 @@ import { Box, Card, Heading, Skeleton } from '@chakra-ui/react';
 import { getApiWorker } from '@src/api/api-worker';
 import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
+import Alert from './alert';
 
 const WorkerHero: FC<{ workerId: string }> = ({ workerId }) => {
     const { data, isLoading, error } = useQuery({
@@ -14,10 +15,13 @@ const WorkerHero: FC<{ workerId: string }> = ({ workerId }) => {
     });
 
     if (error) {
-        if (error.message === 'NOT_FOUND') {
-            throw new Error('Worker not found');
-        }
-        throw new Error(error.message || 'An error occurred while fetching worker data.');
+        return (
+            <Card.Root w={'100%'}>
+                <Card.Header p={5} m={0}>
+                    <Alert status="error" title="Error" description={error.message} />
+                </Card.Header>
+            </Card.Root>
+        );
     }
 
     return (

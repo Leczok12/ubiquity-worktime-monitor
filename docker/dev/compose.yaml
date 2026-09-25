@@ -4,10 +4,10 @@ services:
         container_name: postgres_ubiquiti_worktime_monitor
         image: postgres:latest
         environment:
-            POSTGRES_USER: ${POSTGRES_USER:?error - Set POSTGRES_USER in .env}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?error - Set POSTGRES_PASSWORD in .env}
+            POSTGRES_USER: ${DEV_POSTGRES_USER:?error - Set DEV_POSTGRES_USER in .env}
+            POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD:?error - Set DEV_POSTGRES_PASSWORD in .env}
         ports:
-            - '${POSTGRES_PORT:?error - Set POSTGRES_PORT in .env}:5432'
+            - '${DEV_POSTGRES_PORT:?error - Set DEV_POSTGRES_PORT in .env}:5432'
         volumes:
             - ./postgres:/var/lib/postgresql
 
@@ -15,11 +15,11 @@ services:
         container_name: pgadmin_ubiquiti_worktime_monitor
         image: dpage/pgadmin4
         environment:
-            PGADMIN_DEFAULT_EMAIL: admin@example.com
-            PGADMIN_DEFAULT_PASSWORD: 12345678admin
+            PGADMIN_DEFAULT_EMAIL: ${DEV_PGADMIN_USER_EMAIL:?error - Set DEV_PGADMIN_USER_EMAIL in .env}
+            PGADMIN_DEFAULT_PASSWORD: ${DEV_PGADMIN_USER_PASSWORD:?error - Set DEV_PGADMIN_USER_PASSWORD in .env}
         volumes:
             - ./pgadmin:/var/lib/pgadmin
         ports:
-            - '8080:80'
+            - '${DEV_PGADMIN_PORT:?error - Set DEV_PGADMIN_PORT in .env}:80'
         depends_on:
             - postgres

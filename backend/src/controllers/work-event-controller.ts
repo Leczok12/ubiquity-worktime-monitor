@@ -8,6 +8,7 @@ import { ENV } from '../config/enviroment';
 import { randomInt } from 'node:crypto';
 import { database } from '@src/config/database';
 import { calculateWorkTimeInMinutes } from '@src/utils/calculate-work-time-in-minutes';
+import { ApiError } from '@src/types/api-error';
 
 const workEventController = () => {
     const createWorkEvent: (
@@ -47,6 +48,12 @@ const workEventController = () => {
         sinceDate: Date,
         untilDate: Date
     ) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: { id: workerId, show: true },
+        });
+
+        if (!worker) throw new ApiError(404, 'NOT_FOUND');
+
         const workEvents = await database.prisma.workEvent.findMany({
             where: {
                 AND: [
@@ -85,6 +92,12 @@ const workEventController = () => {
         sinceDate: Date,
         untilDate: Date
     ) => {
+        const worker = await database.prisma.worker.findUnique({
+            where: { id: workerId, show: true },
+        });
+
+        if (!worker) throw new ApiError(404, 'NOT_FOUND');
+
         const data: ApiGetWorkEventGrouped[] = [];
 
         const calculatedUntilDate = new Date(untilDate);

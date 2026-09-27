@@ -1,5 +1,6 @@
-import { Card, IconButton, Input, Portal, Select, createListCollection } from '@chakra-ui/react';
+import { Card, IconButton, Input, Portal, createListCollection } from '@chakra-ui/react';
 import { getApiGroups } from '@src/api/api-group';
+import Select from '@src/components/select';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { GrSearch } from 'react-icons/gr';
@@ -50,18 +51,18 @@ const WorkerSearchBar: React.FC<{
         onSearch(keyword, groupId);
     };
 
-    const { data } = useQuery({
+    const { data: groupsData } = useQuery({
         queryKey: ['search', 'groups'],
         queryFn: async () => {
             return getApiGroups();
         },
     });
 
-    const groups = !data?.data
-        ? undefined
-        : createListCollection({
-              items: data.data.map((group) => ({ value: group.id, label: group.name })),
-          });
+    // const groups = !data?.data
+    //     ? undefined
+    //     : createListCollection({
+    //           items: data.data.map((group) => ({ value: group.id, label: group.name })),
+    //       });
 
     return (
         <Card.Root>
@@ -90,40 +91,22 @@ const WorkerSearchBar: React.FC<{
                         setKeyword(e.target.value || undefined);
                     }}
                 />
-                {groups && (
-                    <Select.Root
-                        collection={groups}
+                {groupsData?.data && (
+                    <Select
+                        items={groupsData.data.map((group) => ({
+                            value: group.id,
+                            label: group.name,
+                        }))}
                         order={{ base: 3, md: 2 }}
                         width={{ base: 'full', md: '160px' }}
                         flex={{ base: '1 0 100%', md: '0 0 160px' }}
                         value={groupId ? [groupId] : []}
+                        placeholder="Select group"
                         onValueChange={(value) => {
                             setKeyword(undefined);
                             setGroupId(value.value[0]);
                         }}
-                    >
-                        <Select.HiddenSelect />
-                        <Select.Control>
-                            <Select.Trigger>
-                                <Select.ValueText placeholder="Select group" />
-                            </Select.Trigger>
-                            <Select.IndicatorGroup>
-                                <Select.Indicator />
-                            </Select.IndicatorGroup>
-                        </Select.Control>
-                        <Portal>
-                            <Select.Positioner>
-                                <Select.Content>
-                                    {groups.items.map((group) => (
-                                        <Select.Item item={group} key={group.value}>
-                                            {group.label}
-                                            <Select.ItemIndicator />
-                                        </Select.Item>
-                                    ))}
-                                </Select.Content>
-                            </Select.Positioner>
-                        </Portal>
-                    </Select.Root>
+                    />
                 )}
                 <IconButton
                     type="submit"

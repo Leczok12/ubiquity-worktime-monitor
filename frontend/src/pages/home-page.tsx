@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 import { getApiWorkers } from '@src/api/api-worker';
-import WorkerSearchBar from '@src/components/worker-search-bar';
+import WorkerSearchBar from '@src/organisms/worker-search-bar';
 import { WorkerTable, WorkerTableRow } from '@src/components/worker-table';
 import { useNavigate } from 'react-router';
 

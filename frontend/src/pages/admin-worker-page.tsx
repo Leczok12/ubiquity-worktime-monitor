@@ -4,7 +4,7 @@ import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 import { AdminWorkerTable, AdminWorkerTableRow } from '@src/components/admin-worker-table';
 import { getApiWorkers } from '@src/api/api-worker';
-import WorkerSearchBar from '@src/components/worker-search-bar';
+import WorkerSearchBar from '@src/organisms/worker-search-bar';
 
 const AdminWorkerPage = () => {
     const pageSize = 15;

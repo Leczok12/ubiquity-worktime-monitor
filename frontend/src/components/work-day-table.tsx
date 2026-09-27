@@ -1,5 +1,4 @@
 import {
-    Alert,
     Box,
     Card,
     DatePicker,
@@ -10,7 +9,7 @@ import {
     parseDate,
 } from '@chakra-ui/react';
 import type { ApiGetWorkEventGrouped } from '@shared/types/api/api-work-event';
-import { useContext, useState, type FC, type PropsWithChildren } from 'react';
+import { useContext, type FC, type PropsWithChildren } from 'react';
 import { PiMicrosoftExcelLogoFill, PiPlusBold } from 'react-icons/pi';
 import { Tooltip } from './ui/tooltip';
 import { numberPadding } from '@src/utils/number-padding';
@@ -23,9 +22,8 @@ export const WorkDayTable: FC<
         onEdit: (data?: ApiGetWorkEventGrouped) => void;
         disabled?: boolean;
         loading?: boolean;
-        error?: string;
     }
-> = ({ children, error, onEdit, disabled, loading }) => {
+> = ({ children, onEdit, disabled, loading }) => {
     const userLocale = navigator.language || 'en-US';
     const userContext = useContext(UserContext);
     const workEventsContext = useContext(WorkEventsContext);
@@ -48,7 +46,7 @@ export const WorkDayTable: FC<
                     locale={userLocale}
                     selectionMode="range"
                     openOnClick
-                    disabled={disabled}
+                    disabled={disabled || loading}
                     onValueChange={(e) => {
                         if (e.value.length === 2) {
                             workEventsContext.changeDateRange([
@@ -88,13 +86,17 @@ export const WorkDayTable: FC<
                         <IconButton
                             variant="subtle"
                             color="fg.success"
-                            disabled={disabled}
+                            disabled={disabled || loading}
                             onClick={() => onEdit(undefined)}
                         >
                             <PiPlusBold />
                         </IconButton>
                     ) : null}
-                    <IconButton variant="subtle" color="fg.success" disabled>
+                    <IconButton
+                        variant="subtle"
+                        color="fg.success"
+                        disabled={disabled || loading || true}
+                    >
                         {/* //TODO: Implement export to excel */}
                         <PiMicrosoftExcelLogoFill />
                     </IconButton>
@@ -126,21 +128,9 @@ export const WorkDayTable: FC<
                     </Table.Header>
                     <Table.Body>
                         {(() => {
-                            if (error) {
-                                return (
-                                    <Table.Row>
-                                        <Table.Cell colSpan={3}>
-                                            <Alert.Root variant="subtle" status="error">
-                                                <Alert.Title>Error</Alert.Title>
-                                                <Alert.Description>{error}</Alert.Description>
-                                            </Alert.Root>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                );
-                            }
                             if (loading) {
                                 return (
-                                    <Table.Row>
+                                    <Table.Row backgroundColor={'bg.subtle'}>
                                         <Table.Cell colSpan={3}>
                                             <Skeleton>Loading work events...</Skeleton>
                                         </Table.Cell>

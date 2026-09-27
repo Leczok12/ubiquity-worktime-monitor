@@ -9,21 +9,22 @@ import {
     getApiWorkEventsGrouped,
     updateApiWorkEvent,
 } from '@src/api/api-work-events';
-import type {
-    ApiCreateWorkEvent,
-    ApiGetWorkEvent,
-    ApiGetWorkEventGrouped,
-} from '@shared/types/api/api-work-event';
-import { createContext, useState } from 'react';
+import type { ApiCreateWorkEvent } from '@shared/types/api/api-work-event';
+import { useState } from 'react';
 import WorkDayEditor from '@src/organisms/work-day-editor';
 import WorkEventCreator from '@src/organisms/work-event-creator';
 import { WorkEventsContext } from '@src/hooks/use-work-events-context';
 import { useLocalStorage } from '@src/hooks/use-local-storage';
 import Alert from '@src/components/alert';
-import { BiError, BiUser } from 'react-icons/bi';
+import { BiUserX } from 'react-icons/bi';
 
 const WorkerPage = () => {
     const { workerId } = useParams();
+
+    if (!workerId) {
+        throw new Error('Worker ID is required');
+    }
+
     const [lastDateRange, setLastDateRange] = useLocalStorage<{
         updated: string;
         since: string;
@@ -46,6 +47,17 @@ const WorkerPage = () => {
     const [editorIndex, setEditorIndex] = useState<number | undefined>(undefined);
 
     const {
+        data: workerData,
+        isLoading: workerLoading,
+        error: workerError,
+    } = useQuery({
+        queryKey: ['worker', workerId],
+        queryFn: () => getApiWorker(workerId),
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 10, // 10 minutes
+    });
+
+    const {
         data: workEventsData,
         isLoading: workEventsLoading,
         error: workEventsError,
@@ -53,17 +65,12 @@ const WorkerPage = () => {
         refetch: refetchWorkEvents,
     } = useQuery({
         queryKey: ['work-events-grouped', workerId, dateRange],
-        queryFn: async () => {
-            if (!workerId) {
-                throw new Error('Worker ID is required');
-            }
-            return getApiWorkEventsGrouped(
+        queryFn: () =>
+            getApiWorkEventsGrouped(
                 workerId,
                 dateRange[0].toISOString(),
                 dateRange[1].toISOString()
-            );
-        },
-        retry: false,
+            ),
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 10, // 10 minutes
     });
@@ -94,8 +101,57 @@ const WorkerPage = () => {
         await refetchWorkEvents();
     };
 
-    if (!workerId) {
-        throw new Error('Worker ID is required');
+    if (workerError || workEventsError) {
+        return (
+            <Container display={'flex'} flexDirection={'column'} gap={4}>
+                {(() => {
+                    if (
+                        workerError?.message &&
+                        workEventsError?.message &&
+                        workerError?.message === workEventsError?.message
+                    ) {
+                        return (
+                            <Alert
+                                status="error"
+                                title="Error"
+                                icon={<BiUserX />}
+                                description={
+                                    workerError?.message === 'NOT_FOUND'
+                                        ? 'Worker not found'
+                                        : workerError?.message
+                                }
+                            />
+                        );
+                    }
+                    return (
+                        <>
+                            {workerError?.message && (
+                                <Alert
+                                    status="error"
+                                    title="Error"
+                                    description={
+                                        workerError?.message === 'NOT_FOUND'
+                                            ? 'Worker not found'
+                                            : workerError?.message
+                                    }
+                                />
+                            )}
+                            {workEventsError?.message && (
+                                <Alert
+                                    status="error"
+                                    title="Error"
+                                    description={
+                                        workEventsError?.message === 'NOT_FOUND'
+                                            ? 'Worker not found'
+                                            : workEventsError?.message
+                                    }
+                                />
+                            )}
+                        </>
+                    );
+                })()}
+            </Container>
+        );
     }
 
     return (
@@ -113,7 +169,7 @@ const WorkerPage = () => {
             <WorkEventCreator open={isCretorOpen} onOpenChange={setIsCreatorOpen} />
             <WorkDayEditor index={editorIndex} open={isEditorOpen} onOpenChange={setIsEditorOpen} />
             <Container pb={20} display={'flex'} flexDirection={'column'} gap={4}>
-                <WorkerHero workerId={workerId} />
+                <WorkerHero data={workerData?.data} loading={workerLoading} />
                 {workerId && (
                     <WorkDayTable
                         disabled={workEventsLoading || workEventsFetching}

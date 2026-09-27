@@ -13,7 +13,7 @@ const AdminLayout = () => {
     const navigator = useNavigate();
     const location = useLocation();
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['auth', 'user'],
         queryFn: getApiAuthUser,
         retry: false,

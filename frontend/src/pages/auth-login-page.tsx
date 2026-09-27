@@ -1,4 +1,4 @@
-import { Button, Card, Heading, IconButton, Input } from '@chakra-ui/react';
+import { Card, Heading, IconButton } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FaGoogle, FaMicrosoft } from 'react-icons/fa6';

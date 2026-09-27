@@ -1,5 +1,4 @@
 import { CloseButton, Dialog, Heading, Portal } from '@chakra-ui/react';
-import { updateApiWorkEvent } from '@src/api/api-work-events';
 import Alert from '@src/components/alert';
 import { WorkEventsTable, WorkEventsTableRow } from '@src/components/work-events-table';
 import WorkEventsTimeline from '@src/components/work-events-timeline';

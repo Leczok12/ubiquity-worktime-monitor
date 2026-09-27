@@ -4,7 +4,6 @@ import { logger } from '@shared/utils/logger';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
 import { PaginationWrapper } from '@src/types/pagination-warpper';
-import { skip } from 'node:test';
 
 const workerController = () => {
     const createWorker: (data: ApiCreateWorker) => Promise<void> = async (
@@ -129,7 +128,6 @@ const workerController = () => {
             where: {
                 workers: { some: { id: id, show: skipShow ? undefined : true } },
                 show: skipShow ? undefined : true,
-                orderBy: [{ name: 'asc' }],
             },
             take: pageSize,
             skip: (pageNumber - 1) * pageSize,

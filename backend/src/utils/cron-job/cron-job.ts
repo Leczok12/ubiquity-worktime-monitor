@@ -1,5 +1,5 @@
 import nodeCron, { ScheduledTask } from 'node-cron';
-import { logger } from '../logger';
+import { logger } from '@shared/utils/logger';
 
 export class CronJob {
     private scheduledTask: ScheduledTask | null = null;
@@ -13,11 +13,15 @@ export class CronJob {
         this.cronExpression = cronExpression;
         this.task = task;
 
-        logger.info(`Initializing cron job "${this.name}" with expression "${this.cronExpression}"`);
+        logger.info(
+            `Initializing cron job "${this.name}" with expression "${this.cronExpression}"`
+        );
 
         this.scheduledTask = nodeCron.schedule(this.cronExpression, async () => {
             if (this.running) {
-                logger.warn(`Previous cron job "${this.name}" is still running. Skipping this run.`);
+                logger.warn(
+                    `Previous cron job "${this.name}" is still running. Skipping this run.`
+                );
                 return;
             }
 

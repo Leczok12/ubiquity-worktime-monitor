@@ -1,13 +1,13 @@
-import { Box, Button, Flex, Heading, Menu, Portal, Span } from '@chakra-ui/react';
+import { Box, Flex, Heading, Menu, Portal } from '@chakra-ui/react';
 import { getApiAuthUser } from '@src/api/api-auth';
 import { UserContext } from '@src/hooks/use-user-context';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 
 const RootLayout = () => {
     const navigator = useNavigate();
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['auth', 'user'],
         queryFn: getApiAuthUser,
         retry: false,

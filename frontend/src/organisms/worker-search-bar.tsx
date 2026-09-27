@@ -1,4 +1,4 @@
-import { Card, IconButton, Input, Portal, createListCollection } from '@chakra-ui/react';
+import { Card, IconButton, Input } from '@chakra-ui/react';
 import { getApiGroups } from '@src/api/api-group';
 import Select from '@src/components/select';
 import { useQuery } from '@tanstack/react-query';
@@ -57,12 +57,6 @@ const WorkerSearchBar: React.FC<{
             return getApiGroups();
         },
     });
-
-    // const groups = !data?.data
-    //     ? undefined
-    //     : createListCollection({
-    //           items: data.data.map((group) => ({ value: group.id, label: group.name })),
-    //       });
 
     return (
         <Card.Root>

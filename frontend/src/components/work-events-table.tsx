@@ -1,8 +1,8 @@
-import { Alert, Box, Button, IconButton, Skeleton, Table } from '@chakra-ui/react';
+import { Alert, Box, IconButton, Table } from '@chakra-ui/react';
 import type { ApiGetWorkEvent } from '@shared/types/api/api-work-event';
 import { UserContext } from '@src/hooks/use-user-context';
 import { useContext, type FC, type PropsWithChildren } from 'react';
-import { TbCopy, TbPlus, TbTrash } from 'react-icons/tb';
+import { TbCopy, TbTrash } from 'react-icons/tb';
 
 export const WorkEventsTable: FC<
     PropsWithChildren<{

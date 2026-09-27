@@ -45,4 +45,6 @@ export const ENV = {
 
     GOOGLE_ENABLED: process.env.GOOGLE_ENABLED === 'true',
     GOOGLE_LOGIN_LABEL: process.env.GOOGLE_LOGIN_LABEL ?? 'Login with Google',
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? null,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? null,
 };

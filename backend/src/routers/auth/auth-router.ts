@@ -5,6 +5,7 @@ import { ApiAuthConfig } from '@shared/types/api/api-auth';
 import { ApiResponse } from '@sharedtypes/api-response';
 import { authController } from '@src/controllers/auth-controller';
 import { localRouter } from './local-router';
+import { googleRouter } from './google-router';
 
 const router = express.Router();
 
@@ -12,6 +13,10 @@ router.use('/local', localRouter);
 
 if (ENV.MICROSOFT_ENABLED) {
     router.use('/microsoft', microsoftRouter);
+}
+
+if (ENV.GOOGLE_ENABLED) {
+    router.use('/google', googleRouter);
 }
 
 router.get('/config', async (req: Request, res: Response) => {

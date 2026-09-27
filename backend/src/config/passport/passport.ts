@@ -3,6 +3,7 @@ import { localStrategy } from './local-strategy';
 import { database } from '../database';
 import { User } from '@prisma/client';
 import { microsoftStrategy } from './microsoft-strategy';
+import { googleStrategy } from './google-startegy';
 
 passport.serializeUser<string>(async (user, done) => {
     done(null, user.id);
@@ -21,6 +22,10 @@ passport.use(localStrategy);
 
 if (microsoftStrategy) {
     passport.use(microsoftStrategy);
+}
+
+if (googleStrategy) {
+    passport.use(googleStrategy);
 }
 
 export { passport };

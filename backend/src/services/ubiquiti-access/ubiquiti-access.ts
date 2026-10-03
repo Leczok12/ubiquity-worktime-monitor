@@ -1,4 +1,4 @@
-import { logger } from '@shared/utils/logger';
+import { Logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
 import { ENV } from '@src/config/enviroment';
 import axios from 'axios';
@@ -12,10 +12,12 @@ import { syncEvents } from './ubiquiti-access-sync-events';
 import { syncWorkEvents } from './ubiquiti-access-sync-work-events';
 
 class UbiquitiAccess {
+    private logger = new Logger('Access API');
+
     public async chealthCheck(disableLogging?: boolean): Promise<boolean> {
         if (!ENV.UBIQUITI_HOST || !ENV.UBIQUITI_API_KEY) {
             if (!disableLogging) {
-                logger.warn(
+                this.logger.warn(
                     'UBIQUITI_HOST or UBIQUITI_API_KEY is not defined in environment variables. Sync with Ubiquiti Access API will be disabled. Please set these variables in your .env file and restart the server.'
                 );
             }
@@ -34,12 +36,12 @@ class UbiquitiAccess {
             });
 
             if (!disableLogging) {
-                logger.success('Ubiquiti Access API is accessible');
+                this.logger.success('Ubiquiti Access API is accessible');
             }
             return true;
         } catch (e) {
             if (!disableLogging) {
-                logger.error(
+                this.logger.error(
                     'Failed to access API. Sync with Ubiquiti Access API will be disabled. Please check the UBIQUITI_HOST and UBIQUITI_API_KEY environment variables and ensure that the API is reachable.'
                 );
             }
@@ -61,10 +63,10 @@ class UbiquitiAccess {
     }
 
     public async fullSync(): Promise<void> {
-        logger.info('Starting full sync with Ubiquiti Access API');
+        this.logger.info('Starting full sync with Ubiquiti Access API');
 
         if ((await this.chealthCheck(true)) === false) {
-            logger.error('Ubiquiti Access API is not accessible');
+            this.logger.error('Ubiquiti Access API is not accessible');
             return;
         }
 
@@ -84,74 +86,38 @@ class UbiquitiAccess {
                 },
                 { timeout: 60000 }
             );
+            await syncGroups(axiosInstance, this.logger);
+            await syncGroupsAssignment(axiosInstance, this.logger);
+            await syncEvents(axiosInstance, this.logger);
+            await syncWorkEvents(axiosInstance, this.logger);
 
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncGroups(prisma, axiosInstance);
-                },
-                { timeout: 60000 }
-            );
-
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncGroupsAssignment(prisma, axiosInstance);
-                },
-                { timeout: 60000 }
-            );
-
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncEvents(prisma, axiosInstance);
-                },
-                { timeout: 120000 }
-            );
-
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncWorkEvents(prisma, axiosInstance);
-                },
-                { timeout: 120000 }
-            );
-
-            logger.success('Finished full sync with Ubiquiti Access API');
+            this.logger.success('Finished full sync with Ubiquiti Access API');
         } catch (error) {
-            logger.error(
+            this.logger.error(
                 `Ubiquiti Access full sync failed: ${error instanceof Error ? error.message : error}`
             );
         }
     }
 
     public async partialSync(): Promise<void> {
-        logger.info('Starting partial sync with Ubiquiti Access API');
+        this.logger.info('Starting partial sync with Ubiquiti Access API');
 
         if ((await this.chealthCheck(true)) === false) {
-            logger.error('Ubiquiti Access API is not accessible');
+            this.logger.error('Ubiquiti Access API is not accessible');
             return;
         }
 
-        try {
-            const axiosInstance = this.creteAxiosInstance();
+        const axiosInstance = this.creteAxiosInstance();
+        const syncEventsResult = await syncEvents(axiosInstance, this.logger);
+        const syncWorkEventsResult = await syncWorkEvents(axiosInstance, this.logger);
 
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncEvents(prisma, axiosInstance);
-                },
-                { timeout: 60000 }
-            );
-
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncWorkEvents(prisma, axiosInstance);
-                },
-                { timeout: 60000 }
-            );
-
-            logger.success('Finished partial sync with Ubiquiti Access API');
-        } catch (error) {
-            logger.warn(
-                `Ubiquiti Access partial sync failed. Starting full sync. Error: ${error instanceof Error ? error.message : error}`
+        if (syncEventsResult.errorCount > 0 || syncWorkEventsResult.errorCount > 0) {
+            this.logger.warn(
+                `Ubiquiti Access partial sync failed. Starting full sync. Errors: ${syncEventsResult.errorCount} events, ${syncWorkEventsResult.errorCount} work events`
             );
             await this.fullSync();
+        } else {
+            this.logger.success('Finished partial sync with Ubiquiti Access API');
         }
     }
 }

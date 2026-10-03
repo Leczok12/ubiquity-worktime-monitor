@@ -1,6 +1,6 @@
 import { Group, Worker } from '@prisma/client';
 import { ApiCreateGroup, ApiUpdateGroup } from '@shared/types/api/api-group';
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
 import { PaginationWrapper } from '@src/types/pagination-warpper';

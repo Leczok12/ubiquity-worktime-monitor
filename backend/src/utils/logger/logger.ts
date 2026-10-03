@@ -1,9 +1,20 @@
 import { LogType } from './logger-types';
+import { ENV } from '@src/config/enviroment';
 
 class LoggerService {
+    private surce: string | undefined;
+
+    constructor(source?: string) {
+        this.surce = source;
+    }
+
     private _log(message: string, logType: LogType): void {
+        if (ENV.LOG_LEVEL <= 1 && (logType === 'INFO' || logType === 'VERBOSE')) return;
+        if (ENV.LOG_LEVEL <= 2 && logType === 'VERBOSE') return;
+
         const colorReset = '\x1b[0m';
         const date = new Date();
+
         const color = (() => {
             switch (logType) {
                 case 'INFO':
@@ -15,8 +26,8 @@ class LoggerService {
                     return '\x1b[31m'; // red
                 case 'SUCCESS':
                     return '\x1b[32m'; // green
-                case 'DEBUG':
-                    return '\x1b[34m'; // blue
+                case 'VERBOSE':
+                    return '\x1b[90m'; // gray
                 default:
                     return '\x1b[0m';
             }
@@ -26,33 +37,13 @@ class LoggerService {
         log += color;
         log += '[';
         log += logType.slice(0, 3);
-        // log += (() => {
-        //     let padding = 7 - logType.length;
-        //     if (padding < 0) padding = 0;
-        //     padding /= 2;
-        //     padding = Math.floor(padding);
-        //     let p = '';
-        //     for (let i = 0; i < padding; i++) {
-        //         p += ' ';
-        //     }
-        //     return p;
-        // })();
-        // log += logType;
-        // log += (() => {
-        //     let padding = 7 - logType.length;
-        //     if (padding < 0) padding = 0;
-        //     padding /= 2;
-        //     padding = Math.ceil(padding);
-        //     let p = '';
-        //     for (let i = 0; i < padding; i++) {
-        //         p += ' ';
-        //     }
-        //     return p;
-        // })();
         log += ']';
         log += '[';
         log += date.toISOString();
         log += ']';
+        if (this.surce) {
+            log += `[${this.surce}]`;
+        }
         log += colorReset;
         log += ' - ';
         log += message;
@@ -83,10 +74,10 @@ class LoggerService {
         this._log(message, 'SUCCESS');
     }
 
-    public debug(message: string): void {
-        this._log(message, 'DEBUG');
+    public verbose(message: string): void {
+        this._log(message, 'VERBOSE');
     }
 }
 
-const logger = new LoggerService();
-export { logger };
+const logger = new LoggerService('Common');
+export { logger, LoggerService as Logger };

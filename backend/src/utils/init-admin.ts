@@ -1,4 +1,4 @@
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
 import { ENV } from '@src/config/enviroment';
 import { userController } from '@src/controllers/user-controller';

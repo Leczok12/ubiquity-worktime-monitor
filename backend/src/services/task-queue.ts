@@ -1,4 +1,4 @@
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 import cron, { ScheduledTask } from 'node-cron';
 
 class TaskQueue {

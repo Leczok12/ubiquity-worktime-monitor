@@ -4,6 +4,12 @@ export const ENV = {
 
     APP_PORT: (DEV ? process.env.DEV_BACKEND_PORT : process.env.APP_PORT) ?? 3000,
     APP_URL: (DEV ? process.env.DEV_BACKEND_URL : process.env.APP_URL) ?? 'http://localhost:3000',
+    LOG_LEVEL: (() => {
+        const level = (DEV ? process.env.DEV_LOG_LEVEL : process.env.LOG_LEVEL) ?? '2';
+        const parsed = parseInt(level, 10);
+        if (isNaN(parsed) || parsed < 1 || parsed > 3) return 2;
+        return parsed;
+    })(),
     TZ: process.env.TZ ?? '',
     END_OF_DAY_OFFSET: (() => {
         if (process.env.END_OF_DAY_OFFSET === undefined) return 0;

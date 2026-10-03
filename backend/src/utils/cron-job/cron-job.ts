@@ -1,5 +1,5 @@
 import nodeCron, { ScheduledTask } from 'node-cron';
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 
 export class CronJob {
     private scheduledTask: ScheduledTask | null = null;

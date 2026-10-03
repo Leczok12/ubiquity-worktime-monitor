@@ -2,7 +2,7 @@ import express, { Request, Response, RequestHandler } from 'express';
 import errorHandler from './middlewares/error-handler';
 import { passport } from './config/passport/passport';
 
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 import { apiRouter } from './routers/api/api-router';
 import loggerMiddleware from './middlewares/logger-middleware';
 import { authRouter } from './routers/auth/auth-router';

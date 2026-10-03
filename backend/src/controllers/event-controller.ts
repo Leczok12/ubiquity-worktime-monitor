@@ -5,7 +5,7 @@ import {
     ApiGetEventExtended,
     ApiUpdateEvent,
 } from '@shared/types/api/api-event';
-import { logger } from '@shared/utils/logger';
+import { logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
 import { PaginationWrapper } from '@src/types/pagination-warpper';

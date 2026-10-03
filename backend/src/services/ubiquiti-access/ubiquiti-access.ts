@@ -73,12 +73,7 @@ class UbiquitiAccess {
         try {
             const axiosInstance = this.creteAxiosInstance();
 
-            await database.prisma.$transaction(
-                async (prisma) => {
-                    await syncDevices(prisma, axiosInstance);
-                },
-                { timeout: 60000 }
-            );
+            await syncDevices(axiosInstance, this.logger);
 
             await database.prisma.$transaction(
                 async (prisma) => {

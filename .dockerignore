@@ -1,15 +1,15 @@
 ./node_modules
+.env
+.env-template
 
 # Frontend
 ./frontend/node_modules
 ./frontend/dist
-./frontend/README.md
 
 # Backend 
 ./backend/node_modules
+./backend/public
 ./backend/dist
 ./backend/docs
-./backend/.env
-./backend/.env-template
 
 

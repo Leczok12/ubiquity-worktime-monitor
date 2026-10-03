@@ -1,46 +1,37 @@
-FROM node:22-alpine AS deps
-
+# ETAP 1: Budowanie aplikacji
+FROM node:20-alpine AS builder
+ARG BUILD=true
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-COPY frontend/package.json frontend/package-lock.json ./frontend/
-COPY backend/package.json backend/package-lock.json ./backend/
+COPY package*.json ./
 
-RUN npm ci --ignore-scripts
-RUN npm ci --prefix frontend
-RUN npm ci --prefix backend
+COPY frontend/package*.json ./frontend/
+COPY backend/package*.json ./backend/
 
-FROM node:22-alpine AS build
+RUN npm install
 
-WORKDIR /app
+RUN npm run install
 
-COPY --from=deps /app/package.json /app/package-lock.json ./
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
-COPY --from=deps /app/backend/node_modules ./backend/node_modules
+COPY . .
 
-COPY frontend/ frontend/
-COPY backend/ backend/
-COPY types/ types/
-COPY scripts/ scripts/
+RUN npm run prisma:generate
 
-RUN cd backend && npx prisma generate
 RUN npm run build
 
-FROM node:22-alpine AS runtime
+# ETAP 2: Obraz produkcyjny
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-ENV DEBUG=false
-EXPOSE 9999
+COPY --from=builder /app ./
 
-COPY --from=build /app/backend/node_modules ./backend/node_modules
-COPY --from=build /app/backend/dist ./backend/dist
-COPY --from=build /app/backend/prisma ./backend/prisma
-COPY --from=build /app/backend/prisma.config.ts ./backend/prisma.config.ts
+ENV NODE_ENV=production
 
+RUN echo '#!/bin/sh' > start.sh && \
+    echo 'cd backend' >> start.sh && \
+    echo 'npm run prisma:migrate:deploy' >> start.sh && \
+    echo 'cd ..' >> start.sh && \
+    echo 'npm start' >> start.sh && \
+    chmod +x start.sh
 
-WORKDIR /app/backend
-
-# Teraz ścieżka jest relatywna do /app/backend
-CMD ["sh", "-c", "npx prisma migrate deploy && exec node dist/backend/src/server.js"]
+CMD ["./start.sh"]

@@ -36,7 +36,6 @@ const startServer = async () => {
                 ubiquitiAccess.partialSync.bind(ubiquitiAccess)
             );
         }
-        // const port = await config.getValue('SERVER_PORT');
         const app = express();
         app.use(express.static(path.join(__dirname, 'public')));
         app.use(express.json());

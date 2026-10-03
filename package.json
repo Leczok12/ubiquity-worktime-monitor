@@ -11,7 +11,7 @@
         "build": "node scripts/build-frontend.js && node scripts/build-backend.js",
         "start": "npx dotenv-cli -e .env -- npm run start --prefix backend",
         "dev:backend": "npx dotenv-cli -e .env -- npm run dev --prefix backend",
-        "prisma:generate": "npx dotenv-cli -e .env -- npm run prisma:generate --prefix backend",
+        "prisma:generate": "npm run prisma:generate --prefix backend",
         "prisma:migrate:dev": "npx dotenv-cli -e .env -- npm run prisma:migrate:dev --prefix backend",
         "prisma:migrate:deploy": "npx dotenv-cli -e .env -- npm run prisma:migrate:deploy --prefix backend",
         "docker:dev:up": " npx dotenv-cli -e .env -- docker compose -f docker/dev/compose.yaml up -d",

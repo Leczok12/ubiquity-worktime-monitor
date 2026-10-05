@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { microsoftRouter } from './microsoft-router';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 import { ApiAuthConfig } from '@shared/types/api/api-auth';
 import { ApiResponse } from '@sharedtypes/api-response';
 import { authController } from '@src/controllers/auth-controller';
@@ -11,11 +11,11 @@ const router = express.Router();
 
 router.use('/local', localRouter);
 
-if (ENV.MICROSOFT_ENABLED) {
+if (env.MICROSOFT_ENABLED) {
     router.use('/microsoft', microsoftRouter);
 }
 
-if (ENV.GOOGLE_ENABLED) {
+if (env.GOOGLE_ENABLED) {
     router.use('/google', googleRouter);
 }
 

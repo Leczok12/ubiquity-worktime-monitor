@@ -1,14 +1,14 @@
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { database } from '@src/config/database';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 
-export const microsoftStrategy = ENV.MICROSOFT_ENABLED
+export const microsoftStrategy = env.MICROSOFT_ENABLED
     ? new MicrosoftStrategy(
           {
-              clientSecret: ENV.MICROSOFT_CLIENT_SECRET ?? 'null',
-              clientID: ENV.MICROSOFT_CLIENT_ID ?? 'null',
-              callbackURL: `${ENV.APP_URL}/api/auth/microsoft/callback`,
-              tenant: ENV.MICROSOFT_TENANT_ID ?? 'null',
+              clientSecret: env.MICROSOFT_CLIENT_SECRET ?? 'null',
+              clientID: env.MICROSOFT_CLIENT_ID ?? 'null',
+              callbackURL: `${env.SERVER_URL}/api/auth/microsoft/callback`,
+              tenant: env.MICROSOFT_TENANT_ID ?? 'null',
               scope: ['user.read'],
           },
           async function (accessToken: string, refreshToken: string, profile: any, done: Function) {

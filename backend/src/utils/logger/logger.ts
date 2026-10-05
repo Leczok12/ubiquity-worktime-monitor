@@ -1,16 +1,25 @@
+import { loadEnvVariable } from '../load-env-variable';
 import { LogType } from './logger-types';
-import { ENV } from '@src/config/enviroment';
 
 class LoggerService {
     private surce: string | undefined;
+    private logLevel: number;
 
     constructor(source?: string) {
         this.surce = source;
+        this.logLevel = (() => {
+            const level = loadEnvVariable('LOG_LEVEL', '2');
+            const parsed = parseInt(level.value, 10);
+            if (isNaN(parsed) || parsed < 1 || parsed > 3) {
+                return 2;
+            }
+            return parsed;
+        })();
     }
 
     private _log(message: string, logType: LogType): void {
-        if (ENV.LOG_LEVEL <= 1 && (logType === 'INFO' || logType === 'VERBOSE')) return;
-        if (ENV.LOG_LEVEL <= 2 && logType === 'VERBOSE') return;
+        if (this.logLevel <= 1 && (logType === 'INFO' || logType === 'VERBOSE')) return;
+        if (this.logLevel <= 2 && logType === 'VERBOSE') return;
 
         const colorReset = '\x1b[0m';
         const date = new Date();

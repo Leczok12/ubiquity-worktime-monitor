@@ -1,13 +1,13 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 import { database } from '@src/config/database';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 
-export const googleStrategy = ENV.GOOGLE_ENABLED
+export const googleStrategy = env.GOOGLE_ENABLED
     ? new GoogleStrategy(
           {
-              clientSecret: ENV.GOOGLE_CLIENT_SECRET ?? 'null',
-              clientID: ENV.GOOGLE_CLIENT_ID ?? 'null',
-              callbackURL: `${ENV.APP_URL}/api/auth/google/callback`,
+              clientSecret: env.GOOGLE_CLIENT_SECRET ?? 'null',
+              clientID: env.GOOGLE_CLIENT_ID ?? 'null',
+              callbackURL: `${env.SERVER_URL}/api/auth/google/callback`,
               passReqToCallback: true,
               scope: ['profile', 'email'],
           },

@@ -1,5 +1,4 @@
 import { ApiResponse } from '@shared/types/api/api-response';
-import { ENV } from '@src/config/enviroment';
 import { ApiError } from '@src/types/api-error';
 import express, { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';

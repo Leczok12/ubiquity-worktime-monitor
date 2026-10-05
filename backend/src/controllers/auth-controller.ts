@@ -1,6 +1,6 @@
 import { ApiAuthConfig, ApiAuthUser } from '@shared/types/api/api-auth';
 import { ApiResponse } from '@sharedtypes/api-response';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 import { ApiError } from '@src/types/api-error';
 import { Request, Response } from 'express';
 
@@ -8,12 +8,12 @@ const authController = () => {
     const getConfig: () => Promise<ApiAuthConfig> = async () => {
         return {
             microsoft: {
-                enabled: ENV.MICROSOFT_ENABLED,
-                loginLabel: ENV.MICROSOFT_LOGIN_LABEL,
+                enabled: env.MICROSOFT_ENABLED,
+                loginLabel: env.MICROSOFT_LOGIN_LABEL,
             },
             google: {
-                enabled: ENV.GOOGLE_ENABLED,
-                loginLabel: ENV.GOOGLE_LOGIN_LABEL,
+                enabled: env.GOOGLE_ENABLED,
+                loginLabel: env.GOOGLE_LOGIN_LABEL,
             },
         };
     };

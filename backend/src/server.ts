@@ -8,18 +8,17 @@ import loggerMiddleware from './middlewares/logger-middleware';
 import { authRouter } from './routers/auth/auth-router';
 import { session } from './config/session';
 import { ApiError } from './types/api-error';
-import { ENV } from '@src/config/enviroment';
 import { taskQueue } from './services/task-queue';
 import { ubiquitiAccess } from './services/ubiquiti-access';
 import { initAdmin } from './utils/init-admin';
 import { appRouter } from './routers/app/app-router';
 import path from 'path';
-
+import { environment as env } from './services/environment';
 const startServer = async () => {
     try {
         await initAdmin();
         if (await ubiquitiAccess.chealthCheck()) {
-            if (ENV.UBIQUITI_SYNC_ON_STARTUP) {
+            if (env.UBIQUITI_SYNC_ON_STARTUP) {
                 taskQueue.createImmediateTask(
                     'Ubiquiti Access Full Sync',
                     ubiquitiAccess.fullSync.bind(ubiquitiAccess)
@@ -27,12 +26,12 @@ const startServer = async () => {
             }
             taskQueue.createTask(
                 'Ubiquiti Access Full Sync',
-                ENV.UBIQUITI_FULL_SYNC_CRON,
+                env.UBIQUITI_FULL_SYNC_CRON,
                 ubiquitiAccess.fullSync.bind(ubiquitiAccess)
             );
             taskQueue.createTask(
                 'Ubiquiti Access Partial Sync',
-                ENV.UBIQUITI_PARTIAL_SYNC_CRON,
+                env.UBIQUITI_PARTIAL_SYNC_CRON,
                 ubiquitiAccess.partialSync.bind(ubiquitiAccess)
             );
         }
@@ -57,8 +56,8 @@ const startServer = async () => {
 
         app.use(errorHandler);
 
-        app.listen(ENV.APP_PORT, () => {
-            logger.success(`Server is running on port ${ENV.APP_PORT}`);
+        app.listen(env.SERVER_PORT, () => {
+            logger.success(`Server is running on port ${env.SERVER_PORT}`);
         });
     } catch (error) {
         logger.error(`Failed to start server: ${error instanceof Error ? error.message : error}`);

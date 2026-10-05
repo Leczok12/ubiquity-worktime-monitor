@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from '@src/types/prisma-transaction';
 import { Logger } from '@src/utils/logger';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 import { database } from '@src/config/database';
 
 export const syncGroups = async (axiosInstance: AxiosInstance, logger: Logger) => {
@@ -46,7 +46,7 @@ export const syncGroups = async (axiosInstance: AxiosInstance, logger: Logger) =
                     data: {
                         id: group.id,
                         name: group.name ?? '',
-                        show: ENV.UBIQUITI_NEW_GROUP_DEFAULT_SHOW,
+                        show: env.UBIQUITI_NEW_GROUP_DEFAULT_SHOW,
                     },
                 });
                 logger.success(`Created group {${group.id}} - ${group.name}`);

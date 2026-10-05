@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 import { isDeepStrictEqual } from 'node:util';
 import { PrismaTransaction } from '@src/types/prisma-transaction';
 import { logger } from '@src/utils/logger';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 
 export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: AxiosInstance) => {
     logger.info('Starting workers sync with Ubiquiti Access API');
@@ -33,7 +33,7 @@ export const syncWorkers = async (prisma: PrismaTransaction, axiosInstance: Axio
                     email: worker.user_email ?? null,
                     active: worker.status === 'ACTIVE' ? true : false,
                     lastname: worker.last_name ?? '',
-                    show: ENV.UBIQUITI_NEW_WORKER_DEFAULT_SHOW,
+                    show: env.UBIQUITI_NEW_WORKER_DEFAULT_SHOW,
                 },
             });
             logger.success(`Created worker ${worker.first_name} ${worker.last_name}`);

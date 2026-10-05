@@ -1,4 +1,4 @@
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 import { ApiError } from '@src/types/api-error';
 import express, { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';
@@ -40,7 +40,7 @@ router.get(
             }
         }
 
-        res.redirect(`${ENV.APP_URL}${finalRedirectUrl}`);
+        res.redirect(`${env.SERVER_URL}${finalRedirectUrl}`);
     }
 );
 

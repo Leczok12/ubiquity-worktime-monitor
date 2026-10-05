@@ -18,10 +18,18 @@ export default defineConfig({
         port: process.env.DEV_FRONTEND_PORT ? parseInt(process.env.DEV_FRONTEND_PORT) : 5173,
         proxy: {
             '/api': {
-                target:
-                    process.env.DEV === 'true'
-                        ? process.env.DEV_BACKEND_URL
-                        : (process.env.APP_URL ?? 'http://localhost:3000'),
+                target: (() => {
+                    const DEV = process.env.DEV === 'true';
+                    const devServerUrl = process.env.DEV_SERVER_URL;
+                    const serverUrl = process.env.SERVER_URL;
+
+                    if (DEV && devServerUrl && devServerUrl !== '') {
+                        return devServerUrl;
+                    } else if (serverUrl && serverUrl !== '') {
+                        return serverUrl;
+                    }
+                    return 'http://localhost:3000';
+                })(),
                 changeOrigin: true,
                 secure: false,
             },

@@ -4,7 +4,7 @@ import {
     ApiGetWorkEventGrouped,
     ApiUpdateWorkEvent,
 } from '@shared/types/api/api-work-event';
-import { ENV } from '../config/enviroment';
+import { environment as env } from '@src/services/environment';
 import { randomInt } from 'node:crypto';
 import { database } from '@src/config/database';
 import { calculateWorkTimeInMinutes } from '@src/utils/calculate-work-time-in-minutes';
@@ -102,11 +102,11 @@ const workEventController = () => {
 
         const calculatedUntilDate = new Date(untilDate);
         calculatedUntilDate.setHours(24, 0, 0, 0);
-        calculatedUntilDate.setMinutes(calculatedUntilDate.getMinutes() + ENV.END_OF_DAY_OFFSET);
+        calculatedUntilDate.setMinutes(calculatedUntilDate.getMinutes() + env.END_OF_DAY_OFFSET);
 
         const calculatedSinceDate = new Date(sinceDate);
         calculatedSinceDate.setHours(0, 0, 0, 0);
-        calculatedSinceDate.setMinutes(calculatedSinceDate.getMinutes() + ENV.END_OF_DAY_OFFSET);
+        calculatedSinceDate.setMinutes(calculatedSinceDate.getMinutes() + env.END_OF_DAY_OFFSET);
 
         // Create empty groups for each day in the range
         while (calculatedSinceDate < calculatedUntilDate) {
@@ -147,7 +147,7 @@ const workEventController = () => {
                     displayDate: new Date(
                         event.timeStart.getTime() / 2 +
                             event.timeEnd.getTime() / 2 +
-                            ENV.DISPLAY_DATE_OFFSET * 60 * 1000
+                            env.DISPLAY_DATE_OFFSET * 60 * 1000
                     ).toISOString(),
                     type: event.type,
                     id: event.id,

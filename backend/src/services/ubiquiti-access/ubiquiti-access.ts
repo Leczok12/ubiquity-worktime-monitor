@@ -1,6 +1,6 @@
 import { Logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
-import { ENV } from '@src/config/enviroment';
+import { environment as env } from '@src/services/environment';
 import axios from 'axios';
 import https from 'https';
 
@@ -15,7 +15,7 @@ class UbiquitiAccess {
     private logger = new Logger('Access API');
 
     public async chealthCheck(disableLogging?: boolean): Promise<boolean> {
-        if (!ENV.UBIQUITI_HOST || !ENV.UBIQUITI_API_KEY) {
+        if (env.UBIQUITI_HOST === '' || env.UBIQUITI_API_KEY === '') {
             if (!disableLogging) {
                 this.logger.warn(
                     'UBIQUITI_HOST or UBIQUITI_API_KEY is not defined in environment variables. Sync with Ubiquiti Access API will be disabled. Please set these variables in your .env file and restart the server.'
@@ -26,7 +26,7 @@ class UbiquitiAccess {
 
         try {
             await axios({
-                url: ENV.UBIQUITI_HOST,
+                url: env.UBIQUITI_HOST,
                 method: 'GET',
                 timeout: 2000,
                 validateStatus: () => true,
@@ -51,9 +51,9 @@ class UbiquitiAccess {
 
     private creteAxiosInstance(): axios.AxiosInstance {
         return axios.create({
-            baseURL: ENV.UBIQUITI_HOST ?? '',
+            baseURL: env.UBIQUITI_HOST ?? '',
             headers: {
-                Authorization: `Bearer ${ENV.UBIQUITI_API_KEY ?? ''}`,
+                Authorization: `Bearer ${env.UBIQUITI_API_KEY ?? ''}`,
                 accept: 'application/json',
                 'content-Type': 'application/json',
             },

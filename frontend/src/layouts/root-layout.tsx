@@ -17,7 +17,7 @@ const RootLayout = () => {
 
     useEffect(() => {
         if (data?.status === 'UNAUTHORIZED') {
-            navigator('/auth/login');
+            navigator('/auth/login/?redirect=' + window.location.pathname);
         }
         if (data?.status === 'SUCCESS' && data.data?.role === 'WORKER') {
             navigator(`/worker/${data.data.workerId}`);

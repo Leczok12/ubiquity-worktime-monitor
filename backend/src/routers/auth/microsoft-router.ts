@@ -19,25 +19,29 @@ router.get('/', (req: Request, res: Response, next: Function) => {
     })(req, res, next);
 });
 
-router.get('/callback', passport.authenticate('microsoft', { failureRedirect: '/login' }), (req, res) => {
-    let finalRedirectUrl = '/';
+router.get(
+    '/callback',
+    passport.authenticate('microsoft', { failureRedirect: '/login' }),
+    (req, res) => {
+        let finalRedirectUrl = '/';
 
-    const stateStr = req.query.state as string;
+        const stateStr = req.query.state as string;
 
-    if (stateStr) {
-        try {
-            const decodedState = Buffer.from(stateStr, 'base64').toString('utf8');
-            const stateObj = JSON.parse(decodedState);
+        if (stateStr) {
+            try {
+                const decodedState = Buffer.from(stateStr, 'base64').toString('utf8');
+                const stateObj = JSON.parse(decodedState);
 
-            if (stateObj.redirect && stateObj.redirect.startsWith('/')) {
-                finalRedirectUrl = stateObj.redirect;
+                if (stateObj.redirect && stateObj.redirect.startsWith('/')) {
+                    finalRedirectUrl = stateObj.redirect;
+                }
+            } catch (error) {
+                console.error('Błąd dekodowania parametru state:', error);
             }
-        } catch (error) {
-            console.error('Błąd dekodowania parametru state:', error);
         }
-    }
 
-    res.redirect(`${ENV.APP_URL}${finalRedirectUrl}`);
-});
+        res.redirect(`${ENV.APP_URL}${finalRedirectUrl}`);
+    }
+);
 
 export { router as microsoftRouter };

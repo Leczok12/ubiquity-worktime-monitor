@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FaGoogle, FaMicrosoft } from 'react-icons/fa6';
 import { getApiAuthConfig, loginLocalApiAuthUser } from '@src/api/api-auth';
-import { useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router';
 import LoginForm from '@src/forms/login-form';
 import Alert from '@src/components/alert';
 
 const AuthLoginPage = () => {
-    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [loginError, setLoginError] = useState<string | undefined>(undefined);
     const [isDisabled, setIsDisabled] = useState(false);
     const { data, isLoading, error } = useQuery({
@@ -26,6 +26,10 @@ const AuthLoginPage = () => {
     if (error) {
         return <Alert title="Error" status="error" description={error?.message} />;
     }
+
+    const redirect = searchParams.get('redirect')
+        ? '/?redirect=' + searchParams.get('redirect')
+        : '';
 
     return (
         <Card.Root w={'300px'}>
@@ -46,7 +50,7 @@ const AuthLoginPage = () => {
                                 setLoginError(error.message);
                             })
                             .then(() => {
-                                navigate('../../'); //TODO: fix it
+                                window.location.href = searchParams.get('redirect') || '/';
                             })
                             .finally(() => {
                                 setIsDisabled(false);
@@ -62,7 +66,7 @@ const AuthLoginPage = () => {
                         variant="subtle"
                         aria-label="User"
                         disabled={isDisabled}
-                        onClick={() => navigate('/api/auth/microsoft/?redirect=/')}
+                        onClick={() => (window.location.href = '/api/auth/microsoft' + redirect)}
                     >
                         <FaMicrosoft /> {data.data?.microsoft?.loginLabel}
                     </IconButton>
@@ -72,7 +76,7 @@ const AuthLoginPage = () => {
                         variant="subtle"
                         aria-label="User"
                         disabled={isDisabled}
-                        onClick={() => navigate('/api/auth/google/?redirect=/')}
+                        onClick={() => (window.location.href = '/api/auth/google' + redirect)}
                     >
                         <FaGoogle /> {data.data?.google?.loginLabel}
                     </IconButton>

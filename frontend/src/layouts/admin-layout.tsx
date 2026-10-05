@@ -23,7 +23,7 @@ const AdminLayout = () => {
 
     useEffect(() => {
         if (data?.status === 'UNAUTHORIZED') {
-            navigator('/auth/login');
+            navigator('/auth/login/?redirect=' + window.location.pathname);
         } else if (data?.status === 'SUCCESS' && data.data?.role !== 'SYSTEM_ADMIN') {
             navigator('/');
         }

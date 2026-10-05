@@ -1,4 +1,4 @@
-import { logger } from '@src/utils/logger';
+import { Logger } from '@src/utils/logger';
 import cron, { ScheduledTask } from 'node-cron';
 
 class TaskQueue {
@@ -15,6 +15,8 @@ class TaskQueue {
 
     private isDoingTasks: boolean = false;
 
+    private logger = new Logger('TaskQueue');
+
     private async doAllTasks(): Promise<void> {
         if (this.isDoingTasks) {
             return;
@@ -23,13 +25,13 @@ class TaskQueue {
         while (this.tasks.length > 0) {
             const { name, task } = this.tasks.shift()!;
             try {
-                logger.info(`Executing task "${name}"`);
+                this.logger.info(`Executing task "${name}"`);
                 await task();
             } catch (error) {
                 if (error instanceof Error) {
-                    logger.error(`Error executing task ${name}: ${error.message}`);
+                    this.logger.error(`Error executing task ${name}: ${error.message}`);
                 } else {
-                    logger.error(`Error executing task ${name}: ${error}`);
+                    this.logger.error(`Error executing task ${name}: ${error}`);
                 }
             }
         }
@@ -37,16 +39,28 @@ class TaskQueue {
     }
 
     public createTask(name: string, cronExpression: string, job: () => Promise<void>): void {
-        const existingTask = this.cronTasks.find((task) => task.name === name);
-        if (existingTask) {
-            existingTask.task.stop();
-            this.cronTasks = this.cronTasks.filter((task) => task.name !== name);
+        try {
+            const existingTask = this.cronTasks.find((task) => task.name === name);
+            if (existingTask) {
+                existingTask.task.stop();
+                this.cronTasks = this.cronTasks.filter((task) => task.name !== name);
+            }
+            const newTask = cron.schedule(cronExpression, async () => {
+                this.tasks.push({ name, task: job });
+                await this.doAllTasks();
+            });
+            this.cronTasks.push({ name, cronExpression, task: newTask });
+        } catch (error) {
+            if (error instanceof Error) {
+                this.logger.error(
+                    `Error creating task "${name}" with cron expression "${cronExpression}": ${error.message}`
+                );
+            } else {
+                this.logger.error(
+                    `Error creating task "${name}" with cron expression "${cronExpression}": ${error}`
+                );
+            }
         }
-        const newTask = cron.schedule(cronExpression, async () => {
-            this.tasks.push({ name, task: job });
-            await this.doAllTasks();
-        });
-        this.cronTasks.push({ name, cronExpression, task: newTask });
     }
 
     public createImmediateTask(name: string, job: () => Promise<void>): void {

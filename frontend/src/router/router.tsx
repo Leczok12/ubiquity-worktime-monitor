@@ -12,6 +12,7 @@ import AuthLoginPage from '@src/pages/auth-login-page';
 import AuthLogoutPage from '@src/pages/auth-logout-page';
 import WorkerPage from '@src/pages/worker-page';
 import ErrorPage from '@src/pages/error-page';
+import AdminConfigPage from '@src/pages/admin-config-page';
 
 const router = createBrowserRouter([
     // {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
             { path: 'workers', element: <AdminWorkerPage /> },
             { path: 'devices', element: <AdminDevicePage /> },
             { path: 'groups', element: <AdminGroupPage /> },
+            { path: 'config', element: <AdminConfigPage /> },
         ],
     },
     {

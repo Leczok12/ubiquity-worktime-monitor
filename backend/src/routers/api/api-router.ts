@@ -5,6 +5,7 @@ import { deviceRouter } from './device-router';
 import { workEventRouter } from './work-event-router';
 import { eventRouter } from './event-router';
 import { statisticsRouter } from './statistics-router';
+import { configRouter } from './config-router';
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use('/work-event', workEventRouter);
 router.use('/group', groupRouter);
 router.use('/statistics', statisticsRouter);
 router.use('/worker', workerRouter);
+router.use('/config', configRouter);
 
 export { router as apiRouter };

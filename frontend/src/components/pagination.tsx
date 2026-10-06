@@ -18,37 +18,65 @@ const Pagination: FC<PaginationProps> = ({ show, count, pageNumber, pageSize, on
     return (
         <Box
             position="fixed"
-            bottom="4"
+            bottom="calc(1rem )"
             left="0"
             right="0"
             display="flex"
             justifyContent="center"
+            px={{ base: 2, sm: 4 }}
             zIndex="1000"
-            p="2"
+            pointerEvents="none"
         >
             <ChakraPagination.Root
                 count={count}
                 pageSize={pageSize}
                 onPageChange={onPageChange}
                 defaultPage={pageNumber}
+                display="flex"
+                alignItems="center"
+                maxW="100%"
+                minW="0"
+                p="1"
+                gap={{ base: 1, sm: 2 }}
+                borderWidth="1px"
+                borderColor="border.muted"
+                borderRadius="lg"
+                bg="bg.panel"
+                pointerEvents="auto"
             >
-                <ButtonGroup variant="ghost" size="sm">
+                <ButtonGroup variant="ghost" size={{ base: 'xs', sm: 'sm' }} flexShrink={0}>
                     <ChakraPagination.PrevTrigger asChild>
-                        <IconButton>
+                        <IconButton aria-label="Previous page">
                             <LuChevronLeft />
                         </IconButton>
                     </ChakraPagination.PrevTrigger>
 
-                    <ChakraPagination.Items
-                        render={(page) => (
-                            <IconButton variant={{ base: 'ghost', _selected: 'outline' }}>
-                                {page.value}
-                            </IconButton>
-                        )}
-                    />
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        minW="0"
+                        overflowX="auto"
+                        css={{
+                            scrollbarWidth: 'none',
+                            '&::-webkit-scrollbar': { display: 'none' },
+                        }}
+                    >
+                        <ChakraPagination.Items
+                            render={(page) => (
+                                <IconButton
+                                    aria-label={`Page ${page.value}`}
+                                    variant={{ base: 'ghost', _selected: 'outline' }}
+                                    size={{ base: 'xs', sm: 'sm' }}
+                                    flexShrink={0}
+                                >
+                                    {page.value}
+                                </IconButton>
+                            )}
+                        />
+                    </Box>
 
                     <ChakraPagination.NextTrigger asChild>
-                        <IconButton>
+                        <IconButton aria-label="Next page">
                             <LuChevronRight />
                         </IconButton>
                     </ChakraPagination.NextTrigger>

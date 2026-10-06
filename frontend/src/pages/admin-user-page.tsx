@@ -2,7 +2,7 @@ import { Container, Heading } from '@chakra-ui/react';
 import Alert from '@src/components/alert';
 
 const AdminUsersPage = () => {
-    const pageSize = 12;
+    // const pageSize = 12;
     return (
         <Container pb={'60px'} display="flex" flexDirection="column" gap={6}>
             <Heading size="4xl">Users</Heading>

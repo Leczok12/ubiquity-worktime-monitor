@@ -4,11 +4,11 @@ import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 import { getApiWorkers } from '@src/api/api-worker';
 import WorkerSearchBar from '@src/organisms/worker-search-bar';
-import { WorkerTable, WorkerTableRow } from '@src/components/worker-table';
+import { WorkerTable } from '@src/components/worker-table';
 import { useNavigate } from 'react-router';
 
 const HomePage = () => {
-    const pageSize = 15;
+    const pageSize = 12;
     const navigator = useNavigate();
     const [pageNumber, setPageNumber] = useState(1);
     const [groupId, setGroupId] = useState<string | undefined>(undefined);
@@ -24,7 +24,7 @@ const HomePage = () => {
     });
 
     return (
-        <Container pb={20}>
+        <Container pb={'60px'} display="flex" flexDirection="column" gap={6}>
             <WorkerSearchBar
                 onSearch={(keyword, groupId) => {
                     setKeyword(keyword);
@@ -36,16 +36,9 @@ const HomePage = () => {
             <WorkerTable
                 loading={isLoading || isFetching}
                 error={error?.message}
-                empty={data?.data?.length === 0}
-            >
-                {data?.data?.map((worker) => (
-                    <WorkerTableRow
-                        key={worker.id}
-                        data={worker}
-                        onClick={() => navigator(`/worker/${worker.id}`)}
-                    />
-                ))}
-            </WorkerTable>
+                data={data?.data}
+                onClick={(id) => navigator(`/worker/${id}`)}
+            />
             <Pagination
                 show={data !== undefined}
                 pageNumber={pageNumber}

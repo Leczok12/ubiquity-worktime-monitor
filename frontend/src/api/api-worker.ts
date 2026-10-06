@@ -41,7 +41,6 @@ export const getApiWorkers = async (
         }
 
         if (groupId !== undefined && groupId.trim() !== '') {
-            searchParams.set('groupId', groupId.trim());
             return '/api/group/' + groupId.trim() + '/worker/all?';
         }
 

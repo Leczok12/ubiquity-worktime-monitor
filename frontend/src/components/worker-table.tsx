@@ -1,65 +1,102 @@
-import { type FC, type PropsWithChildren } from 'react';
-import { Alert, Skeleton, Table } from '@chakra-ui/react';
+import { type FC } from 'react';
+import { Card, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { ApiGetWorker } from '@shared/types/api/api-worker';
+import Alert from './alert';
+import MultipleLineSkeleton from './multiple-line-skeleton';
 
-export const WorkerTable: FC<
-    PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
-> = ({ children, loading, error, empty }) => {
+const BreakPoints = {
+    base: 'small',
+    sm: 'normal',
+    md: 'normal',
+    lg: 'normal',
+    xl: 'normal',
+};
+
+export const WorkerTable: FC<{
+    loading?: boolean;
+    error?: string;
+    data?: ApiGetWorker[];
+    onClick: (id: string) => void;
+}> = ({ loading, error, data, onClick }) => {
+    const currentBrakePoint = useBreakpointValue(BreakPoints, { ssr: false });
+
     return (
-        <Table.Root interactive>
-            <Table.Header>
-                <Table.Row>
-                    <Table.ColumnHeader>Name</Table.ColumnHeader>
-                    <Table.ColumnHeader>Email</Table.ColumnHeader>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {loading && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Skeleton>Loading</Skeleton>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {error && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Alert.Root variant="subtle" status="error">
-                                <Alert.Title>Error</Alert.Title>
-                                <Alert.Description>{error}</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {empty && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Alert.Root variant="subtle" status="info">
-                                <Alert.Title>Info</Alert.Title>
-                                <Alert.Description>No workers found</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {loading || error || empty ? null : children}
-            </Table.Body>
-        </Table.Root>
+        <Card.Root>
+            <Card.Body display="flex" flexDirection="column" gap={3}>
+                {(() => {
+                    if (error) {
+                        return <Alert status="error" title="Error" description={error} />;
+                    }
+                    if (loading) {
+                        return <MultipleLineSkeleton lines={3} />;
+                    }
+                    if (data?.length === 0 || data === undefined) {
+                        return <Alert status="info" title="Info" description="No workers found" />;
+                    }
+
+                    return (
+                        <>
+                            {currentBrakePoint === 'normal' && (
+                                <Card.Root>
+                                    <Card.Body
+                                        pt={2}
+                                        pb={2}
+                                        display="grid"
+                                        gridTemplateColumns={'1fr 1fr'}
+                                        justifyContent="space-evenly"
+                                        alignItems="center"
+                                        textAlign={'center'}
+                                    >
+                                        <strong>Name</strong>
+                                        <strong>Email</strong>
+                                    </Card.Body>
+                                </Card.Root>
+                            )}
+                            {data?.map((worker) => (
+                                <WorkerTableRow
+                                    onClick={() => onClick(worker.id)}
+                                    key={worker.id}
+                                    data={worker}
+                                    isSmall={currentBrakePoint === 'small'}
+                                />
+                            ))}
+                        </>
+                    );
+                })()}
+            </Card.Body>
+        </Card.Root>
     );
 };
 
-export const WorkerTableRow: FC<{ data: ApiGetWorker; onClick: () => void }> = ({
+export const WorkerTableRow: FC<{ data: ApiGetWorker; isSmall?: boolean; onClick: () => void }> = ({
     data,
+    isSmall = false,
     onClick,
 }) => {
     return (
-        <Table.Row
-            key={data.id}
-            color={data.active ? 'inherit' : 'fg.error'}
+        <Card.Root
+            borderColor={data.active ? undefined : 'fg.error'}
+            _hover={{ bg: 'bg.muted' }}
+            transition="background-color 0.1s ease-in-out"
             onClick={onClick}
             cursor="pointer"
         >
-            <Table.Cell w={'50%'}>{data.lastname + ' ' + data.name}</Table.Cell>
-            <Table.Cell w={'50%'}>{data.email}</Table.Cell>
-        </Table.Row>
+            <Card.Body
+                display="grid"
+                p={2}
+                gridTemplateColumns={isSmall ? '1fr' : '1fr 1fr'}
+                gap={isSmall ? 2 : 0}
+                justifyContent="space-evenly"
+                alignItems="center"
+                textAlign={'center'}
+            >
+                <Text truncate>
+                    {data.lastname} {data.name}
+                </Text>
+                <Text truncate>
+                    {data.email === undefined || data.email === '' ? '---@---.--' : data.email}
+                </Text>
+            </Card.Body>
+        </Card.Root>
     );
 };

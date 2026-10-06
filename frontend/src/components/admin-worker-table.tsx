@@ -93,7 +93,7 @@ const AdminWorkerTableRow: FC<{
             >
                 <Text truncate>{data.id}</Text>
                 <Text truncate>
-                    {data.name} {data.lastname}
+                    {data.lastname} {data.name}
                 </Text>
                 <Text truncate>{!data.email || data.email === '' ? '---@---.--' : data.email}</Text>
                 <Button

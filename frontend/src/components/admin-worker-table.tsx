@@ -78,7 +78,11 @@ const AdminWorkerTableRow: FC<{
     onEdit: (id: string, data: ApiUpdateWorker) => void;
 }> = ({ data, isSmall = false, disabled, onEdit }) => {
     return (
-        <Card.Root borderColor={data.active ? undefined : 'fg.error'}>
+        <Card.Root
+            borderColor={data.active ? undefined : 'fg.error'}
+            _hover={{ bg: 'bg.muted' }}
+            transition="background-color 0.1s ease-in-out"
+        >
             <Card.Body
                 display="grid"
                 gridTemplateColumns={isSmall ? '1fr' : '2fr 1fr 2fr 0.5fr'}

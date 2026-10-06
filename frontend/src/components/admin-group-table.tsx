@@ -77,7 +77,7 @@ const AdminGroupTableRow: FC<{
     onEdit: (id: string, data: ApiUpdateGroup) => void;
 }> = ({ data, isSmall, disabled, onEdit }) => {
     return (
-        <Card.Root>
+        <Card.Root _hover={{ bg: 'bg.muted' }} transition="background-color 0.1s ease-in-out">
             <Card.Body
                 display="grid"
                 gridTemplateColumns={isSmall ? '1fr' : '2fr 2fr 0.5fr'}

@@ -1,7 +1,7 @@
 import { Container, Heading } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getApiGroups } from '@src/api/api-group';
-import { AdminGroupTable, AdminGroupTableRow } from '@src/components/admin-group-table';
+import { AdminGroupTable } from '@src/components/admin-group-table';
 import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 

@@ -1,5 +1,5 @@
-import { useState, type FC, type PropsWithChildren } from 'react';
-import { Skeleton, Table, Switch, Card, useBreakpointValue, Text, Button } from '@chakra-ui/react';
+import { useState, type FC } from 'react';
+import { Card, useBreakpointValue, Text, Button } from '@chakra-ui/react';
 import type { ApiGetGroup } from '@shared/types/api/api-group';
 import { updateApiGroup } from '@src/api/api-group';
 import Alert from './alert';

@@ -15,7 +15,7 @@ const AdminHomePage = () => {
     });
 
     return (
-        <Container pb={20}>
+        <Container display="flex" flexDirection="column" gap={6}>
             <Heading size="4xl" mb={6}>
                 Admin Dashboard
             </Heading>

@@ -1,7 +1,6 @@
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import { Card, useBreakpointValue, Text, Button } from '@chakra-ui/react';
-import type { ApiGetGroup } from '@shared/types/api/api-group';
-import { updateApiGroup } from '@src/api/api-group';
+import type { ApiGetGroup, ApiUpdateGroup } from '@shared/types/api/api-group';
 import Alert from './alert';
 import MultipleLineSkeleton from './multiple-line-skeleton';
 
@@ -13,12 +12,14 @@ const BreakPoints = {
     xl: 'normal',
 };
 
-export const AdminGroupTable: FC<{ loading?: boolean; error?: string; data?: ApiGetGroup[] }> = ({
-    loading,
-    error,
-    data,
-}) => {
-    const currentBrakePoint = useBreakpointValue(BreakPoints);
+export const AdminGroupTable: FC<{
+    loading?: boolean;
+    error?: string;
+    data?: ApiGetGroup[];
+    disabled?: boolean;
+    onEdit: (id: string, data: ApiUpdateGroup) => void;
+}> = ({ loading, error, data, disabled, onEdit }) => {
+    const currentBrakePoint = useBreakpointValue(BreakPoints, { ssr: false });
 
     return (
         <Card.Root>
@@ -54,8 +55,11 @@ export const AdminGroupTable: FC<{ loading?: boolean; error?: string; data?: Api
                             )}
                             {data?.map((group) => (
                                 <AdminGroupTableRow
+                                    key={group.id}
                                     data={group}
                                     isSmall={currentBrakePoint === 'small'}
+                                    disabled={disabled}
+                                    onEdit={onEdit}
                                 />
                             ))}
                         </>
@@ -66,30 +70,12 @@ export const AdminGroupTable: FC<{ loading?: boolean; error?: string; data?: Api
     );
 };
 
-export const AdminGroupTableRow: FC<{ data: ApiGetGroup; isSmall: boolean }> = ({
-    data,
-    isSmall,
-}) => {
-    const [disabled, setDisabled] = useState(false);
-    const [error, setError] = useState<string | undefined>(undefined);
-    const [show, setShow] = useState(data.show);
-
-    const onShowChange = (show: boolean) => {
-        setDisabled(true);
-        updateApiGroup(data.id, { show: show })
-            .then(() => {
-                setShow(show);
-                setDisabled(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setDisabled(false);
-            });
-    };
-
-    if (error) {
-        return <Alert status="error" title={`Error ${data.id}`} description={error} />;
-    }
+const AdminGroupTableRow: FC<{
+    data: ApiGetGroup;
+    isSmall: boolean;
+    disabled?: boolean;
+    onEdit: (id: string, data: ApiUpdateGroup) => void;
+}> = ({ data, isSmall, disabled, onEdit }) => {
     return (
         <Card.Root>
             <Card.Body
@@ -105,11 +91,11 @@ export const AdminGroupTableRow: FC<{ data: ApiGetGroup; isSmall: boolean }> = (
                 <Button
                     size="sm"
                     w={isSmall ? '100%' : undefined}
-                    onClick={() => onShowChange(!show)}
+                    onClick={() => onEdit(data.id, { ...data, show: !data.show })}
                     disabled={disabled}
-                    variant={show ? 'solid' : 'outline'}
+                    variant={data.show ? 'solid' : 'outline'}
                 >
-                    {show ? 'Hide' : 'Show'}
+                    {data.show ? 'Hide' : 'Show'}
                 </Button>
             </Card.Body>
         </Card.Root>

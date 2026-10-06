@@ -3,26 +3,40 @@ import { useQuery } from '@tanstack/react-query';
 import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 import { AdminWorkerTable } from '@src/components/admin-worker-table';
-import { getApiWorkers } from '@src/api/api-worker';
+import { getApiWorkers, updateApiWorker } from '@src/api/api-worker';
 import WorkerSearchBar from '@src/organisms/worker-search-bar';
+import type { ApiUpdateWorker } from '@shared/types/api/api-worker';
 
 const AdminWorkerPage = () => {
-    const pageSize = 15;
+    const pageSize = 12;
     const [pageNumber, setPageNumber] = useState(1);
     const [groupId, setGroupId] = useState<string | undefined>(undefined);
     const [keyword, setKeyword] = useState<string | undefined>(undefined);
+    const [disabled, setDisabled] = useState<boolean>(false);
+    const [updateError, setUpdateError] = useState<string | undefined>(undefined);
     const { data, isLoading, isFetching, error, refetch } = useQuery({
         queryKey: ['admin', 'worker', pageNumber, pageSize, keyword, groupId],
         queryFn: async () => {
             return getApiWorkers(pageNumber, pageSize, keyword, groupId, true);
         },
-        retry: false,
-        staleTime: 0,
-        gcTime: 0,
+        staleTime: 100 * 60 * 5,
+        gcTime: 100 * 60 * 10,
     });
 
+    const onEdit = async (id: string, data: ApiUpdateWorker) => {
+        setDisabled(true);
+        try {
+            await updateApiWorker(id, data);
+            refetch();
+        } catch (error) {
+            setUpdateError((error as Error).message);
+        } finally {
+            setDisabled(false);
+        }
+    };
+
     return (
-        <Container pb={20} display="flex" flexDirection="column" gap={6}>
+        <Container pb={'60px'} display="flex" flexDirection="column" gap={6}>
             <Heading size="4xl">Workers</Heading>
             <WorkerSearchBar
                 onSearch={(keyword, groupId) => {
@@ -33,9 +47,11 @@ const AdminWorkerPage = () => {
                 }}
             />
             <AdminWorkerTable
-                loading={isLoading || isFetching}
-                error={error?.message}
+                loading={isLoading}
+                error={error?.message || updateError}
                 data={data?.data}
+                disabled={disabled || isFetching}
+                onEdit={onEdit}
             />
             <Pagination
                 show={data !== undefined}

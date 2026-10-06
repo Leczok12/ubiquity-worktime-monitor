@@ -17,7 +17,7 @@ export const AdminConfigurationTable: FC<{
     error?: string;
     data?: ApiConfigElement[];
 }> = ({ loading, error, data }) => {
-    const currentBrakePoint = useBreakpointValue(BreakPoints);
+    const currentBrakePoint = useBreakpointValue(BreakPoints, { ssr: false });
 
     return (
         <Card.Root>

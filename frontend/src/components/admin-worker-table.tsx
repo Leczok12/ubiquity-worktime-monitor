@@ -1,7 +1,6 @@
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import { useBreakpointValue, Card, Text, Button } from '@chakra-ui/react';
-import type { ApiGetWorker } from '@shared/types/api/api-worker';
-import { updateApiWorker } from '@src/api/api-worker';
+import type { ApiGetWorker, ApiUpdateWorker } from '@shared/types/api/api-worker';
 import Alert from './alert';
 import MultipleLineSkeleton from './multiple-line-skeleton';
 
@@ -17,8 +16,10 @@ export const AdminWorkerTable: FC<{
     loading?: boolean;
     error?: string;
     data?: ApiGetWorker[];
-}> = ({ loading, error, data }) => {
-    const currentBrakePoint = useBreakpointValue(BreakPoints);
+    disabled?: boolean;
+    onEdit: (id: string, data: ApiUpdateWorker) => void;
+}> = ({ loading, error, data, disabled, onEdit }) => {
+    const currentBrakePoint = useBreakpointValue(BreakPoints, { ssr: false });
 
     return (
         <Card.Root>
@@ -58,6 +59,8 @@ export const AdminWorkerTable: FC<{
                                     key={worker.id}
                                     data={worker}
                                     isSmall={currentBrakePoint === 'small'}
+                                    disabled={disabled}
+                                    onEdit={onEdit}
                                 />
                             ))}
                         </>
@@ -71,29 +74,11 @@ export const AdminWorkerTable: FC<{
 const AdminWorkerTableRow: FC<{
     data: ApiGetWorker;
     isSmall?: boolean;
-}> = ({ data, isSmall = false }) => {
-    const [disabled, setDisabled] = useState(false);
-    const [error, setError] = useState<string | undefined>(undefined);
-    const [show, setShow] = useState(data.show);
-
-    const onShowChange = (show: boolean) => {
-        setDisabled(true);
-        updateApiWorker(data.id, { show: show })
-            .then(() => {
-                setDisabled(false);
-                setShow(show);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setDisabled(false);
-            });
-    };
-
-    if (error) {
-        return <Alert status="error" title={`Error ${data.id}`} description={error} />;
-    }
+    disabled?: boolean;
+    onEdit: (id: string, data: ApiUpdateWorker) => void;
+}> = ({ data, isSmall = false, disabled, onEdit }) => {
     return (
-        <Card.Root>
+        <Card.Root borderColor={data.active ? undefined : 'fg.error'}>
             <Card.Body
                 display="grid"
                 gridTemplateColumns={isSmall ? '1fr' : '2fr 1fr 2fr 0.5fr'}
@@ -110,11 +95,11 @@ const AdminWorkerTableRow: FC<{
                 <Button
                     size="sm"
                     w={isSmall ? '100%' : undefined}
-                    onClick={() => onShowChange(!show)}
+                    onClick={() => onEdit(data.id, { ...data, show: !data.show })}
                     disabled={disabled}
-                    variant={show ? 'solid' : 'outline'}
+                    variant={data.show ? 'solid' : 'outline'}
                 >
-                    {show ? 'Hide' : 'Show'}
+                    {data.show ? 'Hide' : 'Show'}
                 </Button>
             </Card.Body>
         </Card.Root>

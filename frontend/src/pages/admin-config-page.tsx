@@ -9,12 +9,12 @@ const AdminConfigPage = () => {
         queryFn: async () => {
             return getApiConfig();
         },
-        staleTime: 0,
-        gcTime: 0,
+        staleTime: 100 * 60 * 5,
+        gcTime: 100 * 60 * 10,
     });
 
     return (
-        <Container pb={20} gap={6} display="flex" flexDirection="column">
+        <Container gap={6} display="flex" flexDirection="column">
             <Heading size="4xl">Configuration</Heading>
             <Heading size="xs">
                 To modify the configuration, please edit the environment variables in the backend

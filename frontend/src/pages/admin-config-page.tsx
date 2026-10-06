@@ -1,10 +1,7 @@
 import { Container, Heading } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getApiConfig } from '@src/api/api-config';
-import {
-    AdminConfigurationTable,
-    AdminConfigurationTableRow,
-} from '@src/components/admin-configuration-table';
+import { AdminConfigurationTable } from '@src/components/admin-configuration-table';
 
 const AdminConfigPage = () => {
     const { data, isLoading, error } = useQuery({
@@ -17,23 +14,13 @@ const AdminConfigPage = () => {
     });
 
     return (
-        <Container pb={20}>
-            <Heading size="4xl" mb={6}>
-                Configuration
-            </Heading>
-            <Heading size="xs" mb={4}>
+        <Container pb={20} gap={6} display="flex" flexDirection="column">
+            <Heading size="4xl">Configuration</Heading>
+            <Heading size="xs">
                 To modify the configuration, please edit the environment variables in the backend
                 and restart the server.
             </Heading>
-            <AdminConfigurationTable
-                loading={isLoading}
-                error={error?.message}
-                empty={data?.data?.length === 0}
-            >
-                {data?.data?.map((config) => (
-                    <AdminConfigurationTableRow key={config.name} data={config} />
-                ))}
-            </AdminConfigurationTable>
+            <AdminConfigurationTable loading={isLoading} error={error?.message} data={data?.data} />
         </Container>
     );
 };

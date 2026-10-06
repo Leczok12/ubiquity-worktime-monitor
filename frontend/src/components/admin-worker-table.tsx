@@ -1,11 +1,11 @@
 import { useState, type FC } from 'react';
-import { Box, Table, Switch, useBreakpointValue, Card, Text, Button } from '@chakra-ui/react';
+import { useBreakpointValue, Card, Text, Button } from '@chakra-ui/react';
 import type { ApiGetWorker } from '@shared/types/api/api-worker';
 import { updateApiWorker } from '@src/api/api-worker';
 import Alert from './alert';
 import MultipleLineSkeleton from './multiple-line-skeleton';
 
-const AdminWorkerTableBreakPoints = {
+const BreakPoints = {
     base: 'small',
     sm: 'small',
     md: 'small',
@@ -16,10 +16,9 @@ const AdminWorkerTableBreakPoints = {
 export const AdminWorkerTable: FC<{
     loading?: boolean;
     error?: string;
-    empty?: boolean;
     data?: ApiGetWorker[];
 }> = ({ loading, error, data }) => {
-    const currentBrakePoint = useBreakpointValue(AdminWorkerTableBreakPoints);
+    const currentBrakePoint = useBreakpointValue(BreakPoints);
 
     return (
         <Card.Root>
@@ -103,13 +102,11 @@ const AdminWorkerTableRow: FC<{
                 alignItems="center"
                 textAlign={'center'}
             >
-                <Text>{data.id}</Text>
-                <Text>
+                <Text truncate>{data.id}</Text>
+                <Text truncate>
                     {data.name} {data.lastname}
                 </Text>
-                <Text fontSize={isSmall ? 'sm' : undefined}>
-                    {!data.email || data.email === '' ? '---@---.--' : data.email}
-                </Text>
+                <Text truncate>{!data.email || data.email === '' ? '---@---.--' : data.email}</Text>
                 <Button
                     size="sm"
                     w={isSmall ? '100%' : undefined}

@@ -1,59 +1,90 @@
-import { useState, type FC, type PropsWithChildren } from 'react';
-import { Alert, Skeleton, Select, Portal, Table, createListCollection } from '@chakra-ui/react';
-import { deviceTypes, type ApiGetDevice, type DeviceType } from '@shared/types/api/api-device';
-import { updateApiDevice } from '@src/api/api-device';
+import { type FC } from 'react';
+import { Card, useBreakpointValue, Text } from '@chakra-ui/react';
 import type { ApiConfigElement } from '@shared/types/api/api-config';
+import Alert from './alert';
+import MultipleLineSkeleton from './multiple-line-skeleton';
 
-export const AdminConfigurationTable: FC<
-    PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
-> = ({ children, loading, error, empty }) => {
+const BreakPoints = {
+    base: 'small',
+    sm: 'small',
+    md: 'normal',
+    lg: 'normal',
+    xl: 'normal',
+};
+
+export const AdminConfigurationTable: FC<{
+    loading?: boolean;
+    error?: string;
+    data?: ApiConfigElement[];
+}> = ({ loading, error, data }) => {
+    const currentBrakePoint = useBreakpointValue(BreakPoints);
+
     return (
-        <Table.Root interactive>
-            <Table.Header>
-                <Table.Row>
-                    <Table.ColumnHeader w="50%">Name</Table.ColumnHeader>
-                    <Table.ColumnHeader w="50%">Value</Table.ColumnHeader>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {loading && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Skeleton>Loading</Skeleton>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {error && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Alert.Root variant="subtle" status="error">
-                                <Alert.Title>Error</Alert.Title>
-                                <Alert.Description>{error}</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {empty && (
-                    <Table.Row>
-                        <Table.Cell colSpan={2}>
-                            <Alert.Root variant="subtle" status="info">
-                                <Alert.Title>Info</Alert.Title>
-                                <Alert.Description>No configuration found</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {loading || error || empty ? null : children}
-            </Table.Body>
-        </Table.Root>
+        <Card.Root>
+            <Card.Body display="flex" flexDirection="column" gap={3}>
+                {(() => {
+                    if (error) {
+                        return <Alert status="error" title="Error" description={error} />;
+                    }
+                    if (loading) {
+                        return <MultipleLineSkeleton lines={3} />;
+                    }
+                    if (data?.length === 0 || data === undefined) {
+                        return <Alert status="info" title="Info" description="No workers found" />;
+                    }
+
+                    return (
+                        <>
+                            {currentBrakePoint === 'normal' && (
+                                <Card.Root>
+                                    <Card.Body
+                                        pt={2}
+                                        pb={2}
+                                        display="grid"
+                                        gridTemplateColumns={'1fr 1fr'}
+                                        justifyContent="space-evenly"
+                                        alignItems="center"
+                                        textAlign={'center'}
+                                    >
+                                        <strong>Name</strong>
+                                        <strong>Value</strong>
+                                    </Card.Body>
+                                </Card.Root>
+                            )}
+                            {data?.map((config) => (
+                                <AdminConfigurationTableRow
+                                    key={config.name}
+                                    data={config}
+                                    isSmall={currentBrakePoint === 'small'}
+                                />
+                            ))}
+                        </>
+                    );
+                })()}
+            </Card.Body>
+        </Card.Root>
     );
 };
 
-export const AdminConfigurationTableRow: FC<{ data: ApiConfigElement }> = ({ data }) => {
+export const AdminConfigurationTableRow: FC<{ data: ApiConfigElement; isSmall: boolean }> = ({
+    data,
+    isSmall,
+}) => {
     return (
-        <Table.Row>
-            <Table.Cell>{data.name}</Table.Cell>
-            <Table.Cell>{data.value}</Table.Cell>
-        </Table.Row>
+        <Card.Root>
+            <Card.Body
+                display="grid"
+                gridTemplateColumns={isSmall ? '1fr' : '1fr 1fr'}
+                gap={isSmall ? 2 : 0}
+                justifyContent="space-evenly"
+                alignItems="center"
+                textAlign={'center'}
+            >
+                <Text truncate style={{ fontWeight: 'bold' }}>
+                    {data.name}
+                </Text>
+                <Text truncate>{data.value}</Text>
+            </Card.Body>
+        </Card.Root>
     );
 };

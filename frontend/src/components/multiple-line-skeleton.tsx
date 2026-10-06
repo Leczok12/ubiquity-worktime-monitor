@@ -1,4 +1,4 @@
-import { Box, Skeleton, type SkeletonProps } from '@chakra-ui/react';
+import { Skeleton, type SkeletonProps } from '@chakra-ui/react';
 
 const MultipleLineSkeleton: React.FC<SkeletonProps & { lines: number }> = ({ lines, ...props }) => {
     const skeletonLines = Array.from({ length: lines }, (_, index) => (

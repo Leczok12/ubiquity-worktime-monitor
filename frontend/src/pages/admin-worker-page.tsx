@@ -2,7 +2,7 @@ import { Container, Heading } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import Pagination from '@src/components/pagination';
 import { useState } from 'react';
-import { AdminWorkerTable, AdminWorkerTableRow } from '@src/components/admin-worker-table';
+import { AdminWorkerTable } from '@src/components/admin-worker-table';
 import { getApiWorkers } from '@src/api/api-worker';
 import WorkerSearchBar from '@src/organisms/worker-search-bar';
 
@@ -22,10 +22,8 @@ const AdminWorkerPage = () => {
     });
 
     return (
-        <Container pb={20}>
-            <Heading size="4xl" mb={6}>
-                Workers
-            </Heading>
+        <Container pb={20} display="flex" flexDirection="column" gap={6}>
+            <Heading size="4xl">Workers</Heading>
             <WorkerSearchBar
                 onSearch={(keyword, groupId) => {
                     setKeyword(keyword);
@@ -37,12 +35,8 @@ const AdminWorkerPage = () => {
             <AdminWorkerTable
                 loading={isLoading || isFetching}
                 error={error?.message}
-                empty={data?.data?.length === 0}
-            >
-                {data?.data?.map((worker) => (
-                    <AdminWorkerTableRow key={worker.id} data={worker} />
-                ))}
-            </AdminWorkerTable>
+                data={data?.data}
+            />
             <Pagination
                 show={data !== undefined}
                 pageNumber={pageNumber}

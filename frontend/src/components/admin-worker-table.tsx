@@ -76,12 +76,12 @@ const AdminWorkerTableRow: FC<{
     const [error, setError] = useState<string | undefined>(undefined);
     const [show, setShow] = useState(data.show);
 
-    const onCheckedChange = (checked: boolean) => {
+    const onShowChange = (show: boolean) => {
         setDisabled(true);
-        updateApiWorker(data.id, { show: checked })
+        updateApiWorker(data.id, { show: show })
             .then(() => {
                 setDisabled(false);
-                setShow(checked);
+                setShow(show);
             })
             .catch((err) => {
                 setError(err.message);
@@ -110,7 +110,7 @@ const AdminWorkerTableRow: FC<{
                 <Button
                     size="sm"
                     w={isSmall ? '100%' : undefined}
-                    onClick={() => onCheckedChange(!show)}
+                    onClick={() => onShowChange(!show)}
                     disabled={disabled}
                     variant={show ? 'solid' : 'outline'}
                 >

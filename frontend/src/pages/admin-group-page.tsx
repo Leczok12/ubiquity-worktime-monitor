@@ -6,7 +6,7 @@ import Pagination from '@src/components/pagination';
 import { useState } from 'react';
 
 const AdminGroupPage = () => {
-    const pageSize = 25;
+    const pageSize = 10;
     const [pageNumber, setPageNumber] = useState(1);
     const { data, isLoading, error } = useQuery({
         queryKey: ['admin', 'group', pageNumber, pageSize],
@@ -23,15 +23,7 @@ const AdminGroupPage = () => {
             <Heading size="4xl" mb={6}>
                 Groups
             </Heading>
-            <AdminGroupTable
-                loading={isLoading}
-                error={error?.message}
-                empty={data?.data?.length === 0}
-            >
-                {data?.data?.map((group) => (
-                    <AdminGroupTableRow key={group.id} data={group} />
-                ))}
-            </AdminGroupTable>
+            <AdminGroupTable loading={isLoading} error={error?.message} data={data?.data} />
             <Pagination
                 show={data !== undefined}
                 pageNumber={pageNumber}

@@ -1,94 +1,117 @@
 import { useState, type FC, type PropsWithChildren } from 'react';
-import { Alert, Skeleton, Table, Switch } from '@chakra-ui/react';
+import { Skeleton, Table, Switch, Card, useBreakpointValue, Text, Button } from '@chakra-ui/react';
 import type { ApiGetGroup } from '@shared/types/api/api-group';
 import { updateApiGroup } from '@src/api/api-group';
+import Alert from './alert';
+import MultipleLineSkeleton from './multiple-line-skeleton';
 
-export const AdminGroupTable: FC<
-    PropsWithChildren & { loading?: boolean; error?: string; empty?: boolean }
-> = ({ children, loading, error, empty }) => {
+const BreakPoints = {
+    base: 'small',
+    sm: 'small',
+    md: 'small',
+    lg: 'normal',
+    xl: 'normal',
+};
+
+export const AdminGroupTable: FC<{ loading?: boolean; error?: string; data?: ApiGetGroup[] }> = ({
+    loading,
+    error,
+    data,
+}) => {
+    const currentBrakePoint = useBreakpointValue(BreakPoints);
+
     return (
-        <Table.Root interactive>
-            <Table.Header>
-                <Table.Row>
-                    <Table.ColumnHeader>ID</Table.ColumnHeader>
-                    <Table.ColumnHeader>Name</Table.ColumnHeader>
-                    <Table.ColumnHeader textAlign="end">Show</Table.ColumnHeader>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {loading && (
-                    <Table.Row>
-                        <Table.Cell colSpan={3}>
-                            <Skeleton>Loading</Skeleton>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {error && (
-                    <Table.Row>
-                        <Table.Cell colSpan={3}>
-                            <Alert.Root variant="subtle" status="error">
-                                <Alert.Title>Error</Alert.Title>
-                                <Alert.Description>{error}</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {empty && (
-                    <Table.Row>
-                        <Table.Cell colSpan={3}>
-                            <Alert.Root variant="subtle" status="info">
-                                <Alert.Title>Info</Alert.Title>
-                                <Alert.Description>No groups found</Alert.Description>
-                            </Alert.Root>
-                        </Table.Cell>
-                    </Table.Row>
-                )}
-                {loading || error || empty ? null : children}
-            </Table.Body>
-        </Table.Root>
+        <Card.Root>
+            <Card.Body display="flex" flexDirection="column" gap={3}>
+                {(() => {
+                    if (error) {
+                        return <Alert status="error" title="Error" description={error} />;
+                    }
+                    if (loading) {
+                        return <MultipleLineSkeleton lines={3} />;
+                    }
+                    if (data?.length === 0 || data === undefined) {
+                        return <Alert status="info" title="Info" description="No workers found" />;
+                    }
+
+                    return (
+                        <>
+                            {currentBrakePoint === 'normal' && (
+                                <Card.Root>
+                                    <Card.Body
+                                        pt={2}
+                                        pb={2}
+                                        display="grid"
+                                        gridTemplateColumns={'2fr 2fr 0.5fr'}
+                                        justifyContent="space-evenly"
+                                        alignItems="center"
+                                        textAlign={'center'}
+                                    >
+                                        <strong>ID</strong>
+                                        <strong>Name</strong>
+                                    </Card.Body>
+                                </Card.Root>
+                            )}
+                            {data?.map((group) => (
+                                <AdminGroupTableRow
+                                    data={group}
+                                    isSmall={currentBrakePoint === 'small'}
+                                />
+                            ))}
+                        </>
+                    );
+                })()}
+            </Card.Body>
+        </Card.Root>
     );
 };
 
-export const AdminGroupTableRow: FC<{ data: ApiGetGroup }> = ({ data }) => {
+export const AdminGroupTableRow: FC<{ data: ApiGetGroup; isSmall: boolean }> = ({
+    data,
+    isSmall,
+}) => {
     const [disabled, setDisabled] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={3}>
-                    <Alert.Root variant="subtle" status="error">
-                        <Alert.Title>Error</Alert.Title>
-                        <Alert.Description>{error}</Alert.Description>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        );
-    }
+    const [show, setShow] = useState(data.show);
 
+    const onShowChange = (show: boolean) => {
+        setDisabled(true);
+        updateApiGroup(data.id, { show: show })
+            .then(() => {
+                setShow(show);
+                setDisabled(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setDisabled(false);
+            });
+    };
+
+    if (error) {
+        return <Alert status="error" title={`Error ${data.id}`} description={error} />;
+    }
     return (
-        <Table.Row key={data.id}>
-            <Table.Cell>{data.id}</Table.Cell>
-            <Table.Cell>{data.name}</Table.Cell>
-            <Table.Cell textAlign="end">
-                <Switch.Root
+        <Card.Root>
+            <Card.Body
+                display="grid"
+                gridTemplateColumns={isSmall ? '1fr' : '2fr 2fr 0.5fr'}
+                gap={isSmall ? 2 : 0}
+                justifyContent="space-evenly"
+                alignItems="center"
+                textAlign={'center'}
+            >
+                <Text truncate>{data.id}</Text>
+                <Text truncate>{data.name}</Text>
+                <Button
+                    size="sm"
+                    w={isSmall ? '100%' : undefined}
+                    onClick={() => onShowChange(!show)}
                     disabled={disabled}
-                    defaultChecked={data.show}
-                    onCheckedChange={(checked) => {
-                        setDisabled(true);
-                        updateApiGroup(data.id, { show: checked.checked })
-                            .then(() => {
-                                setDisabled(false);
-                            })
-                            .catch((err) => {
-                                setError(err.message);
-                                setDisabled(false);
-                            });
-                    }}
+                    variant={show ? 'solid' : 'outline'}
                 >
-                    <Switch.HiddenInput />
-                    <Switch.Control />
-                </Switch.Root>
-            </Table.Cell>
-        </Table.Row>
+                    {show ? 'Hide' : 'Show'}
+                </Button>
+            </Card.Body>
+        </Card.Root>
     );
 };

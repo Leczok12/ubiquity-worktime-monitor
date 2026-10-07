@@ -85,6 +85,8 @@ const AdminWorkerTableRow: FC<{
         >
             <Card.Body
                 display="grid"
+                pb={2}
+                pt={2}
                 gridTemplateColumns={isSmall ? '1fr' : '2fr 1fr 2fr 0.5fr'}
                 gap={isSmall ? 2 : 0}
                 justifyContent="space-evenly"

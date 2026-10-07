@@ -74,6 +74,8 @@ export const AdminConfigurationTableRow: FC<{ data: ApiConfigElement; isSmall: b
         <Card.Root _hover={{ bg: 'bg.muted' }} transition="background-color 0.1s ease-in-out">
             <Card.Body
                 display="grid"
+                pb={2}
+                pt={2}
                 gridTemplateColumns={isSmall ? '1fr' : '1fr 1fr'}
                 gap={isSmall ? 2 : 0}
                 justifyContent="space-evenly"

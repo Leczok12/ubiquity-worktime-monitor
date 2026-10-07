@@ -48,7 +48,7 @@ export const WorkerTable: FC<{
                                         textAlign={'center'}
                                     >
                                         <strong>Name</strong>
-                                        <strong>Email</strong>
+                                        <strong>Status</strong>
                                     </Card.Body>
                                 </Card.Root>
                             )}
@@ -75,7 +75,7 @@ export const WorkerTableRow: FC<{ data: ApiGetWorker; isSmall?: boolean; onClick
 }) => {
     return (
         <Card.Root
-            borderColor={data.active ? undefined : 'fg.error'}
+            // borderColor={data.active ? undefined : 'fg.error'}
             _hover={{ bg: 'bg.muted' }}
             transition="background-color 0.1s ease-in-out"
             onClick={onClick}
@@ -83,7 +83,8 @@ export const WorkerTableRow: FC<{ data: ApiGetWorker; isSmall?: boolean; onClick
         >
             <Card.Body
                 display="grid"
-                p={2}
+                pt={2}
+                pb={2}
                 gridTemplateColumns={isSmall ? '1fr' : '1fr 1fr'}
                 gap={isSmall ? 2 : 0}
                 justifyContent="space-evenly"
@@ -93,8 +94,8 @@ export const WorkerTableRow: FC<{ data: ApiGetWorker; isSmall?: boolean; onClick
                 <Text truncate>
                     {data.lastname} {data.name}
                 </Text>
-                <Text truncate>
-                    {data.email === undefined || data.email === '' ? '---@---.--' : data.email}
+                <Text color={data?.active ? 'fg.success' : 'fg.error'}>
+                    {data.active ? 'Active' : 'Inactive'}
                 </Text>
             </Card.Body>
         </Card.Root>

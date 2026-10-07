@@ -94,7 +94,7 @@ export const WorkerTableRow: FC<{ data: ApiGetWorker; isSmall?: boolean; onClick
                 <Text truncate>
                     {data.lastname} {data.name}
                 </Text>
-                <Text color={data?.active ? 'fg.success' : 'fg.error'}>
+                <Text truncate color={data?.active ? 'fg.success' : 'fg.error'}>
                     {data.active ? 'Active' : 'Inactive'}
                 </Text>
             </Card.Body>

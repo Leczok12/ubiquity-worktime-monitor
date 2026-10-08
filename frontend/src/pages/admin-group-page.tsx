@@ -34,9 +34,7 @@ const AdminGroupPage = () => {
 
     return (
         <Container pb={'60px'} display="flex" flexDirection="column" gap={6}>
-            <Heading size="4xl" mb={6}>
-                Groups
-            </Heading>
+            <Heading size="4xl">Groups</Heading>
             <AdminGroupTable
                 loading={isLoading}
                 error={error?.message || updateError}

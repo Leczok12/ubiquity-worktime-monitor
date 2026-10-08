@@ -16,9 +16,7 @@ const AdminHomePage = () => {
 
     return (
         <Container display="flex" flexDirection="column" gap={6}>
-            <Heading size="4xl" mb={6}>
-                Admin Dashboard
-            </Heading>
+            <Heading size="4xl">Admin Dashboard</Heading>
             <Statistics data={data?.data} loading={isLoading} error={error?.message} />
         </Container>
     );

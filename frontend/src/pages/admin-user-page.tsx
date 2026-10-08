@@ -1,7 +1,6 @@
 import { Container, Heading } from '@chakra-ui/react';
 import { getApiUsers } from '@src/api/api-user';
 import { AdminUserTable } from '@src/components/admin-user-table';
-import Alert from '@src/components/alert';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Pagination from '@src/components/pagination';
@@ -22,6 +21,7 @@ const AdminUsersPage = () => {
     });
 
     const onEdit = async (id: string, data: ApiUpdateUser) => {
+        console.log('onEdit', id, data);
         setDisabled(true);
         try {
             // await updateApiGroup(id, data);

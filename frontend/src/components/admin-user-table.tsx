@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { useBreakpointValue, Card, Text, Button } from '@chakra-ui/react';
+import { useBreakpointValue, Card, Text } from '@chakra-ui/react';
 import Alert from './alert';
 import MultipleLineSkeleton from './multiple-line-skeleton';
 import { userRole, type ApiGetUser, type ApiUpdateUser } from '@shared/types/api/api-user';

@@ -14,7 +14,13 @@ passport.deserializeUser<string>(async (id, done) => {
 
     if (!user) return done(new Error('User not found'), null);
 
+    await database.prisma.user.update({
+        where: { id: String(id) },
+        data: { lastActivity: new Date() },
+    });
+
     const { password, ...userWithoutPassword } = user;
+
     done(null, userWithoutPassword);
 });
 

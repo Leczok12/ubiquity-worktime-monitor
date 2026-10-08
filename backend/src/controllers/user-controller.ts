@@ -1,6 +1,6 @@
 import { Group, Worker } from '@prisma/client';
 import { ApiCreateGroup, ApiUpdateGroup } from '@shared/types/api/api-group';
-import { ApiCreateUser } from '@shared/types/api/api-user';
+import { ApiCreateUser, ApiGetUser } from '@shared/types/api/api-user';
 import { logger } from '@src/utils/logger';
 import { database } from '@src/config/database';
 import { ApiError } from '@src/types/api-error';
@@ -23,7 +23,57 @@ const userController = () => {
         logger.success(`User created: ${data.email}`);
     };
 
-    return { createUser };
+    const getUser: (id: string) => Promise<ApiGetUser> = async (id: string) => {
+        const user = await database.prisma.user.findUnique({
+            where: { id: id },
+        });
+
+        if (!user) throw new ApiError(404, 'NOT_FOUND');
+
+        return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            lastname: user.lastname,
+            role: user.role as ApiGetUser['role'],
+            lastLogin: user.lastLogin?.toISOString(),
+            lastActivity: user.lastActivity?.toISOString() ?? undefined,
+        };
+    };
+
+    const getUsers: (
+        pageSize: number,
+        pageNumber: number
+    ) => Promise<PaginationWrapper<ApiGetUser[]>> = async (pageSize, pageNumber) => {
+        const users = await database.prisma.user.findMany({
+            take: pageSize,
+            skip: (pageNumber - 1) * pageSize,
+            orderBy: [{ lastname: 'asc' }, { name: 'asc' }],
+        });
+
+        const totalUsers = await database.prisma.user.count();
+
+        const apiUsers: ApiGetUser[] = users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            lastname: user.lastname,
+            role: user.role as ApiGetUser['role'],
+            lastLogin: user.lastLogin?.toISOString(),
+            lastActivity: user.lastActivity?.toISOString(),
+        }));
+
+        return {
+            data: apiUsers,
+            pagination: {
+                page: pageNumber,
+                pageSize: pageSize,
+                total: totalUsers,
+            },
+        };
+    };
+
+    return { createUser, getUser, getUsers };
     // const getGroup: (id: string, skipShow?: boolean) => Promise<Group> = async (
     //     id: string,
     //     skipShow?: boolean

@@ -11,7 +11,7 @@ const AdminDevicePage = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [disabled, setDisabled] = useState<boolean>(false);
     const [updateError, setUpdateError] = useState<string | undefined>(undefined);
-    const { data, isLoading, error, refetch, isRefetching } = useQuery({
+    const { data, isLoading, error, refetch, isFetching } = useQuery({
         queryKey: ['admin', 'device', pageNumber, pageSize],
         queryFn: async () => {
             return getApiDevices(pageNumber, pageSize);
@@ -39,7 +39,7 @@ const AdminDevicePage = () => {
                 loading={isLoading}
                 error={error?.message || updateError}
                 data={data?.data}
-                disabled={disabled || isRefetching}
+                disabled={disabled || isFetching}
                 onEdit={onEdit}
             />
             <Pagination

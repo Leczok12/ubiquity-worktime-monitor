@@ -20,6 +20,7 @@ model User {
   lastname           String
   createdAt          DateTime   @default(now())
   lastLogin          DateTime?  
+  lastActivity       DateTime?
   lastPasswordChange DateTime   @default(now())
   isPasswordChange   Boolean    @default(false)
   isLocked           Boolean    @default(false)

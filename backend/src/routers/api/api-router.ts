@@ -6,6 +6,7 @@ import { workEventRouter } from './work-event-router';
 import { eventRouter } from './event-router';
 import { statisticsRouter } from './statistics-router';
 import { configRouter } from './config-router';
+import { userRouter } from './user-router';
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use('/group', groupRouter);
 router.use('/statistics', statisticsRouter);
 router.use('/worker', workerRouter);
 router.use('/config', configRouter);
+router.use('/user', userRouter);
 
 export { router as apiRouter };

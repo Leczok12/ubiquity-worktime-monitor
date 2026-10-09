@@ -1,5 +1,5 @@
 import { Container, Heading } from '@chakra-ui/react';
-import { getApiUsers } from '@src/api/api-user';
+import { getApiUsers, updateApiUser } from '@src/api/api-user';
 import { AdminUserTable } from '@src/components/admin-user-table';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -24,7 +24,7 @@ const AdminUsersPage = () => {
         console.log('onEdit', id, data);
         setDisabled(true);
         try {
-            // await updateApiGroup(id, data);
+            await updateApiUser(id, data);
             refetch();
         } catch (error) {
             setUpdateError((error as Error).message);
